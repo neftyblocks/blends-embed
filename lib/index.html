@@ -30,6 +30,30 @@
 <body>
     <div id="neftyblocks-blend"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script type="module">
+        const { VITE_COLLECTION_NAME, VITE_ACCOUNT_NAME, VITE_ATOMIC_URL, VITE_CHAIN_URL } = import.meta.env;
+
+        const config = {
+            atomic_url: VITE_ATOMIC_URL,
+            chain_url: VITE_CHAIN_URL
+        }
+
+        const el = document.querySelector('#neftyblocks-blend');
+        const embed = `<neftyblocks-blend 
+                        config=${JSON.stringify(config)}
+                        collection=${VITE_COLLECTION_NAME}
+                        account=${VITE_ACCOUNT_NAME}
+                    />`;
+
+        el.innerHTML = embed;
+
+        // Listen for sign event
+        const component = document.querySelector("neftyblocks-blend");
+
+        component.addEventListener("sign", ({ detail }) => {
+            console.log("sign", detail)
+        });
+    </script>
 </body>
 
 </html>
