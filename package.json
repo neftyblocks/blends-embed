@@ -16,9 +16,9 @@
     ],
     "type": "module",
     "scripts": {
-        "dev": "cd lib && pnpm run dev",
-        "build": "cd lib && pnpm run build",
-        "play": "cd playground && pnpm run dev"
+        "dev": "cd lib && pnpm dev",
+        "build": "cd lib && pnpm build",
+        "play": "pnpm build && cd playground && pnpm dev"
     },
     "packageManager": "pnpm@7.25.0",
     "dependencies": {
