@@ -1,28 +1,28 @@
+:host {
+    --nb-font-family: var(--nefty-font-family, sans-serif);
+    --nb-font-size: var(--nefty-font-size, 16px);
+    --nb-font-size--small: var(--nefty-font-size--small, 14px);
+    --nb-card-size-min: var(--nefty-card-size-min, 250px);
+    --nb-card-size-max: var(--nefty-card-size-max, 1fr);
+    --nb-gap: var(--nefty-gap, 24px);
+    --nb-radius: var(--nefty-radius, 12px);
+
+    --nb-border: var(--nefty-border, #353945);
+    --nb-border-card: var(--nefty-border-card, #424652);
+    --nb-border-size: var(--nefty-border-size, 1px);
+    --nb-bg-card: var(--nefty-bg-card, #23262f);
+    --nb-bg-footer: var(--nefty-bg-footer, #292c36);
+
+    --nb-color: var(--nefty-color, #fcfcfd);
+    --nb-color-secondary: var(--nefty-color-secondary, #777e90);
+
+    color: var(--nb-color);
+}
+
 :host * {
-    font-family: var(--nefty-font-family, sans-serif);
+    font-family: var(--nb-font-family);
     font-size: 16px;
     box-sizing: border-box;
     margin: 0;
     line-height: 1.2;
-}
-
-button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #fff;
-    cursor: pointer;
-    transition: border-color 0.25s;
-
-    &:hover {
-        border-color: #646cff;
-    }
-
-    &:focus,
-    &:focus-visible {
-        outline: 4px auto -webkit-focus-ring-color;
-    }
 }
