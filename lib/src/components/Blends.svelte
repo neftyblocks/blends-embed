@@ -48,6 +48,11 @@
             <div class="blends-item">
                 <header>
                     <figure>
+                        <img
+                            class="shadow"
+                            src={blend.image}
+                            alt={blend.name}
+                        />
                         <img src={blend.image} alt={blend.name} />
                     </figure>
                     <article>
@@ -59,11 +64,27 @@
                             )}
                         </time>
                         <h3 data-title={blend.name}>{blend.name}</h3>
+                        <div class="stats">
+                            {#if blend.category}
+                                <div class="stat">
+                                    <small>category</small>
+                                    <span>
+                                        {blend.category}
+                                    </span>
+                                </div>
+                            {/if}
+                            {#if blend.secure}
+                                <div class="stat">
+                                    <small>secure</small>
+                                    <span>Yes</span>
+                                </div>
+                            {/if}
+                        </div>
                     </article>
                 </header>
                 <main>
                     <div class="stats">
-                        <div>
+                        <div class="stat">
                             <small>ingredients</small>
                             <span>
                                 <svg>
@@ -72,36 +93,14 @@
                                 {blend.ingredients_count}
                             </span>
                         </div>
-                        {#if blend.category}
-                            <div>
-                                <small>category</small>
-                                <span>
-                                    <svg>
-                                        <use href="#star" />
-                                    </svg>
-                                    {blend.category}
-                                </span>
-                            </div>
-                        {/if}
-                        {#if blend.secure}
-                            <div>
-                                <small>secure</small>
-                                <span>
-                                    <svg>
-                                        <use href="#lock" />
-                                    </svg>
-                                    Yes
-                                </span>
-                            </div>
-                        {/if}
                     </div>
-                    <div class="requirments">
+                    <!-- <div class="requirments">
                         {#each blend.items as item}
                             <figure>
                                 <img src={item.image} alt={item.name} />
                             </figure>
                         {/each}
-                    </div>
+                    </div> -->
                 </main>
                 <footer>
                     <button>{blend.secure ? 'Secure blend' : 'Blend'}</button>
@@ -133,16 +132,26 @@
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid var(--nb-border);
-        margin-top: 80px;
 
         figure {
             overflow: hidden;
+            position: relative;
+            border-radius: 3px;
+            z-index: 0;
         }
 
         img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+
+            &.shadow {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: -1;
+                filter: blur(40px);
+            }
         }
 
         time {
@@ -160,75 +169,48 @@
             cursor: pointer;
         }
 
-        // h3 on one line with ellipsis and title on hover in ::before
-        h3 {
-            margin: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 100%;
-            transition: color 0.2s ease;
-
-            &::before {
-                content: attr(data-title);
-                color: var(--nb-color);
-                position: absolute;
-                opacity: 0;
-                white-space: normal;
-                transition: opacity 0.2s ease;
-            }
-
-            &:hover {
-                color: rgba(0, 0, 0, 0);
-
-                &::before {
-                    opacity: 1;
-                }
-            }
-        }
-
         header {
             display: flex;
-            align-items: center;
-            padding: 12px 12px 12px 112px;
-            position: relative;
+            gap: 12px;
+            padding: 6px 6px 12px;
 
             figure {
-                width: 94px;
+                flex: 0 0 100px;
+                width: 100px;
                 height: 140px;
-                position: absolute;
-                top: -80px;
-                left: 6px;
+                overflow: hidden;
             }
 
             article {
                 width: 100%;
             }
 
-            img {
-                object-position: bottom;
+            .stats {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
             }
+        }
+
+        h3 {
+            margin-bottom: 6px;
         }
 
         main {
             padding: 12px 0;
-            margin: 6px 6px 0;
+            margin: 6px 6px;
             border-top: var(--nb-border-size) solid var(--nb-border);
+
+            .stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 12px;
+            }
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-            border-bottom: var(--nb-border-size) solid var(--nb-border);
-
-            > div {
-                display: flex;
-                flex-direction: column;
-                gap: 5px;
-            }
+        .stat {
+            display: flex;
+            flex-direction: column;
 
             small {
                 color: var(--nb-color-secondary);
