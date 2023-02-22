@@ -30,7 +30,7 @@
 
 <main>
     <nefty-blend-group />
-    <button on:click={() => dispatch('sign', { test: 1 })}>
+    <button style="display:none" on:click={() => dispatch('sign', { test: 1 })}>
         Click to sign
     </button>
 </main>

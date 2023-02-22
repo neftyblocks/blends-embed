@@ -31,7 +31,15 @@ export const getBlends = async ({
                 start_time,
                 end_time,
                 ingredients,
+                ingredients_count,
+                security_id,
+                display_data,
+                is_hidden,
+                category,
             } = data.data[i];
+
+            if (is_hidden) continue;
+
             const { template } = rolls[0].outcomes[0].results[0];
 
             const asset = getAssetDataSet(template);
@@ -60,6 +68,10 @@ export const getBlends = async ({
                 start_time,
                 end_time,
                 items,
+                category,
+                ingredients_count,
+                secure: security_id !== '0',
+                display_data: display_data ? JSON.parse(display_data) : null,
                 image: createImageUrl(img as string),
             });
         }
