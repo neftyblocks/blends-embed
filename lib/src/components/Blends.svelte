@@ -1,8 +1,9 @@
 <svelte:options tag="nefty-blend-group" />
 
 <script lang="ts">
-    import { useCountDown } from '@mvdschee/use';
     import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
+    import { useCountDown } from '@mvdschee/use';
     import { getBlends, settings } from '../store';
 
     // COMPONENTS
@@ -11,6 +12,8 @@
     // PROPS
     export let blends = undefined;
     export let now = new Date().getTime();
+
+    let show;
 
     // STORES
     settings.subscribe(async ({ atomic_url, collection }) => {
@@ -44,67 +47,104 @@
 
 {#if blends}
     <div class="blends-group">
-        {#each blends as blend}
+        {#each blends as blend, key}
             <div class="blends-item">
-                <header>
-                    <figure>
-                        <img
-                            class="shadow"
-                            src={blend.image}
-                            alt={blend.name}
-                        />
-                        <img src={blend.image} alt={blend.name} />
-                    </figure>
-                    <article>
-                        <time>
-                            {displayTime(blend.start_time, now)} · {displayTime(
-                                blend.end_time,
-                                now,
-                                true
-                            )}
-                        </time>
-                        <h3 data-title={blend.name}>{blend.name}</h3>
-                        <div class="stats">
-                            {#if blend.category}
-                                <div class="stat">
-                                    <small>category</small>
-                                    <span>
-                                        {blend.category}
-                                    </span>
-                                </div>
-                            {/if}
-                            {#if blend.secure}
-                                <div class="stat">
-                                    <small>secure</small>
-                                    <span>Yes</span>
-                                </div>
-                            {/if}
-                        </div>
-                    </article>
-                </header>
-                <main>
-                    <div class="stats">
-                        <div class="stat">
-                            <small>ingredients</small>
-                            <span>
-                                <svg>
-                                    <use href="#hat" />
-                                </svg>
-                                {blend.ingredients_count}
-                            </span>
+                {#if show === key}
+                    <div
+                        in:fade={{ delay: 100, duration: 100 }}
+                        out:fade={{ duration: 100 }}
+                        class="content"
+                    >
+                        <div class="requirments">
+                            {#each blend.items as item}
+                                <figure>
+                                    <img src={item.image} alt={item.name} />
+                                </figure>
+                            {/each}
                         </div>
                     </div>
-                    <!-- <div class="requirments">
-                        {#each blend.items as item}
+                {:else}
+                    <div
+                        in:fade={{ delay: 100, duration: 100 }}
+                        out:fade={{ duration: 100 }}
+                        class="content"
+                    >
+                        <header>
                             <figure>
-                                <img src={item.image} alt={item.name} />
+                                <img
+                                    class="shadow"
+                                    src={blend.image}
+                                    alt={blend.name}
+                                />
+                                <img src={blend.image} alt={blend.name} />
                             </figure>
-                        {/each}
-                    </div> -->
-                </main>
-                <footer>
-                    <button>{blend.secure ? 'Secure blend' : 'Blend'}</button>
-                </footer>
+                            <article>
+                                <time>
+                                    {displayTime(blend.start_time, now)} · {displayTime(
+                                        blend.end_time,
+                                        now,
+                                        true
+                                    )}
+                                </time>
+                                <h3 data-title={blend.name}>{blend.name}</h3>
+                                <div class="stats">
+                                    {#if blend.category}
+                                        <div class="stat">
+                                            <small>category</small>
+                                            <span>
+                                                {blend.category}
+                                            </span>
+                                        </div>
+                                    {/if}
+                                    {#if blend.secure}
+                                        <div class="stat">
+                                            <small>secure</small>
+                                            <span>Yes</span>
+                                        </div>
+                                    {/if}
+                                </div>
+                            </article>
+                        </header>
+                        <main>
+                            <div class="stats">
+                                <div class="stat">
+                                    <small>ingredients</small>
+                                    <span>
+                                        <svg>
+                                            <use href="#hat" />
+                                        </svg>
+                                        {blend.ingredients_count}
+                                    </span>
+                                </div>
+                                <div class="stat">
+                                    <small>results</small>
+                                    <span>
+                                        <svg>
+                                            <use href="#star" />
+                                        </svg>
+                                        {blend.result_count}
+                                    </span>
+                                </div>
+                                <button
+                                    class="btn-clear btn-requirments"
+                                    on:click={() => (show = key)}
+                                >
+                                    details
+                                    <svg>
+                                        <use href="#chevron-right" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </main>
+                        <footer>
+                            <button class={blend.secure ? 'secure' : ''}
+                                >{blend.secure
+                                    ? 'Secure blend'
+                                    : 'Blend'}</button
+                            >
+                        </footer>
+                    </div>
+                {/if}
             </div>
         {/each}
     </div>
@@ -127,11 +167,17 @@
     }
 
     .blends-item {
-        display: flex;
-        flex-direction: column;
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid var(--nb-border);
+        overflow: hidden;
+        max-height: 276px;
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
 
         figure {
             overflow: hidden;
@@ -154,19 +200,37 @@
             }
         }
 
+        h3 {
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            height: 2.4em;
+            margin-bottom: 6px;
+            transition: color 0.2s ease;
+
+            &::before {
+                content: attr(data-title);
+                color: var(--nb-color);
+                background-color: var(--nb-bg-card);
+                position: absolute;
+                width: 100%;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+            }
+
+            &:hover {
+                color: rgba(0, 0, 0, 0);
+
+                &::before {
+                    opacity: 1;
+                }
+            }
+        }
+
         time {
             color: var(--nb-color-secondary);
             font-size: var(--nb-font-size--small);
-        }
-
-        button {
-            width: 100%;
-            padding: 6px;
-            border: none;
-            border-radius: var(--nb-radius);
-            background-color: var(--nb-bg-button);
-            color: var(--nb-color-button);
-            cursor: pointer;
         }
 
         header {
@@ -182,7 +246,9 @@
             }
 
             article {
+                display: block;
                 width: 100%;
+                position: relative;
             }
 
             .stats {
@@ -192,13 +258,10 @@
             }
         }
 
-        h3 {
-            margin-bottom: 6px;
-        }
-
         main {
             padding: 12px 0;
-            margin: 6px 6px;
+            margin: auto 6px 0;
+            height: 61px;
             border-top: var(--nb-border-size) solid var(--nb-border);
 
             .stats {
@@ -232,6 +295,18 @@
             }
         }
 
+        .btn-requirments {
+            display: flex;
+            align-items: center;
+            color: var(--nb-color);
+            font-size: var(--nb-font-size--small);
+
+            svg {
+                width: 16px;
+                height: 16px;
+                color: var(--nb-color);
+            }
+        }
         .requirments {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
@@ -251,10 +326,25 @@
         }
 
         footer {
-            padding: 12px 6px;
-            margin-top: auto;
             background-color: var(--nb-bg-footer);
             border-radius: 0 0 var(--nb-radius) var(--nb-radius);
+
+            button {
+                padding: 18px 6px;
+                width: 100%;
+                border: none;
+                background-color: rgba(0, 0, 0, 0);
+                color: var(--nb-color-button);
+                cursor: pointer;
+
+                &:hover {
+                    background-color: var(--nb-button-hover);
+
+                    &.secure {
+                        background-color: var(--nb-secure-hover);
+                    }
+                }
+            }
         }
 
         &:hover {

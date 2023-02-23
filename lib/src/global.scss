@@ -16,6 +16,9 @@
     --nb-color: var(--nefty-color, #fcfcfd);
     --nb-color-secondary: var(--nefty-color-secondary, #777e90);
 
+    --nb-button-hover: var(--nefty-button-hover, #21b55a);
+    --nb-secure-hover: var(--nefty-secure-hover, #21abb5);
+
     color: var(--nb-color);
 }
 
@@ -25,4 +28,12 @@
     box-sizing: border-box;
     margin: 0;
     line-height: 1.2;
+}
+
+.btn-clear {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
 }

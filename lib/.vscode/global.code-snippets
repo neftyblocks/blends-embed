@@ -1,0 +1,27 @@
+{
+    "template": {
+        "scope": "svelte",
+        "prefix": ["template"],
+        "body": [
+            "<script lang=\"ts\">",
+            "</script>",
+            "",
+            "<div>",
+            "</div>",
+            "",
+            "<style lang=\"scss\">",
+            "</style>"
+        ],
+        "description": "create svelte template"
+    },
+    "svg": {
+        "scope": "svelte",
+        "prefix": ["svg"],
+        "body": [
+            "<svg role=\"presentation\" focusable=\"false\" aria-hidden=\"true\" >",
+            "<use xlink:href=\"#$1\" />",
+            "</svg>"
+        ],
+        "description": "A svg sprite import"
+    }
+}

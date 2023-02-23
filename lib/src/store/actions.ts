@@ -61,18 +61,23 @@ export const getBlends = async ({
                 });
             }
 
+            const displayData = display_data ? JSON.parse(display_data) : null;
+
             results.push({
                 blend_id,
                 contract,
-                name,
+                name: displayData?.name || name,
                 start_time,
                 end_time,
                 items,
                 category,
                 ingredients_count,
+                result_count: rolls[0].outcomes.length,
                 secure: security_id !== '0',
                 display_data: display_data ? JSON.parse(display_data) : null,
-                image: createImageUrl(img as string),
+                image: displayData?.img
+                    ? createImageUrl(displayData.img)
+                    : createImageUrl(img as string),
             });
         }
 

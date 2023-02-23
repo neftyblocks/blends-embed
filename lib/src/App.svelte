@@ -35,6 +35,7 @@
     </button>
 </main>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
     @import './global.scss';
 
