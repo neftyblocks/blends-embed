@@ -55,6 +55,14 @@
                         out:fade={{ duration: 100 }}
                         class="content"
                     >
+                        <button
+                            class="btn-clear btn-close"
+                            on:click={() => (show = undefined)}
+                        >
+                            <svg>
+                                <use href="#close" />
+                            </svg>
+                        </button>
                         <div class="requirments">
                             {#each blend.items as item}
                                 <figure>
@@ -304,7 +312,21 @@
             svg {
                 width: 16px;
                 height: 16px;
-                color: var(--nb-color);
+            }
+        }
+
+        .btn-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            margin-left: auto;
+            color: var(--nb-color);
+
+            svg {
+                width: 28px;
+                height: 28px;
             }
         }
         .requirments {
