@@ -3,27 +3,33 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
+    import { get_current_component } from 'svelte/internal';
     import { useCountDown } from '@mvdschee/use';
     import { getBlends, settings } from '../store';
+    import { dispatch } from '../utils';
 
     // COMPONENTS
     import Sprite from './Sprite.svelte';
 
-    // PROPS
+    // GLOBALS
+    const component = get_current_component();
+
+    // STATES
     export let blends = undefined;
-    export let now = new Date().getTime();
 
     let show;
-
-    // STORES
-    settings.subscribe(async ({ atomic_url, collection }) => {
-        blends = await getBlends({
-            atomic_url,
-            collection,
-        });
-    });
+    let now = new Date().getTime();
 
     // METHODS
+    settings.subscribe(async ({ config, collection }) => {
+        if (config && collection) {
+            blends = await getBlends({
+                atomic_url: config.atomic_url,
+                collection,
+            });
+        }
+    });
+
     onMount(() => {
         const interval = setInterval(() => {
             now = new Date().getTime();
@@ -63,6 +69,15 @@
                                 <use href="#close" />
                             </svg>
                         </button>
+                        <small>results</small>
+                        <div class="results">
+                            {#each blend.results as item}
+                                <figure>
+                                    <img src={item.image} alt={item.name} />
+                                </figure>
+                            {/each}
+                        </div>
+                        <small>requirments</small>
                         <div class="requirments">
                             {#each blend.items as item}
                                 <figure>
@@ -145,7 +160,17 @@
                             </div>
                         </main>
                         <footer>
-                            <button class={blend.secure ? 'secure' : ''}
+                            <button
+                                class={blend.secure ? 'secure' : ''}
+                                on:click={() =>
+                                    dispatch(
+                                        'blend',
+                                        {
+                                            blend_id: blend.blend_id,
+                                            contract: blend.contract,
+                                        },
+                                        component
+                                    )}
                                 >{blend.secure
                                     ? 'Secure blend'
                                     : 'Blend'}</button
@@ -185,6 +210,40 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            padding: 6px;
+
+            > small {
+                color: var(--nb-color-secondary);
+                font-size: var(--nb-font-size--small);
+                position: relative;
+                z-index: 0;
+                text-align: center;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: calc(50% + 1px);
+                    left: 0;
+                    transform: translateY(-50%);
+                    width: 100%;
+                    height: 1px;
+                    z-index: -1;
+                    background-color: var(--nb-border);
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    background-color: var(--nb-bg-card);
+                    display: block;
+                    filter: blur(3px);
+                    height: 100%;
+                    left: calc(50% - 55px);
+                    top: 0;
+                    width: 110px;
+                    z-index: -1;
+                }
+            }
         }
 
         figure {
@@ -244,7 +303,7 @@
         header {
             display: flex;
             gap: 12px;
-            padding: 6px 6px 12px;
+            padding-bottom: 12px;
 
             figure {
                 flex: 0 0 100px;
@@ -268,7 +327,7 @@
 
         main {
             padding: 12px 0;
-            margin: auto 6px 0;
+            margin: auto 0 0;
             height: 61px;
             border-top: var(--nb-border-size) solid var(--nb-border);
 
@@ -329,14 +388,12 @@
                 height: 28px;
             }
         }
-        .requirments {
+        .requirments,
+        .results {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
             gap: 5px;
-            filter: grayscale(100%);
-            opacity: 0.8;
-
-            transition: filter 0.2s ease, opacity 0.2s ease;
+            margin: 6px 0;
 
             figure {
                 width: 60px;
@@ -348,6 +405,7 @@
         }
 
         footer {
+            margin: 0 -6px;
             background-color: var(--nb-bg-footer);
             border-radius: 0 0 var(--nb-radius) var(--nb-radius);
 
@@ -366,13 +424,6 @@
                         background-color: var(--nb-secure-hover);
                     }
                 }
-            }
-        }
-
-        &:hover {
-            .requirments {
-                filter: none;
-                opacity: 1;
             }
         }
     }
