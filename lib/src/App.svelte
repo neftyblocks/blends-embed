@@ -25,6 +25,11 @@
 
     const handleBlend = (e: CustomEvent) => {
         blend = e.detail ? JSON.stringify(e.detail) : null;
+
+        settings.update((s) => {
+            s.blend = e.detail;
+            return s;
+        });
     };
 </script>
 

@@ -1,7 +1,7 @@
 <svelte:options tag="nefty-blend-group" />
 
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     import { get_current_component } from 'svelte/internal';
     import { useCountDown } from '@mvdschee/use';
@@ -15,20 +15,22 @@
     const component = get_current_component();
 
     // STATES
-    export let blends = undefined;
+    export let data = undefined;
 
     let show;
     let now = new Date().getTime();
 
     // METHODS
-    settings.subscribe(async ({ config, collection }) => {
-        if (config && collection) {
-            blends = await getBlends({
-                atomic_url: config.atomic_url,
-                collection,
-            });
+    const unsubscribe = settings.subscribe(
+        async ({ config, collection, blend }) => {
+            if (config && collection && !blend) {
+                data = await getBlends({
+                    atomic_url: config.atomic_url,
+                    collection,
+                });
+            }
         }
-    });
+    );
 
     onMount(() => {
         const interval = setInterval(() => {
@@ -36,6 +38,10 @@
         }, 1000);
 
         return () => clearInterval(interval);
+    });
+
+    onDestroy(() => {
+        unsubscribe();
     });
 
     const displayTime = (time, now, end = false) => {
@@ -51,9 +57,9 @@
 
 <Sprite />
 
-{#if blends}
+{#if data}
     <div class="blends-group">
-        {#each blends as blend, key}
+        {#each data as blend, key}
             <div class="blends-item">
                 {#if show === key}
                     <div
@@ -181,10 +187,10 @@
             </div>
         {/each}
     </div>
-{:else if blends === null}
+{:else if data === null}
     <div>An error happend</div>
 {:else}
-    <div>loading...</div>
+    <div>loading blends...</div>
 {/if}
 
 <style lang="scss">
