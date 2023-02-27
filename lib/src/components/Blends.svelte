@@ -4,7 +4,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     import { get_current_component } from 'svelte/internal';
-    import { useCountDown } from '@mvdschee/use';
+    import { useCountDown } from '@nefty/use';
     import { getBlends, settings } from '../store';
     import { dispatch } from '../utils';
 

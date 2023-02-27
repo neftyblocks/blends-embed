@@ -1,4 +1,4 @@
-import { useFetch } from '@mvdschee/use';
+import { useFetch } from '@nefty/use';
 import type {
     GetBlendsProperty,
     Payload,
