@@ -37,14 +37,14 @@
             atomic_url: VITE_ATOMIC_URL,
             chain_url: VITE_CHAIN_URL
         }
-        // const blend = { blend_id: "206361", contract: "blenderizerx" };
+        const blend = { blend_id: "3737", contract: "blend.nefty" };
 
         const el = document.querySelector('#neftyblocks-blend');
         const embed = `<neftyblocks-blend 
                         config=${JSON.stringify(config)}
                         collection=${VITE_COLLECTION_NAME}
                         account=${VITE_ACCOUNT_NAME}
-                        blend
+                        blend=${JSON.stringify(blend)}
                     />`;
 
         el.innerHTML = embed;

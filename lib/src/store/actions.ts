@@ -190,6 +190,7 @@ export const getBlend = async ({
             blend_id,
             contract,
             name: displayData?.name || name,
+            description: displayData?.description,
             start_time,
             end_time,
             items,

@@ -2,6 +2,7 @@
     --nb-font-family: var(--nefty-font-family, sans-serif);
     --nb-font-size: var(--nefty-font-size, 16px);
     --nb-font-size--small: var(--nefty-font-size--small, 14px);
+    --nb-font-size--large: var(--nefty-font-size, 26px);
     --nb-card-size-min: var(--nefty-card-size-min, 250px);
     --nb-card-size-max: var(--nefty-card-size-max, 1fr);
     --nb-gap: var(--nefty-gap, 24px);
@@ -10,6 +11,7 @@
     --nb-border: var(--nefty-border, #353945);
     --nb-border-card: var(--nefty-border-card, #424652);
     --nb-border-size: var(--nefty-border-size, 1px);
+    --nb-bg: var(--nefty-bg, #1a1a1a);
     --nb-bg-card: var(--nefty-bg-card, #23262f);
     --nb-bg-footer: var(--nefty-bg-footer, #292c36);
 
@@ -36,4 +38,81 @@
     padding: 0;
     cursor: pointer;
     outline: none;
+}
+
+.markdown {
+    p {
+        margin-bottom: 12px;
+        line-height: 1.2;
+        color: var(--nb-color);
+        word-break: break-word;
+    }
+
+    ul {
+        margin-bottom: 12px;
+    }
+
+    li {
+        line-height: 1.2;
+        color: var(--nb-color);
+    }
+
+    img {
+        display: block;
+        margin: 0 auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        margin-bottom: 12px;
+        font-size: var(--nb-font-size--large);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    strong {
+        color: var(--nb-color);
+        font-weight: 900;
+    }
+
+    a {
+        color: var(--nb-color-secondary);
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    table {
+        width: fit-content;
+        margin-bottom: 12px;
+        border-collapse: collapse;
+        border-spacing: 0;
+        border: var(--nb-border-size) solid var(--nb-border);
+        font-size: var(--nb-font-size);
+        line-height: 1.2;
+
+        th {
+            padding: 6px;
+            border: var(--nb-border-size) solid var(--nb-border);
+            text-align: left;
+            background-color: var(--nb-bg-card);
+
+            &:empty {
+                display: none;
+            }
+        }
+
+        td {
+            padding: 6px;
+            border: var(--nb-border-size) solid var(--nb-border);
+        }
+    }
 }
