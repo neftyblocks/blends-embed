@@ -116,10 +116,14 @@
         height: 40px;
         color: var(--nb-color);
         z-index: 2;
-        transition: transform 0.3s ease-in-out;
+        transition: transform 0.15s ease;
 
         &:hover {
             transform: scale(1.1);
+        }
+
+        &:active {
+            transform: scale(0.9);
         }
 
         svg {
