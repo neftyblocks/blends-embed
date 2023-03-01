@@ -8,6 +8,7 @@
     import { dispatch } from '../utils';
 
     // COMPONENTS
+    import './Slider.svelte';
 
     // GLOBALS
     const component = get_current_component();
@@ -23,8 +24,6 @@
                 blend_id: blend.blend_id,
                 contract: blend.contract,
             });
-
-            console.log(data);
         }
     });
 
@@ -38,11 +37,7 @@
     <div class="blend">
         <main>
             <section class="blend-results">
-                {#each data.results as item}
-                    <figure>
-                        <img src={item.image} alt={item.name} />
-                    </figure>
-                {/each}
+                <nefty-blend-slider items={data.results} />
                 <img
                     class="result-bg"
                     src={data.results[0].image}
@@ -51,7 +46,8 @@
                 />
             </section>
             <section class="blend-selection">
-                <h2>Selection</h2>
+                <h2>Select ingredients</h2>
+                <small>ingredients will be consumed</small>
             </section>
         </main>
         <aside class="blend-text">

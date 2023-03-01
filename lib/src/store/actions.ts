@@ -68,20 +68,32 @@ export const getBlends = async ({
                 });
             }
 
-            for (let a = 0; a < rolls[0].outcomes.length; a++) {
-                const { results } = rolls[0].outcomes[a];
+            // Locked to first array as we don't support multiple outcomes yet
+            const outcomes = rolls[0].outcomes;
 
-                for (let b = 0; b < results.length; b++) {
-                    const { template } = results[b];
-                    if (!template) continue;
+            for (let a = 0; a < outcomes.length; a++) {
+                const { results } = outcomes[a];
 
-                    const asset = getAssetDataSet(template);
-                    const { img, name } = asset;
-
+                if (!results.length) {
                     result.push({
-                        name,
-                        image: createImageUrl(img as string),
+                        name: 'empty',
+                        empty: true,
+                        image: null,
                     });
+                } else {
+                    for (let b = 0; b < results.length; b++) {
+                        const { template } = results[b];
+
+                        if (!template) continue;
+
+                        const asset = getAssetDataSet(template);
+                        const { img, name } = asset;
+
+                        result.push({
+                            name,
+                            image: createImageUrl(img as string),
+                        });
+                    }
                 }
             }
 
@@ -145,9 +157,10 @@ export const getBlend = async ({
             category,
         } = data.data;
 
-        const { template } = rolls[0].outcomes[0].results[0];
+        const { template: firstResultTemplate } =
+            rolls[0].outcomes[0].results[0];
 
-        const asset = getAssetDataSet(template);
+        const asset = getAssetDataSet(firstResultTemplate);
         const { name, img } = asset;
 
         const items = [];
@@ -167,20 +180,45 @@ export const getBlend = async ({
             });
         }
 
-        for (let a = 0; a < rolls[0].outcomes.length; a++) {
-            const { results } = rolls[0].outcomes[a];
+        // Locked to first array as we don't support multiple outcomes yet
+        const totalOdds = rolls[0].total_odds;
+        const outcomes = rolls[0].outcomes;
 
-            for (let b = 0; b < results.length; b++) {
-                const { template } = results[b];
-                if (!template) continue;
+        for (let a = 0; a < outcomes.length; a++) {
+            const { results, odds } = outcomes[a];
 
-                const asset = getAssetDataSet(template);
-                const { img, name } = asset;
+            const dropRate = (odds / totalOdds) * 100;
 
+            if (!results.length) {
                 result.push({
-                    name,
-                    image: createImageUrl(img as string),
+                    name: 'empty',
+                    drop_rate: dropRate,
+                    mint: null,
+                    empty: true,
+                    image: null,
                 });
+            } else {
+                for (let b = 0; b < results.length; b++) {
+                    const { template } = results[b];
+
+                    if (!template) continue;
+
+                    const asset = getAssetDataSet(template);
+                    const { img, name } = asset;
+
+                    result.push({
+                        name,
+                        drop_rate: dropRate,
+                        mint: {
+                            amount: +template.issued_supply,
+                            supply:
+                                +template.max_supply === 0
+                                    ? '∞'
+                                    : template.max_supply,
+                        },
+                        image: createImageUrl(img as string),
+                    });
+                }
             }
         }
 

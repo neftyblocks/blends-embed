@@ -4,7 +4,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { fade } from 'svelte/transition';
     import { get_current_component } from 'svelte/internal';
-    import { useCountDown } from '@nefty/use';
+    import { useCountDown, useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
     import { dispatch } from '../utils';
 
@@ -24,10 +24,12 @@
     const unsubscribe = settings.subscribe(
         async ({ config, collection, blend }) => {
             if (config && collection && !blend) {
-                data = await getBlends({
-                    atomic_url: config.atomic_url,
-                    collection,
-                });
+                data = await useSWR(`blends-${collection}`, () =>
+                    getBlends({
+                        atomic_url: config.atomic_url,
+                        collection,
+                    })
+                );
             }
         }
     );
@@ -79,7 +81,11 @@
                         <div class="results">
                             {#each blend.results as item}
                                 <figure>
-                                    <img src={item.image} alt={item.name} />
+                                    {#if item.image}
+                                        <img src={item.image} alt={item.name} />
+                                    {:else}
+                                        <small>empty</small>
+                                    {/if}
                                 </figure>
                             {/each}
                         </div>
@@ -402,11 +408,19 @@
             margin: 6px 0;
 
             figure {
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 width: 60px;
                 height: 60px;
                 padding: 2px;
                 background-color: rgba(0, 0, 0, 0.2);
                 border: var(--nb-border-size) dotted var(--nb-border-card);
+
+                small {
+                    color: var(--nb-color-secondary);
+                    font-size: var(--nb-font-size--small);
+                }
             }
         }
 
