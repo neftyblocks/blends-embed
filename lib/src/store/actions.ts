@@ -6,7 +6,7 @@ import type {
     GetBlendProperty,
     GetBlendResult,
 } from '../types';
-import { createImageUrl, getAssetDataSet } from '../utils';
+import { createImageUrl, getAssetDataSet, matchRarity } from '../utils';
 
 export const getBlends = async ({
     atomic_url,
@@ -188,11 +188,13 @@ export const getBlend = async ({
             const { results, odds } = outcomes[a];
 
             const dropRate = (odds / totalOdds) * 100;
+            const rarity = matchRarity(dropRate);
 
             if (!results.length) {
                 result.push({
                     name: 'empty',
                     drop_rate: dropRate,
+                    rarity,
                     mint: null,
                     empty: true,
                     image: null,
@@ -209,6 +211,7 @@ export const getBlend = async ({
                     result.push({
                         name,
                         drop_rate: dropRate,
+                        rarity,
                         mint: {
                             amount: +template.issued_supply,
                             supply:

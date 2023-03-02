@@ -23,6 +23,12 @@
     --nb-button-hover: var(--nefty-button-hover, #21b55a);
     --nb-secure-hover: var(--nefty-secure-hover, #21abb5);
 
+    --nb-rarity-common: var(--nefty-rarity-common, #353945);
+    --nb-rarity-uncommon: var(--nefty-rarity-uncommon, #4caf50);
+    --nb-rarity-rare: var(--nefty-rarity-rare, #4050b5);
+    --nb-rarity-epic: var(--nefty-rarity-epic, #9c27b0);
+    --nb-rarity-legendary: var(--nefty-rarity-legendary, #ffd500);
+
     color: var(--nb-color);
 }
 

@@ -34,7 +34,7 @@
 
 {#if data}
     <button on:click={() => dispatch('blend', null, component)}>back</button>
-    <div class="blend">
+    <div class="blend {data.description ? '' : 'no-text'}">
         <main>
             <section class="blend-results">
                 <nefty-blend-slider items={data.results} />
@@ -50,29 +50,32 @@
                 <small>ingredients will be consumed</small>
             </section>
         </main>
-        <aside class="blend-text">
-            <article class="markdown">
-                {@html useMarkdown(data.description)}
 
-                <template>
-                    <h1 />
-                    <h2 />
-                    <h3 />
-                    <h4 />
-                    <h5 />
-                    <strong />
-                    <p />
-                    <ul />
-                    <li />
-                    <a />
-                    <img />
-                    <table>
-                        <th />
-                        <td />
-                    </table>
-                </template>
-            </article>
-        </aside>
+        {#if data.description}
+            <aside class="blend-text">
+                <article class="markdown">
+                    {@html useMarkdown(data.description)}
+
+                    <template>
+                        <h1 />
+                        <h2 />
+                        <h3 />
+                        <h4 />
+                        <h5 />
+                        <strong />
+                        <p />
+                        <ul />
+                        <li />
+                        <a />
+                        <img />
+                        <table>
+                            <th />
+                            <td />
+                        </table>
+                    </template>
+                </article>
+            </aside>
+        {/if}
     </div>
     <button on:click={() => dispatch('sign', { test: 1 }, component)}>
         Click to sign
@@ -90,6 +93,10 @@
         display: grid;
         grid-template-columns: 1fr 0.3fr;
         gap: 48px;
+
+        &.no-text {
+            grid-template-columns: 1fr;
+        }
 
         & main {
             display: flex;
@@ -109,8 +116,7 @@
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid var(--nb-border);
-        padding: 12px;
-        min-height: 40vh;
+        height: 40vh;
         position: relative;
         overflow: hidden;
         z-index: 0;

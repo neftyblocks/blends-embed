@@ -11,7 +11,9 @@
 
     // STATES
     export let items: any[] = undefined;
-    export let active = 0;
+
+    let active = 0;
+    let gridView = false;
 
     // METHODS
     onMount(() => {
@@ -43,23 +45,24 @@
 
 {#if items}
     <div class="slider">
-        {#if items.length > 1}
+        {#if items.length > 1 && !gridView}
             <button class="btn-clear prev" on:click={prev}>
                 <svg role="presentation" focusable="false" aria-hidden="true">
                     <use xlink:href="#arrow_left" />
                 </svg>
             </button>
         {/if}
-        <div class="slider-group">
+        <div class="slider-group {gridView ? 'slider-group--grid' : ''}">
             {#each items as item, key}
                 <div
-                    class="slider-item {key === active
+                    class="slider-item {item.rarity} {key === active
                         ? 'current'
                         : key > active
                         ? 'next'
                         : 'prev'} 
                         {key < active - 1 ? 'prev-depth' : ''} 
-                        {key > active + 1 ? 'next-depth' : ''}"
+                        {key > active + 1 ? 'next-depth' : ''}
+                        "
                 >
                     <figure>
                         {#if item.image}
@@ -89,10 +92,21 @@
                 </div>
             {/each}
         </div>
-        {#if items.length > 1}
+        {#if items.length > 1 && !gridView}
             <button class="btn-clear next" on:click={next}>
                 <svg role="presentation" focusable="false" aria-hidden="true">
                     <use xlink:href="#arrow_right" />
+                </svg>
+            </button>
+        {/if}
+
+        {#if items.length > 1}
+            <button
+                class="btn-clear grid"
+                on:click={() => (gridView = !gridView)}
+            >
+                <svg role="presentation" focusable="false" aria-hidden="true">
+                    <use xlink:href={gridView ? '#layers' : '#grid'} />
                 </svg>
             </button>
         {/if}
@@ -109,6 +123,8 @@
         width: 100%;
         height: 100%;
         gap: 72px;
+        position: relative;
+        overflow: hidden;
     }
 
     .btn-clear {
@@ -130,13 +146,15 @@
             width: 100%;
             height: 100%;
         }
-    }
 
-    .slider-group {
-        display: block;
-        position: relative;
-        height: 276px;
-        width: 300px;
+        &.grid {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 1;
+            width: 28px;
+            height: 28px;
+        }
     }
 
     .slider-item {
@@ -148,17 +166,91 @@
         top: 0;
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
-        border: var(--nb-border-size) solid var(--nb-border);
+        border: var(--nb-border-size) solid;
         transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
         box-shadow: 0 0 26px 0 var(--nb-shadow);
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--nb-radius);
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        &.common {
+            border-color: var(--nb-rarity-common);
+
+            &::before {
+                background-color: var(--nb-rarity-common);
+            }
+
+            small {
+                color: var(--nb-color-secondary);
+            }
+        }
+
+        &.uncommon {
+            border-color: var(--nb-rarity-uncommon);
+
+            &::before {
+                background-color: var(--nb-rarity-uncommon);
+            }
+
+            small {
+                color: var(--nb-rarity-uncommon);
+            }
+        }
+
+        &.rare {
+            border-color: var(--nb-rarity-rare);
+
+            &::before {
+                background-color: var(--nb-rarity-rare);
+            }
+
+            small {
+                color: var(--nb-rarity-rare);
+            }
+        }
+
+        &.epic {
+            border-color: var(--nb-rarity-epic);
+
+            &::before {
+                background-color: var(--nb-rarity-epic);
+            }
+
+            small {
+                color: var(--nb-rarity-epic);
+            }
+        }
+
+        &.legendary {
+            border-color: var(--nb-rarity-legendary);
+
+            &::before {
+                background-color: var(--nb-rarity-legendary);
+            }
+
+            small {
+                color: var(--nb-rarity-legendary);
+            }
+        }
 
         figure {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 60%;
+            width: 100%;
             height: 60%;
-            margin: 0 auto;
+            padding: 12px;
+            position: relative;
+            overflow: hidden;
 
             small {
                 color: var(--nb-color-secondary);
@@ -177,10 +269,6 @@
 
             h3 {
                 margin-bottom: 12px;
-            }
-
-            small {
-                color: var(--nb-color-secondary);
             }
 
             p {
@@ -226,6 +314,37 @@
             &.prev-depth {
                 z-index: 1;
                 transform: translate3d(-55%, 0, 0) rotate(-12deg) scale(0.8);
+            }
+        }
+    }
+
+    .slider-group {
+        display: block;
+        position: relative;
+        height: 276px;
+        width: 300px;
+        padding: 12px;
+
+        &--grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            height: 100%;
+            width: 100%;
+            gap: var(--nb-gap);
+            overflow: hidden auto;
+
+            .slider-item {
+                position: static;
+                transform: translate3d(0, 0, 0) rotate(0) scale(1);
+                width: 100%;
+                height: 276px;
+                z-index: 0;
+
+                &.prev,
+                &.next {
+                    z-index: 0;
+                    transform: translate3d(0, 0, 0) rotate(0) scale(1);
+                }
             }
         }
     }
