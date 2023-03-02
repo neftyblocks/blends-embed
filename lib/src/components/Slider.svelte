@@ -332,8 +332,10 @@
         padding: 24px 48px;
 
         &--grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
             height: 100%;
             width: 100%;
             gap: var(--nb-gap);
@@ -342,7 +344,7 @@
             .slider-item {
                 position: static;
                 transform: translate3d(0, 0, 0) rotate(0) scale(1);
-                width: 100%;
+                width: clamp(180px, 30vw, 220px);
                 height: 276px;
                 z-index: 0;
                 &.prev,
