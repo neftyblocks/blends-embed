@@ -97,7 +97,7 @@
         /></symbol
     >
     <symbol
-        id="layers"
+        id="carousel"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
@@ -105,10 +105,11 @@
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        ><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline
-            points="2 17 12 22 22 17"
-        /><polyline points="2 12 12 17 22 12" /></symbol
     >
+        <path
+            d="M7.556 4h8.888v16H7.556V4zm8.888 1.333H22v13.334h-5.556V5.333zM2 5.333h5.556v13.334H2V5.333z"
+        />
+    </symbol>
     <symbol
         id="arrow_right"
         xmlns="http://www.w3.org/2000/svg"

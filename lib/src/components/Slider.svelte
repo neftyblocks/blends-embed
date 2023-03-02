@@ -106,7 +106,7 @@
                 on:click={() => (gridView = !gridView)}
             >
                 <svg role="presentation" focusable="false" aria-hidden="true">
-                    <use xlink:href={gridView ? '#layers' : '#grid'} />
+                    <use xlink:href={gridView ? '#carousel' : '#grid'} />
                 </svg>
             </button>
         {/if}
