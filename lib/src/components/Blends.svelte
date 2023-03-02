@@ -202,6 +202,7 @@
     <div>loading blends...</div>
 {/if}
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
     @import '../global.scss';
 

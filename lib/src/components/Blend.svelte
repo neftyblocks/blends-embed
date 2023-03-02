@@ -74,17 +74,17 @@
                     {@html useMarkdown(data.description)}
 
                     <template>
-                        <h1 />
-                        <h2 />
-                        <h3 />
-                        <h4 />
-                        <h5 />
+                        <h1>0</h1>
+                        <h2>0</h2>
+                        <h3>0</h3>
+                        <h4>0</h4>
+                        <h5>0</h5>
                         <strong />
                         <p />
                         <ul />
                         <li />
-                        <a />
-                        <img />
+                        <a href="#0">0</a>
+                        <img alt="" />
                         <table>
                             <th />
                             <td />
