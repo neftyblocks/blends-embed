@@ -4,12 +4,12 @@ importers:
 
   .:
     specifiers:
-      '@nefty/use': ^0.1.2
+      '@nefty/use': ^0.1.3
       sass: ^1.58.3
       typescript: ^4.9.5
       vite: ^4.1.3
     dependencies:
-      '@nefty/use': 0.1.2
+      '@nefty/use': 0.1.3
     devDependencies:
       sass: 1.58.3
       typescript: 4.9.5
@@ -255,8 +255,8 @@ packages:
     resolution: {integrity: sha512-2I7FU0j5Ohqa4BYXJSv465lNYjc6MXxVZVHFsk3y/IY0hWZdUQcMgNFxR1vH71IqOnKNSdWT2xUDV/VvfmPMFA==}
     dev: false
 
-  /@nefty/use/0.1.2:
-    resolution: {integrity: sha512-n47hiwp6GUfJsx8GZCf7aBbkb3Jq9LF47o6Ir3a+94qw/M9qiOou0zt0fgtqU70sgUR/NAwVc5Pq4oNBdVpGQA==}
+  /@nefty/use/0.1.3:
+    resolution: {integrity: sha512-beGvgL27dfwPyxElTqK8lJEMjBEFBBRR/CKhOUD/5fg/RpZitMVv+CZPTXCIt8X+48w1q0fva8JLzkTIGWHgXQ==}
     dependencies:
       '@mvdschee/use': 0.0.29
       universal-authenticator-library: 0.3.0

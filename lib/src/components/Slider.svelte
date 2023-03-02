@@ -113,6 +113,7 @@
     </div>
 {/if}
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
     @import '../global.scss';
 
@@ -150,7 +151,7 @@
         &.grid {
             position: absolute;
             top: 12px;
-            right: 12px;
+            right: 24px;
             z-index: 1;
             width: 28px;
             height: 28px;
@@ -303,6 +304,7 @@
 
                 & + & {
                     z-index: 0;
+                    box-shadow: none;
                 }
             }
         }
@@ -314,6 +316,10 @@
             &.prev-depth {
                 z-index: 1;
                 transform: translate3d(-55%, 0, 0) rotate(-12deg) scale(0.8);
+
+                & + & {
+                    box-shadow: none;
+                }
             }
         }
     }
@@ -323,7 +329,7 @@
         position: relative;
         height: 276px;
         width: 300px;
-        padding: 12px;
+        padding: 24px 48px;
 
         &--grid {
             display: grid;
@@ -339,11 +345,18 @@
                 width: 100%;
                 height: 276px;
                 z-index: 0;
-
                 &.prev,
                 &.next {
                     z-index: 0;
                     transform: translate3d(0, 0, 0) rotate(0) scale(1);
+                }
+
+                &.prev.prev-depth + .slider-item.prev.prev-depth {
+                    box-shadow: 0 0 26px 0 var(--nb-shadow);
+                }
+
+                &.next.next-depth + .slider-item.next.next-depth {
+                    box-shadow: 0 0 26px 0 var(--nb-shadow);
                 }
             }
         }

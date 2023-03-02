@@ -2,13 +2,13 @@
 
 <script lang="ts">
     import { useMarkdown } from '@nefty/use';
-    import { onDestroy } from 'svelte';
     import { get_current_component } from 'svelte/internal';
     import { getBlend, settings } from '../store';
     import { dispatch } from '../utils';
 
     // COMPONENTS
     import './Slider.svelte';
+    import Sprite from './Sprite.svelte';
 
     // GLOBALS
     const component = get_current_component();
@@ -27,13 +27,23 @@
         }
     });
 
-    onDestroy(() => {
+    const close = () => {
+        dispatch('blend', null, component);
+
+        // Avoid onDestroy this doesn't work to clean up the subscription
         unsubscribe();
-    });
+    };
 </script>
 
+<Sprite />
+
 {#if data}
-    <button on:click={() => dispatch('blend', null, component)}>back</button>
+    <button class="btn-clear back" on:click={close}>
+        <svg role="presentation" focusable="false" aria-hidden="true">
+            <use xlink:href="#arrow_left" />
+        </svg>
+        back
+    </button>
     <div class="blend {data.description ? '' : 'no-text'}">
         <main>
             <section class="blend-results">
@@ -46,8 +56,15 @@
                 />
             </section>
             <section class="blend-selection">
-                <h2>Select ingredients</h2>
-                <small>ingredients will be consumed</small>
+                <h2>Ingredients</h2>
+                <small>Ingredients will be consumed</small>
+                <div class="selection-group">
+                    {#each data.items as item}
+                        <figure>
+                            <img src={item.image} alt={item.name} />
+                        </figure>
+                    {/each}
+                </div>
             </section>
         </main>
 
@@ -105,6 +122,32 @@
         }
     }
 
+    .back {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--nb-color);
+        margin-bottom: 12px;
+
+        &:hover {
+            svg {
+                transform: scale(1.1);
+            }
+        }
+
+        &:active {
+            svg {
+                transform: scale(0.9);
+            }
+        }
+
+        svg {
+            width: 28px;
+            height: 28px;
+            transition: transform 0.15s ease;
+        }
+    }
+
     .blend-text {
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
@@ -120,9 +163,6 @@
         position: relative;
         overflow: hidden;
         z-index: 0;
-
-        figure {
-        }
     }
 
     .result-bg {
@@ -138,6 +178,8 @@
     }
 
     .blend-selection {
+        text-align: center;
+
         h2 {
             color: var(--nb-color-secondary);
             font-size: var(--nb-font-size--large);
@@ -164,10 +206,39 @@
                 display: block;
                 filter: blur(3px);
                 height: 100%;
-                left: calc(50% - 85px);
+                left: calc(50% - 97px);
                 top: 0;
-                width: 170px;
+                width: 190px;
                 z-index: -1;
+            }
+        }
+
+        small {
+            color: var(--nb-color-secondary);
+            font-size: var(--nb-font-size--small);
+        }
+    }
+
+    .selection-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin: 12px 0;
+
+        figure {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1/1;
+            padding: 2px;
+            border-radius: var(--nb-radius);
+            background-color: rgba(0, 0, 0, 0.2);
+            border: var(--nb-border-size) dashed var(--nb-border-card);
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
             }
         }
     }

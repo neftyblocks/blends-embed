@@ -1,7 +1,7 @@
 <svelte:options tag="nefty-blend-group" />
 
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
     import { get_current_component } from 'svelte/internal';
     import { useCountDown, useSWR } from '@nefty/use';
@@ -10,6 +10,7 @@
 
     // COMPONENTS
     import Sprite from './Sprite.svelte';
+    import type { GetBlendsResult } from '../types';
 
     // GLOBALS
     const component = get_current_component();
@@ -42,9 +43,19 @@
         return () => clearInterval(interval);
     });
 
-    onDestroy(() => {
+    const viewBlend = (blend: GetBlendsResult) => {
+        dispatch(
+            'blend',
+            {
+                blend_id: blend.blend_id,
+                contract: blend.contract,
+            },
+            component
+        );
+
+        // Avoid onDestroy this doesn't work to clean up the subscription
         unsubscribe();
-    });
+    };
 
     const displayTime = (time, now, end = false) => {
         const countdown = useCountDown(time, now);
@@ -174,15 +185,7 @@
                         <footer>
                             <button
                                 class={blend.secure ? 'secure' : ''}
-                                on:click={() =>
-                                    dispatch(
-                                        'blend',
-                                        {
-                                            blend_id: blend.blend_id,
-                                            contract: blend.contract,
-                                        },
-                                        component
-                                    )}
+                                on:click={() => viewBlend(blend)}
                                 >{blend.secure
                                     ? 'Secure blend'
                                     : 'Blend'}</button
@@ -415,7 +418,7 @@
                 height: 60px;
                 padding: 2px;
                 background-color: rgba(0, 0, 0, 0.2);
-                border: var(--nb-border-size) dotted var(--nb-border-card);
+                border: var(--nb-border-size) dashed var(--nb-border-card);
 
                 small {
                     color: var(--nb-color-secondary);

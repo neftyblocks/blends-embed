@@ -19,11 +19,12 @@
         "dev": "cd lib && pnpm dev",
         "build": "cd lib && pnpm build",
         "play": "pnpm build && cd playground && pnpm dev",
+        "play-build": "pnpm build && cd playground && pnpm build",
         "pub": "pnpm build && cd lib && pnpm publish --access public"
     },
-    "packageManager": "pnpm@7.25.0",
+    "packageManager": "pnpm@7.28.0",
     "dependencies": {
-        "@nefty/use": "^0.1.2"
+        "@nefty/use": "^0.1.3"
     },
     "devDependencies": {
         "vite": "^4.1.3",

@@ -1,4 +1,4 @@
-import { useFetch } from '@nefty/use';
+import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
 import type {
     GetBlendsProperty,
     Payload,
@@ -6,11 +6,12 @@ import type {
     GetBlendProperty,
     GetBlendResult,
 } from '../types';
-import { createImageUrl, getAssetDataSet, matchRarity } from '../utils';
+import { matchRarity } from '../utils';
 
 export const getBlends = async ({
     atomic_url,
     collection,
+    page = 1,
 }: GetBlendsProperty): Promise<GetBlendsResult[] | null> => {
     if (!atomic_url || !collection) return null;
 
@@ -18,6 +19,9 @@ export const getBlends = async ({
         baseUrl: atomic_url,
         params: {
             collection_name: collection,
+            visibility: 'visible',
+            limit: '1000',
+            page: `${page}`,
         },
     });
 
@@ -27,7 +31,7 @@ export const getBlends = async ({
     }
 
     if (data) {
-        const content = [];
+        const content: GetBlendsResult[] = [];
 
         for (let i = 0; i < data.data.length; i++) {
             const {
@@ -48,7 +52,7 @@ export const getBlends = async ({
 
             const { template } = rolls[0].outcomes[0].results[0];
 
-            const asset = getAssetDataSet(template);
+            const asset = useAssetData(template);
             const { name, img } = asset;
 
             const items = [];
@@ -59,12 +63,12 @@ export const getBlends = async ({
 
                 if (!template) continue;
 
-                const asset = getAssetDataSet(template);
+                const asset = useAssetData(template);
                 const { img, name } = asset;
 
                 items.push({
                     name,
-                    image: createImageUrl(img as string),
+                    image: useImageUrl(img as string),
                 });
             }
 
@@ -86,12 +90,12 @@ export const getBlends = async ({
 
                         if (!template) continue;
 
-                        const asset = getAssetDataSet(template);
+                        const asset = useAssetData(template);
                         const { img, name } = asset;
 
                         result.push({
                             name,
-                            image: createImageUrl(img as string),
+                            image: useImageUrl(img as string),
                         });
                     }
                 }
@@ -111,10 +115,10 @@ export const getBlends = async ({
                 ingredients_count,
                 result_count: result.length,
                 secure: security_id !== '0',
-                display_data: display_data ? JSON.parse(display_data) : null,
+                display_data: displayData,
                 image: displayData?.image
-                    ? createImageUrl(displayData.image)
-                    : createImageUrl(img as string),
+                    ? useImageUrl(displayData.image)
+                    : useImageUrl(img as string),
             });
         }
 
@@ -160,23 +164,31 @@ export const getBlend = async ({
         const { template: firstResultTemplate } =
             rolls[0].outcomes[0].results[0];
 
-        const asset = getAssetDataSet(firstResultTemplate);
+        const asset = useAssetData(firstResultTemplate);
         const { name, img } = asset;
 
         const items = [];
         const result = [];
+        const requirments = [];
 
         for (let a = 0; a < ingredients.length; a++) {
-            const { template } = ingredients[a];
+            const { template, type } = ingredients[a];
+
+            console.log(ingredients[a]);
 
             if (!template) continue;
 
-            const asset = getAssetDataSet(template);
+            // TODO: finish this
+            requirments.push({
+                key: type,
+            });
+
+            const asset = useAssetData(template);
             const { img, name } = asset;
 
             items.push({
                 name,
-                image: createImageUrl(img as string),
+                image: useImageUrl(img as string),
             });
         }
 
@@ -205,7 +217,7 @@ export const getBlend = async ({
 
                     if (!template) continue;
 
-                    const asset = getAssetDataSet(template);
+                    const asset = useAssetData(template);
                     const { img, name } = asset;
 
                     result.push({
@@ -219,7 +231,7 @@ export const getBlend = async ({
                                     ? '∞'
                                     : template.max_supply,
                         },
-                        image: createImageUrl(img as string),
+                        image: useImageUrl(img as string),
                     });
                 }
             }
@@ -240,12 +252,14 @@ export const getBlend = async ({
             ingredients_count,
             result_count: result.length,
             secure: security_id !== '0',
-            display_data: display_data ? JSON.parse(display_data) : null,
+            display_data: displayData,
             image: displayData?.image
-                ? createImageUrl(displayData.image)
-                : createImageUrl(img as string),
+                ? useImageUrl(displayData.image)
+                : useImageUrl(img as string),
         };
     }
 
     return null;
 };
+
+export const getRequirments = async () => {};
