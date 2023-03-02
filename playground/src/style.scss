@@ -31,3 +31,37 @@ p {
 #neftyblocks-blend {
     padding: 20px;
 }
+
+form {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: fit-content;
+    margin: 20px auto;
+    gap: 20px;
+
+    div {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    input {
+        padding: 12px 24px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #eaeaea;
+        background-color: #3b3b3b;
+
+        &[type='submit'] {
+            background-color: #949494;
+            cursor: pointer;
+        }
+    }
+}

@@ -1,28 +1,50 @@
 import './style.scss';
-import 'neftyblocks-blend';
+import '@neftyblocks/blends';
 
 const el = document.querySelector('#neftyblocks-blend');
+const form = document.querySelector('#neftyblocks-form');
 
-if (el) {
-    const config = {
-        atomic_url: 'https://aa.neftyblocks.com',
-        chain_url: 'https://wax-public.neftyblocks.com',
-    };
+const mountEl = ({ collection = 'alpacaworlds', account = 'alpacaworlds' }) => {
+    if (el) {
+        el.innerHTML = '';
 
-    const embed = `<neftyblocks-blend 
+        const config = {
+            atomic_url: 'https://aa.neftyblocks.com',
+            chain_url: 'https://wax-public.neftyblocks.com',
+        };
+
+        const embed = `<neftyblocks-blend 
                         config=${JSON.stringify(config)} 
-                        collection=alpacaworlds 
-                        account=alpacaworlds 
+                        collection=${collection} 
+                        account=${account} 
                     />`;
 
-    el.innerHTML = embed;
+        el.innerHTML = embed;
 
-    // Listen for sign event
-    const component = document.querySelector('neftyblocks-blend');
+        // Listen for sign event
+        const component = document.querySelector('neftyblocks-blend');
 
-    if (component) {
-        component.addEventListener('sign', ({ detail }: any) => {
-            console.log('sign', detail);
+        if (component) {
+            component.addEventListener('sign', ({ detail }: any) => {
+                console.log('sign', detail);
+            });
+        }
+    }
+};
+
+mountEl({});
+
+form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form as HTMLFormElement);
+    const collection = formData.get('neftyblocks-collection');
+    const account = formData.get('neftyblocks-account');
+
+    if (collection && account) {
+        mountEl({
+            collection: collection as string,
+            account: account as string,
         });
     }
-}
+});
