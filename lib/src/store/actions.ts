@@ -159,6 +159,7 @@ export const getBlend = async ({
             security_id,
             display_data,
             category,
+            collection_name,
         } = data.data;
 
         const { template: firstResultTemplate } =
@@ -170,25 +171,28 @@ export const getBlend = async ({
         const items = [];
         const result = [];
         const requirments = [];
-
         for (let a = 0; a < ingredients.length; a++) {
             const { template, type } = ingredients[a];
-
-            console.log(ingredients[a]);
 
             if (!template) continue;
 
             // TODO: finish this
             requirments.push({
                 key: type,
+                collection_name,
+                template_id: template?.template_id,
             });
 
             const asset = useAssetData(template);
-            const { img, name } = asset;
+            const { img, video, name } = asset;
 
+            // Matcher needs to be fixed to support dymanic types
             items.push({
                 name,
-                image: useImageUrl(img as string),
+                matcher_type: 'template_id',
+                matcher: template?.template_id,
+                video: video ? useImageUrl(video as string) : null,
+                image: img ? useImageUrl(img as string) : null,
             });
         }
 
@@ -218,7 +222,7 @@ export const getBlend = async ({
                     if (!template) continue;
 
                     const asset = useAssetData(template);
-                    const { img, name } = asset;
+                    const { img, video, name } = asset;
 
                     result.push({
                         name,
@@ -231,7 +235,8 @@ export const getBlend = async ({
                                     ? '∞'
                                     : template.max_supply,
                         },
-                        image: useImageUrl(img as string),
+                        video: video ? useImageUrl(video as string) : null,
+                        image: img ? useImageUrl(img as string) : null,
                     });
                 }
             }
@@ -253,6 +258,7 @@ export const getBlend = async ({
             result_count: result.length,
             secure: security_id !== '0',
             display_data: displayData,
+            requirments,
             image: displayData?.image
                 ? useImageUrl(displayData.image)
                 : useImageUrl(img as string),
@@ -262,4 +268,91 @@ export const getBlend = async ({
     return null;
 };
 
-export const getRequirments = async () => {};
+const assetsConfig = {
+    is_transferable: 'true',
+    is_burnable: 'true',
+    order: 'asc',
+    sort: 'template_mint',
+};
+
+export const getAssetId = async ({
+    template_id,
+    collection_name,
+    atomic_url,
+    account,
+}) => {
+    let result = {};
+
+    const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
+        baseUrl: atomic_url,
+        params: {
+            collection_name,
+            template_id,
+            owner: account,
+            ...assetsConfig,
+        },
+    });
+
+    if (error) console.error(error);
+
+    if (data) {
+        const { data: assets } = data;
+
+        if (assets.length) {
+            result = {
+                [template_id]: [],
+            };
+
+            for (let i = 0; i < assets.length; i++) {
+                const { asset_id, template_mint } = assets[i];
+
+                result[template_id].push({
+                    asset_id,
+                    mint: template_mint,
+                });
+            }
+        }
+    }
+
+    return result;
+};
+
+export const getRequirments = async ({
+    requirments,
+    atomic_url,
+    account,
+}: {
+    requirments: GetBlendResult['requirments'];
+    atomic_url: string;
+    account: string;
+}) => {
+    const fetchCalls = [];
+    let results = {};
+
+    for (let i = 0; i < requirments.length; i++) {
+        const requirment = requirments[i];
+
+        if (requirment.key === 'TEMPLATE_INGREDIENT') {
+            fetchCalls.push(
+                getAssetId({
+                    template_id: requirment.template_id,
+                    collection_name: requirment.collection_name,
+                    account,
+                    atomic_url,
+                })
+            );
+        }
+    }
+
+    const result = await Promise.allSettled(fetchCalls);
+
+    for (let i = 0; i < result.length; i++) {
+        const e = result[i];
+
+        if (e.status === 'fulfilled') {
+            results = { ...e.value, ...results };
+        }
+    }
+
+    return results;
+};

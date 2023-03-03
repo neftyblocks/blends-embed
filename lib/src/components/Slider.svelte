@@ -65,7 +65,16 @@
                         "
                 >
                     <figure>
-                        {#if item.image}
+                        {#if item.video}
+                            <video
+                                src={item.video}
+                                alt={item.name}
+                                loop
+                                autoplay
+                                muted
+                                playsinline
+                            />
+                        {:else if item.image}
                             <img src={item.image} alt={item.name} />
                         {:else}
                             <small>No result</small>
@@ -259,7 +268,8 @@
             }
         }
 
-        img {
+        img,
+        video {
             width: 100%;
             height: 100%;
             object-fit: contain;

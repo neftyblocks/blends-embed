@@ -2,6 +2,7 @@ export interface Settings {
     config?: {
         atomic_url: string;
         chain_url: string;
+        marketplace_url: string;
     };
     collection?: string;
     account?: string;
@@ -70,11 +71,15 @@ export interface GetBlendResult {
     end_time: number;
     items: {
         name: string;
-        image: string;
+        matcher_type: string;
+        matcher?: string;
+        image: string | null;
+        video: string | null;
     }[];
     results: {
         name: string;
         image: string | null;
+        video: string | null;
         empty?: boolean;
     }[];
     category: string;
@@ -82,4 +87,9 @@ export interface GetBlendResult {
     result_count: number;
     secure: boolean;
     display_data: any | null;
+    requirments: {
+        key: string;
+        collection_name: string;
+        template_id: string;
+    }[];
 }

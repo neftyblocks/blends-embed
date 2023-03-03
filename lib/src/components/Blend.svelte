@@ -2,8 +2,9 @@
 
 <script lang="ts">
     import { useMarkdown } from '@nefty/use';
+    import { backIn } from 'svelte/easing';
     import { get_current_component } from 'svelte/internal';
-    import { getBlend, settings } from '../store';
+    import { getBlend, getRequirments, settings } from '../store';
     import { dispatch } from '../utils';
 
     // COMPONENTS
@@ -14,18 +15,48 @@
     const component = get_current_component();
 
     // STATES
-    export let data = undefined;
+    let data = undefined;
+    let selection = undefined;
+    let marketUrl = '';
+    let collectionName = '';
 
     // METHODS
-    const unsubscribe = settings.subscribe(async ({ config, blend }) => {
-        if (config && blend) {
-            data = await getBlend({
-                atomic_url: config.atomic_url,
-                blend_id: blend.blend_id,
-                contract: blend.contract,
-            });
+    function swoop(node: any, params: any) {
+        return {
+            delay: params.key * 100,
+            duration: 500,
+            easing: backIn,
+            css: (t, u) =>
+                `transform: translate3d(${-u * (50 * params.key)}%, ${
+                    u * 100
+                }%, 0); opacity: ${t}`,
+        };
+    }
+
+    const unsubscribe = settings.subscribe(
+        async ({ config, collection, blend, account }) => {
+            if (config && blend) {
+                data = await getBlend({
+                    atomic_url: config.atomic_url,
+                    blend_id: blend.blend_id,
+                    contract: blend.contract,
+                });
+
+                marketUrl = config.marketplace_url;
+                collectionName = collection;
+
+                if (account) {
+                    selection = await getRequirments({
+                        requirments: data.requirments,
+                        atomic_url: config.atomic_url,
+                        account,
+                    });
+
+                    console.log(selection);
+                }
+            }
         }
-    });
+    );
 
     const close = () => {
         dispatch('blend', null, component);
@@ -59,10 +90,37 @@
                 <h2>Ingredients</h2>
                 <small>Ingredients will be consumed</small>
                 <div class="selection-group">
-                    {#each data.items as item}
-                        <figure>
-                            <img src={item.image} alt={item.name} />
-                        </figure>
+                    {#each data.items as item, key}
+                        <div class="selection-item">
+                            {#if selection}
+                                <div
+                                    class={selection[key] ? 'owned' : 'needed'}
+                                    transition:swoop={{ key }}
+                                >
+                                    <figure>
+                                        <img src={item.image} alt={item.name} />
+                                    </figure>
+
+                                    {#if selection[item.matcher]}
+                                        <!-- show selector -->
+                                    {:else}
+                                        <a
+                                            class="btn"
+                                            href={`${marketUrl}?collection_name=${collectionName}&${item.matcher_type}=${item.matcher}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Get this asset
+                                        </a>
+                                    {/if}
+                                </div>
+                            {:else}
+                                <p>
+                                    Selecting some NFTs <br /> for you. Please hold
+                                    on...
+                                </p>
+                            {/if}
+                        </div>
                     {/each}
                 </div>
             </section>
@@ -221,26 +279,60 @@
     }
 
     .selection-group {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 12px;
-        margin: 12px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: var(--nb-gap);
+        padding: 48px 0 72px;
+        overflow: hidden;
+    }
+
+    .selection-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(180px, 30vw, 220px);
+        aspect-ratio: 1/1;
+        padding: 4px;
+        border-radius: var(--nb-radius);
+        background-color: rgba(0, 0, 0, 0.2);
+        border: var(--nb-border-size) dashed var(--nb-border-card);
+
+        > div {
+            width: 100%;
+            height: 100%;
+            background-color: var(--nb-bg-card);
+            border-radius: 8px;
+            border: var(--nb-border-size) solid var(--nb-border-card);
+            transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 0 26px 0 var(--nb-shadow);
+
+            &.needed {
+                img,
+                video {
+                    filter: grayscale(1);
+                }
+            }
+        }
 
         figure {
             display: flex;
             align-items: center;
             justify-content: center;
-            aspect-ratio: 1/1;
-            padding: 2px;
-            border-radius: var(--nb-radius);
-            background-color: rgba(0, 0, 0, 0.2);
-            border: var(--nb-border-size) dashed var(--nb-border-card);
+            width: 100%;
+            height: 60%;
+            padding: 12px;
+            position: relative;
+            overflow: hidden;
+        }
 
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
+        img,
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
     }
 </style>

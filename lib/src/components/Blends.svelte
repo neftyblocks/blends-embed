@@ -16,7 +16,7 @@
     const component = get_current_component();
 
     // STATES
-    export let data = undefined;
+    let data = undefined;
 
     let show;
     let now = new Date().getTime();
