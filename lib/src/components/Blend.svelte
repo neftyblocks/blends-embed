@@ -98,7 +98,20 @@
                                     transition:swoop={{ key }}
                                 >
                                     <figure>
-                                        <img src={item.image} alt={item.name} />
+                                        {#if item.video}
+                                            <video
+                                                src={item.video}
+                                                loop
+                                                autoplay
+                                                muted
+                                                playsinline
+                                            />
+                                        {:else if item.image}
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                            />
+                                        {/if}
                                     </figure>
 
                                     {#if selection[item.matcher]}

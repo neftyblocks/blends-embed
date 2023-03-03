@@ -92,7 +92,15 @@
                         <div class="results">
                             {#each blend.results as item}
                                 <figure>
-                                    {#if item.image}
+                                    {#if item.video}
+                                        <video
+                                            src={item.video}
+                                            loop
+                                            autoplay
+                                            muted
+                                            playsinline
+                                        />
+                                    {:else if item.image}
                                         <img src={item.image} alt={item.name} />
                                     {:else}
                                         <small>empty</small>

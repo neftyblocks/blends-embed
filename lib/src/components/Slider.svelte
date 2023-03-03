@@ -68,7 +68,6 @@
                         {#if item.video}
                             <video
                                 src={item.video}
-                                alt={item.name}
                                 loop
                                 autoplay
                                 muted
