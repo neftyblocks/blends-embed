@@ -114,6 +114,8 @@
                                         {/if}
                                     </figure>
 
+                                    <h3>{item.name}</h3>
+
                                     {#if selection[item.matcher]}
                                         <!-- show selector -->
                                     {:else}
@@ -346,6 +348,10 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+
+        h3 {
+            margin-bottom: 12px;
         }
     }
 </style>
