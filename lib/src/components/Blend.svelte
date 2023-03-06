@@ -5,10 +5,12 @@
     import { backIn } from 'svelte/easing';
     import { get_current_component } from 'svelte/internal';
     import { getBlend, getRequirments, settings } from '../store';
+    import type { GetBlendResult } from '../types';
     import { dispatch } from '../utils';
 
     // COMPONENTS
     import './Slider.svelte';
+    import './Selecter.svelte';
     import Sprite from './Sprite.svelte';
 
     // GLOBALS
@@ -17,6 +19,8 @@
     // STATES
     let data = undefined;
     let selection = undefined;
+    let selected = {};
+
     let marketUrl = '';
     let collectionName = '';
 
@@ -52,11 +56,36 @@
                         account,
                     });
 
-                    console.log(selection);
+                    autoSelect(selection, data.requirments);
                 }
             }
         }
     );
+
+    const autoSelect = (
+        selection: any,
+        requirments: GetBlendResult['requirments']
+    ) => {
+        const list = Object.values(requirments);
+
+        for (let i = 0; i < list.length; i++) {
+            const { matcher, amount } = list[i];
+
+            if (selection[matcher] && selection[matcher].length > amount) {
+                selected[matcher] = selection[matcher].slice(0, amount);
+            }
+        }
+    };
+
+    const matchRequirments = (selection: any, requirments: any) => {
+        const { amount } = requirments;
+
+        if (!selection) return false;
+
+        if (amount > selection.length) return false;
+
+        return true;
+    };
 
     const close = () => {
         dispatch('blend', null, component);
@@ -86,6 +115,13 @@
                     loading="lazy"
                 />
             </section>
+            <section>
+                <button
+                    on:click={() => dispatch('sign', { test: 1 }, component)}
+                >
+                    Blend
+                </button>
+            </section>
             <section class="blend-selection">
                 <h2>Ingredients</h2>
                 <small>Ingredients will be consumed</small>
@@ -94,7 +130,12 @@
                         <div class="selection-item">
                             {#if selection}
                                 <div
-                                    class={selection[key] ? 'owned' : 'needed'}
+                                    class={matchRequirments(
+                                        selection[item.matcher],
+                                        data.requirments[item.matcher]
+                                    )
+                                        ? 'owned'
+                                        : 'needed'}
                                     transition:swoop={{ key }}
                                 >
                                     <figure>
@@ -116,8 +157,15 @@
 
                                     <h3>{item.name}</h3>
 
-                                    {#if selection[item.matcher]}
-                                        <!-- show selector -->
+                                    {#if matchRequirments(selection[item.matcher], data.requirments[item.matcher])}
+                                        <nefty-blend-selecter
+                                            items={selection[item.matcher]}
+                                            matcher={item.matcher}
+                                            amount={data.requirments[
+                                                item.matcher
+                                            ].amount}
+                                            selected={selected[item.matcher]}
+                                        />
                                     {:else}
                                         <a
                                             class="btn"
@@ -131,8 +179,7 @@
                                 </div>
                             {:else}
                                 <p>
-                                    Selecting some NFTs <br /> for you. Please hold
-                                    on...
+                                    Getting your NFTs <br /> Please hold...
                                 </p>
                             {/if}
                         </div>
@@ -167,9 +214,6 @@
             </aside>
         {/if}
     </div>
-    <button on:click={() => dispatch('sign', { test: 1 }, component)}>
-        Click to sign
-    </button>
 {:else if data === null}
     <div>An error happend</div>
 {:else}

@@ -170,18 +170,22 @@ export const getBlend = async ({
 
         const items = [];
         const result = [];
-        const requirments = [];
+        const requirments = {};
         for (let a = 0; a < ingredients.length; a++) {
-            const { template, type } = ingredients[a];
+            const { template, type, amount } = ingredients[a];
 
             if (!template) continue;
 
-            // TODO: finish this
-            requirments.push({
+            // TODO: finish this (matcher only handles template_id)
+            const matcher = template?.template_id;
+
+            requirments[matcher] = {
                 key: type,
                 collection_name,
-                template_id: template?.template_id,
-            });
+                amount,
+                matcher_type: 'template_id',
+                matcher,
+            };
 
             const asset = useAssetData(template);
             const { img, video, name } = asset;
@@ -271,7 +275,7 @@ export const getBlend = async ({
 const assetsConfig = {
     is_transferable: 'true',
     is_burnable: 'true',
-    order: 'asc',
+    order: 'desc',
     sort: 'template_mint',
 };
 
@@ -329,13 +333,15 @@ export const getRequirments = async ({
     const fetchCalls = [];
     let results = {};
 
-    for (let i = 0; i < requirments.length; i++) {
-        const requirment = requirments[i];
+    const list = Object.values(requirments);
+
+    for (let i = 0; i < list.length; i++) {
+        const requirment = list[i];
 
         if (requirment.key === 'TEMPLATE_INGREDIENT') {
             fetchCalls.push(
                 getAssetId({
-                    template_id: requirment.template_id,
+                    template_id: requirment.matcher,
                     collection_name: requirment.collection_name,
                     account,
                     atomic_url,

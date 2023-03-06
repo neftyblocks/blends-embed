@@ -1,8 +1,13 @@
-export const dispatch = (name: string, detail: any, component: any) => {
+export const dispatch = (
+    name: string,
+    detail: any,
+    component: any,
+    composed = true
+) => {
     component.dispatchEvent(
         new CustomEvent(name, {
             detail,
-            composed: true, // propagate across the shadow DOM
+            composed, // propagate across the shadow DOM
         })
     );
 };

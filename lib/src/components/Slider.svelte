@@ -369,6 +369,10 @@
                 &.next.next-depth + .slider-item.next.next-depth {
                     box-shadow: 0 0 26px 0 var(--nb-shadow);
                 }
+
+                &:hover {
+                    transform: translate3d(0, 0, 0) rotate(0) scale(1.1);
+                }
             }
         }
     }

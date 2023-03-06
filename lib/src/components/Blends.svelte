@@ -185,7 +185,7 @@
                                 >
                                     details
                                     <svg>
-                                        <use href="#chevron-right" />
+                                        <use href="#chevron_right" />
                                     </svg>
                                 </button>
                             </div>
