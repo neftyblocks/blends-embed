@@ -22,6 +22,7 @@ export const getBlends = async ({
             visibility: 'visible',
             limit: '1000',
             page: `${page}`,
+            order: 'asc',
         },
     });
 
