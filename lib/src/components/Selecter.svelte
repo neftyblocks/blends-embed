@@ -178,7 +178,7 @@
                 align-items: center;
                 position: absolute;
                 top: -2px;
-                right: -2px;
+                left: -2px;
                 padding: 5px;
                 color: var(--nb-color);
                 font-size: var(--nb-font-size--small);
