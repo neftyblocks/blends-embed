@@ -71,7 +71,7 @@
         for (let i = 0; i < list.length; i++) {
             const { matcher, amount } = list[i];
 
-            if (selection[matcher] && selection[matcher].length > amount) {
+            if (selection[matcher] && selection[matcher].length >= amount) {
                 selected[matcher] = selection[matcher].slice(0, amount);
             }
         }

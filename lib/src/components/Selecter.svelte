@@ -2,6 +2,7 @@
 
 <script lang="ts">
     import { get_current_component } from 'svelte/internal';
+    import { onMount } from 'svelte/internal';
     import { dispatch } from '../utils';
 
     // COMPONENTS
@@ -20,6 +21,8 @@
     let show = false;
 
     // METHODS
+    onMount(() => {});
+
     const toggleShow = () => {
         show = !show;
     };
