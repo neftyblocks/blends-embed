@@ -1,12 +1,12 @@
 <svelte:options tag="nefty-blend-item" />
 
 <script lang="ts">
-    import { useMarkdown } from '@nefty/use';
+    import { useMarkdown, useTokenDisplay } from '@nefty/use';
     import { backIn } from 'svelte/easing';
     import { get_current_component } from 'svelte/internal';
     import { getBlend, getRequirments, settings } from '../store';
     import type { GetBlendResult } from '../types';
-    import { dispatch } from '../utils';
+    import { dispatch, formatTokenWithoutSymbol } from '../utils';
 
     // COMPONENTS
     import './Slider.svelte';
@@ -42,6 +42,7 @@
             if (config && blend) {
                 data = await getBlend({
                     atomic_url: config.atomic_url,
+
                     blend_id: blend.blend_id,
                     contract: blend.contract,
                 });
@@ -53,6 +54,7 @@
                     selection = await getRequirments({
                         requirments: data.requirments,
                         atomic_url: config.atomic_url,
+                        chain_url: config.chain_url,
                         account,
                     });
 
@@ -69,15 +71,18 @@
         const list = Object.values(requirments);
 
         for (let i = 0; i < list.length; i++) {
-            const { matcher, amount } = list[i];
+            const { matcher, matcher_type, amount } = list[i];
 
-            if (selection[matcher] && selection[matcher].length >= amount) {
-                selected[matcher] = selection[matcher].slice(0, amount);
+            // If the matcher is a token we don't need to auto select
+            if (matcher_type !== 'token_symbol|token_contract') {
+                if (selection[matcher] && selection[matcher].length >= amount) {
+                    selected[matcher] = selection[matcher].slice(0, amount);
+                }
             }
         }
     };
 
-    const matchRequirments = (selection: any, requirments: any) => {
+    const matchAssetRequirments = (selection: any, requirments: any) => {
         const { amount } = requirments;
 
         if (!selection) return false;
@@ -85,6 +90,24 @@
         if (amount > selection.length) return false;
 
         return true;
+    };
+
+    const matchTokenRequirments = (selection: any, requirments: any) => {
+        const { value } = requirments;
+
+        if (!selection) return false;
+
+        const [tokenValue] = selection.split(' ');
+
+        return value <= +tokenValue;
+    };
+
+    const getMarketUrl = (item: any) => {
+        const includeCollection = item.matcher_type !== 'collection_name';
+
+        return `${marketUrl}?${
+            includeCollection ? `collection_name=${collectionName}&` : ''
+        }${item.matcher_type}=${item.matcher}`;
     };
 
     const close = () => {
@@ -130,7 +153,7 @@
                         <div class="selection-item">
                             {#if selection}
                                 <div
-                                    class={matchRequirments(
+                                    class={matchAssetRequirments(
                                         selection[item.matcher],
                                         data.requirments[item.matcher]
                                     )
@@ -138,49 +161,81 @@
                                         : 'needed'}
                                     transition:swoop={{ key }}
                                 >
-                                    <figure>
-                                        {#if item.video}
-                                            <video
-                                                src={item.video}
-                                                loop
-                                                autoplay
-                                                muted
-                                                playsinline
-                                            />
-                                        {:else if item.image}
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                            />
-                                        {/if}
-                                    </figure>
+                                    {#if item.matcher_type !== 'token_symbol|token_contract'}
+                                        <figure class="visual">
+                                            {#if item.video}
+                                                <video
+                                                    src={item.video}
+                                                    loop
+                                                    autoplay
+                                                    muted
+                                                    playsinline
+                                                />
+                                            {:else if item.image}
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                />
+                                            {/if}
+                                        </figure>
+                                    {:else}
+                                        <span class="visual">
+                                            {useTokenDisplay(
+                                                item.token.value,
+                                                item.token.precision
+                                            )}
+                                        </span>
+                                    {/if}
 
                                     <h3>{item.name}</h3>
 
-                                    {#if matchRequirments(selection[item.matcher], data.requirments[item.matcher])}
-                                        <nefty-blend-selecter
-                                            items={selection[item.matcher]}
-                                            matcher={item.matcher}
-                                            amount={data.requirments[
-                                                item.matcher
-                                            ].amount}
-                                            selected={selected[item.matcher]}
-                                        />
+                                    {#if item.matcher_type !== 'token_symbol|token_contract'}
+                                        {#if matchAssetRequirments(selection[item.matcher], data.requirments[item.matcher])}
+                                            <nefty-blend-selecter
+                                                items={selection[item.matcher]}
+                                                matcher={item.matcher}
+                                                amount={data.requirments[
+                                                    item.matcher
+                                                ].amount}
+                                                selected={selected[
+                                                    item.matcher
+                                                ]}
+                                            />
+                                        {:else}
+                                            <!-- svelte-ignore security-anchor-rel-noreferrer -->
+                                            <a
+                                                class="btn"
+                                                href={getMarketUrl(item)}
+                                                target="_blank"
+                                                rel="noopener"
+                                            >
+                                                Get assets
+                                            </a>{/if}
+                                    {:else if matchTokenRequirments(selection[item.matcher], data.requirments[item.matcher])}
+                                        <p class="balance">
+                                            <small>current balance</small>
+                                            {formatTokenWithoutSymbol(
+                                                selection[item.matcher],
+                                                2
+                                            )}
+                                            <span>
+                                                {item.token.token_symbol}
+                                            </span>
+                                        </p>
                                     {:else}
+                                        <!-- svelte-ignore security-anchor-rel-noreferrer -->
                                         <a
                                             class="btn"
-                                            href={`${marketUrl}?collection_name=${collectionName}&${item.matcher_type}=${item.matcher}`}
+                                            href=""
                                             target="_blank"
-                                            rel="noopener noreferrer"
+                                            rel="noopener"
                                         >
-                                            Get this asset
+                                            Get more {item.token.token_symbol}
                                         </a>
                                     {/if}
                                 </div>
                             {:else}
-                                <p>
-                                    Getting your NFTs <br /> Please hold...
-                                </p>
+                                <span class="loading-state" />
                             {/if}
                         </div>
                     {/each}
@@ -376,15 +431,26 @@
             }
         }
 
-        figure {
+        .visual {
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 700;
+            font-size: var(--nb-font-size--large);
             width: 100%;
             height: 60%;
             padding: 12px;
             position: relative;
             overflow: hidden;
+        }
+
+        .balance {
+            font-size: var(--nb-font-size--small);
+            color: var(--nb-color-secondary);
+
+            small {
+                display: block;
+            }
         }
 
         img,
@@ -396,6 +462,24 @@
 
         h3 {
             margin-bottom: 12px;
+        }
+    }
+
+    .loading-state {
+        width: 100%;
+        height: 100%;
+        background: var(--nb-bg-card);
+        border-radius: 8px;
+        animation: loading 1.1s ease-in-out infinite;
+    }
+
+    @keyframes loading {
+        0%,
+        100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 0.5;
         }
     }
 </style>

@@ -74,6 +74,7 @@
                                 playsinline
                             />
                         {:else if item.image}
+                            <!-- <img class="shadow" src={item.image} alt="" /> -->
                             <img src={item.image} alt={item.name} />
                         {:else}
                             <small>No result</small>

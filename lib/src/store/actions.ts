@@ -6,7 +6,7 @@ import type {
     GetBlendProperty,
     GetBlendResult,
 } from '../types';
-import { matchRarity } from '../utils';
+import { matchRarity, priceForInput } from '../utils';
 
 export const getBlends = async ({
     atomic_url,
@@ -172,35 +172,98 @@ export const getBlend = async ({
         const items = [];
         const result = [];
         const requirments = {};
+
+        // ------------------------------
+        // INGREDIENTS & REQUIREMENTS
+        // ------------------------------
         for (let a = 0; a < ingredients.length; a++) {
-            const { template, type, amount } = ingredients[a];
+            const { template, collection, ft_amount, type, amount } =
+                ingredients[a];
 
-            if (!template) continue;
+            let matcher;
+            let matcher_type;
+            let value = 0;
 
-            // TODO: finish this (matcher only handles template_id)
-            const matcher = template?.template_id;
+            // INGREDIENT - TEMPLATE
+            if (type === 'TEMPLATE_INGREDIENT') {
+                matcher = template?.template_id;
+                matcher_type = 'template_id';
+
+                const asset = useAssetData(template);
+                const { img, video, name } = asset;
+
+                items.push({
+                    name,
+                    matcher_type,
+                    matcher,
+                    video: video ? useImageUrl(video as string) : null,
+                    image: img ? useImageUrl(img as string) : null,
+                });
+            }
+
+            // INGREDIENT - COLLECTION
+            if (type === 'COLLECTION_INGREDIENT') {
+                matcher = collection?.collection_name;
+                matcher_type = 'collection_name';
+
+                const {
+                    data: { img },
+                } = collection;
+
+                items.push({
+                    name: matcher,
+                    matcher_type,
+                    matcher,
+                    video: null,
+                    image: img ? useImageUrl(img as string) : null,
+                });
+            }
+
+            // INGREDIENT - TOKEN
+            if (type === 'FT_INGREDIENT') {
+                matcher = `${ft_amount.token_symbol}|${ft_amount.token_contract}`;
+                matcher_type = 'token_symbol|token_contract';
+
+                const { token_symbol, token_contract } = ft_amount;
+
+                // const tokens = await useFetch(
+                //     'https://neftyblocks.com/api/helpers/token_images',
+                //     {
+                //         params: {
+                //             tokensIds: `${token_symbol}_${token_contract}`,
+                //         },
+                //     }
+                // );
+
+                // console.log(tokens);
+                value = priceForInput(ft_amount.amount, ft_amount.precision);
+
+                items.push({
+                    name: token_symbol,
+                    matcher_type,
+                    matcher,
+                    video: null,
+                    image: null,
+                    token: {
+                        ...ft_amount,
+                        value,
+                    },
+                });
+            }
 
             requirments[matcher] = {
                 key: type,
                 collection_name,
                 amount,
-                matcher_type: 'template_id',
+                value,
+                matcher_type,
                 matcher,
             };
-
-            const asset = useAssetData(template);
-            const { img, video, name } = asset;
-
-            // Matcher needs to be fixed to support dymanic types
-            items.push({
-                name,
-                matcher_type: 'template_id',
-                matcher: template?.template_id,
-                video: video ? useImageUrl(video as string) : null,
-                image: img ? useImageUrl(img as string) : null,
-            });
         }
 
+        // ------------------------------
+        // RESULTS
+        // ------------------------------
         // Locked to first array as we don't support multiple outcomes yet
         const totalOdds = rolls[0].total_odds;
         const outcomes = rolls[0].outcomes;
@@ -280,7 +343,7 @@ const assetsConfig = {
     sort: 'template_mint',
 };
 
-export const getAssetId = async ({
+export const getTemplateAssetId = async ({
     template_id,
     collection_name,
     atomic_url,
@@ -321,14 +384,86 @@ export const getAssetId = async ({
 
     return result;
 };
+export const getCollectionAssetId = async ({
+    collection_name,
+    atomic_url,
+    account,
+}) => {
+    let result = {};
+
+    const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
+        baseUrl: atomic_url,
+        params: {
+            collection_name,
+            owner: account,
+            ...assetsConfig,
+        },
+    });
+
+    if (error) console.error(error);
+
+    if (data) {
+        const { data: assets } = data;
+
+        if (assets.length) {
+            result = {
+                [collection_name]: [],
+            };
+
+            for (let i = 0; i < assets.length; i++) {
+                const { asset_id, template_mint } = assets[i];
+
+                result[collection_name].push({
+                    asset_id,
+                    mint: template_mint,
+                });
+            }
+        }
+    }
+
+    return result;
+};
+
+export const getTokenBalance = async ({
+    chain_url,
+    account,
+    code,
+    symbol,
+    matcher,
+}) => {
+    let result = {};
+
+    const { data, error } = await useFetch<Payload>(
+        '/v1/chain/get_currency_balance',
+        {
+            baseUrl: chain_url,
+            method: 'POST',
+            body: {
+                code,
+                symbol,
+                account,
+            },
+        }
+    );
+
+    if (error) console.error(error);
+
+    if (data) {
+        result[matcher] = data[0];
+    }
+
+    return result;
+};
 
 export const getRequirments = async ({
     requirments,
     atomic_url,
+    chain_url,
     account,
 }: {
     requirments: GetBlendResult['requirments'];
     atomic_url: string;
+    chain_url: string;
     account: string;
 }) => {
     const fetchCalls = [];
@@ -341,11 +476,34 @@ export const getRequirments = async ({
 
         if (requirment.key === 'TEMPLATE_INGREDIENT') {
             fetchCalls.push(
-                getAssetId({
+                getTemplateAssetId({
                     template_id: requirment.matcher,
                     collection_name: requirment.collection_name,
                     account,
                     atomic_url,
+                })
+            );
+        }
+
+        if (requirment.key === 'COLLECTION_INGREDIENT') {
+            fetchCalls.push(
+                getCollectionAssetId({
+                    collection_name: requirment.matcher,
+                    account,
+                    atomic_url,
+                })
+            );
+        }
+
+        if (requirment.key === 'FT_INGREDIENT') {
+            const token = requirment.matcher.split('|');
+            fetchCalls.push(
+                getTokenBalance({
+                    chain_url,
+                    account,
+                    code: token[1],
+                    symbol: token[0],
+                    matcher: requirment.matcher,
                 })
             );
         }
