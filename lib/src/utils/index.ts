@@ -31,3 +31,10 @@ export const formatTokenWithoutSymbol = (selection: string, precision = 8) => {
 
     return useTokenDisplay(tokenValue, precision);
 };
+
+export const findAttributeParent = (key: string, asset: any) => {
+    if (asset.data[key]) return 'data';
+    else if (asset.immutable_data[key]) return 'immutable_data';
+    else if (asset.mutable_data[key]) return 'mutable_data';
+    else return null;
+};

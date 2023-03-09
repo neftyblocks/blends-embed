@@ -6,7 +6,7 @@ import type {
     GetBlendProperty,
     GetBlendResult,
 } from '../types';
-import { matchRarity, priceForInput } from '../utils';
+import { findAttributeParent, matchRarity, priceForInput } from '../utils';
 
 export const getBlends = async ({
     atomic_url,
@@ -128,7 +128,6 @@ export const getBlends = async ({
 
     return null;
 };
-
 export const getBlend = async ({
     atomic_url,
     blend_id,
@@ -175,19 +174,101 @@ export const getBlend = async ({
 
         // ------------------------------
         // INGREDIENTS & REQUIREMENTS
+        // ingredients holds what should be displayed in the UI
+        // requirements is what it will be checked against
+        // the `matcher` is used to bond the two together
+        // the `matcher_type` is used to determine what type of matcher and
+        // which properties it will be checked against
         // ------------------------------
         for (let a = 0; a < ingredients.length; a++) {
-            const { template, collection, ft_amount, type, amount } =
-                ingredients[a];
+            const {
+                template,
+                collection,
+                attributes,
+                schema,
+                ft_amount,
+                type,
+                amount,
+                index,
+                display_data,
+            } = ingredients[a];
 
             let matcher;
             let matcher_type;
-            let value = 0;
+            let value;
+
+            // INGREDIENT - ATTRIBUTE
+            if (type === 'ATTRIBUTE_INGREDIENT') {
+                matcher_type = 'attributes';
+
+                const attr = attributes.attributes;
+
+                matcher = `${attributes.collection_name}|${
+                    attributes.schema_name
+                }|${attr.map(({ name }) => name).join('&')}|${index}`;
+
+                // quickly find out where the attribute is nested
+                const { data } = await useFetch<Payload>(
+                    '/atomicassets/v1/assets',
+                    {
+                        baseUrl: atomic_url,
+                        params: {
+                            schema_name: attributes.schema_name,
+                            collection_name,
+                            limit: '1',
+                        },
+                    }
+                );
+
+                if (data) {
+                    for (let i = 0; i < attr.length; i++) {
+                        const { name } = attr[i];
+
+                        const result = findAttributeParent(name, data.data[0]);
+
+                        attr[i].pre = result;
+                    }
+                }
+
+                value = attr;
+
+                const displayData = display_data
+                    ? JSON.parse(display_data)
+                    : null;
+
+                items.push({
+                    name: attributes.collection_name,
+                    description: displayData?.description,
+                    matcher_type,
+                    matcher,
+                    video: null,
+                    image: null,
+                });
+            }
+
+            // INGREDIENT - SCHEMA
+            else if (type === 'SCHEMA_INGREDIENT') {
+                matcher = `${schema.c}|${schema.s}`;
+                matcher_type = 'schema';
+
+                const displayData = display_data
+                    ? JSON.parse(display_data)
+                    : null;
+
+                items.push({
+                    name: schema.c,
+                    description: displayData?.description,
+                    matcher_type,
+                    matcher,
+                    video: null,
+                    image: null,
+                });
+            }
 
             // INGREDIENT - TEMPLATE
-            if (type === 'TEMPLATE_INGREDIENT') {
+            else if (type === 'TEMPLATE_INGREDIENT') {
                 matcher = template?.template_id;
-                matcher_type = 'template_id';
+                matcher_type = 'template';
 
                 const asset = useAssetData(template);
                 const { img, video, name } = asset;
@@ -202,9 +283,9 @@ export const getBlend = async ({
             }
 
             // INGREDIENT - COLLECTION
-            if (type === 'COLLECTION_INGREDIENT') {
+            else if (type === 'COLLECTION_INGREDIENT') {
                 matcher = collection?.collection_name;
-                matcher_type = 'collection_name';
+                matcher_type = 'collection';
 
                 const {
                     data: { img },
@@ -222,20 +303,10 @@ export const getBlend = async ({
             // INGREDIENT - TOKEN
             if (type === 'FT_INGREDIENT') {
                 matcher = `${ft_amount.token_symbol}|${ft_amount.token_contract}`;
-                matcher_type = 'token_symbol|token_contract';
+                matcher_type = 'token';
 
-                const { token_symbol, token_contract } = ft_amount;
+                const { token_symbol } = ft_amount;
 
-                // const tokens = await useFetch(
-                //     'https://neftyblocks.com/api/helpers/token_images',
-                //     {
-                //         params: {
-                //             tokensIds: `${token_symbol}_${token_contract}`,
-                //         },
-                //     }
-                // );
-
-                // console.log(tokens);
                 value = priceForInput(ft_amount.amount, ft_amount.precision);
 
                 items.push({
@@ -343,13 +414,116 @@ const assetsConfig = {
     sort: 'template_mint',
 };
 
+export const getAttributesAssetId = async ({
+    schema_name,
+    collection_name,
+    attribute,
+    atomic_url,
+    account,
+    matcher,
+}) => {
+    let result = {
+        type: 'attributes',
+        data: {},
+    };
+
+    const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
+        baseUrl: atomic_url,
+        params: {
+            schema_name,
+            collection_name,
+            owner: account,
+            [attribute.key]: attribute.value,
+            ...assetsConfig,
+        },
+    });
+
+    if (error) console.error(error);
+
+    if (data) {
+        const { data: assets } = data;
+
+        if (assets.length) {
+            result.data[matcher] = [];
+
+            for (let i = 0; i < assets.length; i++) {
+                const { asset_id, template_mint } = assets[i];
+
+                const asset = useAssetData(assets[i]);
+                const { video, img, name } = asset;
+
+                result.data[matcher].push({
+                    asset_id,
+                    name,
+                    mint: template_mint,
+                    video: video ? useImageUrl(video as string) : null,
+                    image: img ? useImageUrl(img as string) : null,
+                });
+            }
+        }
+    }
+
+    return result;
+};
+export const getSchemaAssetId = async ({
+    collection_name,
+    atomic_url,
+    schema_name,
+    account,
+    matcher,
+}) => {
+    let result = {
+        type: 'schema',
+        data: {},
+    };
+
+    const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
+        baseUrl: atomic_url,
+        params: {
+            collection_name,
+            schema_name,
+            owner: account,
+            ...assetsConfig,
+        },
+    });
+
+    if (error) console.error(error);
+
+    if (data) {
+        const { data: assets } = data;
+
+        if (assets.length) {
+            result.data[matcher] = [];
+
+            for (let i = 0; i < assets.length; i++) {
+                const { asset_id, template_mint } = assets[i];
+
+                const asset = useAssetData(assets[i]);
+                const { video, img, name } = asset;
+
+                result.data[matcher].push({
+                    asset_id,
+                    name,
+                    mint: template_mint,
+                    video: video ? useImageUrl(video as string) : null,
+                    image: img ? useImageUrl(img as string) : null,
+                });
+            }
+        }
+    }
+
+    return result;
+};
 export const getTemplateAssetId = async ({
     template_id,
     collection_name,
     atomic_url,
     account,
 }) => {
-    let result = {};
+    let result = {
+        type: 'template',
+        data: {},
+    };
 
     const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
         baseUrl: atomic_url,
@@ -367,14 +541,12 @@ export const getTemplateAssetId = async ({
         const { data: assets } = data;
 
         if (assets.length) {
-            result = {
-                [template_id]: [],
-            };
+            result.data[template_id] = [];
 
             for (let i = 0; i < assets.length; i++) {
                 const { asset_id, template_mint } = assets[i];
 
-                result[template_id].push({
+                result.data[template_id].push({
                     asset_id,
                     mint: template_mint,
                 });
@@ -389,7 +561,10 @@ export const getCollectionAssetId = async ({
     atomic_url,
     account,
 }) => {
-    let result = {};
+    let result = {
+        type: 'collection',
+        data: {},
+    };
 
     const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
         baseUrl: atomic_url,
@@ -406,16 +581,20 @@ export const getCollectionAssetId = async ({
         const { data: assets } = data;
 
         if (assets.length) {
-            result = {
-                [collection_name]: [],
-            };
+            result.data[collection_name] = [];
 
             for (let i = 0; i < assets.length; i++) {
                 const { asset_id, template_mint } = assets[i];
 
-                result[collection_name].push({
+                const asset = useAssetData(assets[i]);
+                const { video, img, name } = asset;
+
+                result.data[collection_name].push({
                     asset_id,
+                    name,
                     mint: template_mint,
+                    video: video ? useImageUrl(video as string) : null,
+                    image: img ? useImageUrl(img as string) : null,
                 });
             }
         }
@@ -423,7 +602,6 @@ export const getCollectionAssetId = async ({
 
     return result;
 };
-
 export const getTokenBalance = async ({
     chain_url,
     account,
@@ -431,7 +609,10 @@ export const getTokenBalance = async ({
     symbol,
     matcher,
 }) => {
-    let result = {};
+    let result = {
+        type: 'token',
+        data: {},
+    };
 
     const { data, error } = await useFetch<Payload>(
         '/v1/chain/get_currency_balance',
@@ -449,7 +630,7 @@ export const getTokenBalance = async ({
     if (error) console.error(error);
 
     if (data) {
-        result[matcher] = data[0];
+        result.data[matcher] = data[0];
     }
 
     return result;
@@ -474,7 +655,47 @@ export const getRequirments = async ({
     for (let i = 0; i < list.length; i++) {
         const requirment = list[i];
 
-        if (requirment.key === 'TEMPLATE_INGREDIENT') {
+        if (requirment.key === 'ATTRIBUTE_INGREDIENT') {
+            const [, schema] = requirment.matcher.split('|');
+
+            for (
+                let i = 0;
+                i < (requirment.value as Record<string, any>[]).length;
+                i++
+            ) {
+                const { allowed_values, name, pre } = requirment.value[i];
+
+                for (let a = 0; a < allowed_values.length; a++) {
+                    const value = allowed_values[a];
+
+                    fetchCalls.push(
+                        getAttributesAssetId({
+                            schema_name: schema,
+                            collection_name: requirment.collection_name,
+                            attribute: {
+                                key: `${pre}.${name}`,
+                                value,
+                            },
+                            account,
+                            atomic_url,
+                            matcher: `attribute-${name}-${a}:${requirment.matcher}`,
+                        })
+                    );
+                }
+            }
+        } else if (requirment.key === 'SCHEMA_INGREDIENT') {
+            const [, schema] = requirment.matcher.split('|');
+
+            fetchCalls.push(
+                getSchemaAssetId({
+                    schema_name: schema,
+                    collection_name: requirment.collection_name,
+                    account,
+                    atomic_url,
+                    matcher: requirment.matcher,
+                })
+            );
+        } else if (requirment.key === 'TEMPLATE_INGREDIENT') {
             fetchCalls.push(
                 getTemplateAssetId({
                     template_id: requirment.matcher,
@@ -483,9 +704,7 @@ export const getRequirments = async ({
                     atomic_url,
                 })
             );
-        }
-
-        if (requirment.key === 'COLLECTION_INGREDIENT') {
+        } else if (requirment.key === 'COLLECTION_INGREDIENT') {
             fetchCalls.push(
                 getCollectionAssetId({
                     collection_name: requirment.matcher,
@@ -493,9 +712,7 @@ export const getRequirments = async ({
                     atomic_url,
                 })
             );
-        }
-
-        if (requirment.key === 'FT_INGREDIENT') {
+        } else if (requirment.key === 'FT_INGREDIENT') {
             const token = requirment.matcher.split('|');
             fetchCalls.push(
                 getTokenBalance({
@@ -515,7 +732,23 @@ export const getRequirments = async ({
         const e = result[i];
 
         if (e.status === 'fulfilled') {
-            results = { ...e.value, ...results };
+            if (e.value.type === 'attributes') {
+                const keys = Object.keys(e.value.data);
+                const key = keys[0].split(':')[1];
+
+                const temp = [];
+
+                for (let a = 0; a < keys.length; a++) {
+                    temp.push(...e.value.data[keys[a]]);
+                }
+
+                results = {
+                    [key]: temp,
+                    ...results,
+                };
+            } else {
+                results = { ...e.value.data, ...results };
+            }
         }
     }
 

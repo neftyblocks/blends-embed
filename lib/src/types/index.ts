@@ -95,8 +95,9 @@ export interface GetBlendResult {
             collection_name: string;
             // Matcher is a common name for a property that can be: template_id, collection_name, or asset_id, token_id
             matcher?: string;
-            // the type of matcher will let you know which property was used: template_id, collection_name, or asset_id, token_id
+            // the type of matcher will let you know which property was used: template, collection, token, schema, or attributes
             matcher_type: string;
+            value?: number | Record<string, any>[];
         }
     >;
 }

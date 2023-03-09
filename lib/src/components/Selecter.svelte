@@ -14,14 +14,16 @@
 
     // STATES
     export let items = undefined;
-    export let matcher = undefined;
+    export let matchertype = undefined;
     export let selected = undefined;
     export let amount = 1;
 
     let show = false;
 
     // METHODS
-    onMount(() => {});
+    onMount(() => {
+        // console.log(matchertype, items);
+    });
 
     const toggleShow = () => {
         show = !show;
@@ -85,10 +87,31 @@
             <div>
                 {#each items as item}
                     <button
-                        class="btn-clear {isSelected(item) ? 'checked' : ''}"
+                        class="btn-clear {isSelected(item)
+                            ? 'checked'
+                            : ''} {matchertype}"
                         on:click={() => selection(item)}
                     >
-                        #{item.mint}
+                        {#if matchertype === 'collection' || matchertype === 'attributes' || matchertype === 'schema'}
+                            {#if item.video}
+                                <video
+                                    src={item.video}
+                                    loop
+                                    autoplay
+                                    muted
+                                    playsinline
+                                />
+                            {:else if item.image}
+                                <img src={item.image} alt={item.name} />
+                            {/if}
+                        {/if}
+                        <article>
+                            {#if matchertype === 'collection' || matchertype === 'attributes' || matchertype === 'schema'}
+                                <p class="name">{item.name}</p>
+                            {/if}
+                            <p>#{item.mint}</p>
+                        </article>
+
                         {#if isSelected(item)}
                             <svg>
                                 <use href="#check" />
@@ -152,9 +175,8 @@
         position: absolute;
         bottom: 44px;
         left: 50%;
-        width: 180px;
-        max-height: 180px;
-        padding: 6px;
+        width: 280px;
+        max-height: 280px;
         transform: translateX(-50%);
         border-radius: var(--nb-radius);
         background-color: var(--nb-bg-card);
@@ -167,8 +189,8 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            padding: 0 0 6px;
-            height: 29px;
+            padding: 6px;
+            height: 44px;
             color: var(--nb-color-secondary);
             font-size: var(--nb-font-size--small);
             border-bottom: var(--nb-border-size) solid var(--nb-border-card);
@@ -177,8 +199,8 @@
                 display: flex;
                 align-items: center;
                 position: absolute;
-                top: -2px;
-                left: -2px;
+                top: 9px;
+                left: 6px;
                 padding: 5px;
                 color: var(--nb-color);
                 font-size: var(--nb-font-size--small);
@@ -204,8 +226,16 @@
                 align-items: center;
                 color: var(--nb-color-secondary);
                 text-align: left;
-                padding: 6px 0;
+                padding: 12px 6px;
                 border-bottom: var(--nb-border-size) solid var(--nb-border-card);
+
+                img,
+                video {
+                    object-fit: contain;
+                    width: 75px;
+                    height: 75px;
+                    margin-right: 6px;
+                }
 
                 svg {
                     width: 18px;
@@ -216,6 +246,16 @@
 
                 &.checked {
                     color: var(--nb-color);
+                }
+
+                &.collection,
+                &.attributes,
+                &.schema {
+                    .name {
+                        color: var(--nb-color-secondary);
+                        font-size: var(--nb-font-size--small);
+                        margin-bottom: 6px;
+                    }
                 }
 
                 &:hover {

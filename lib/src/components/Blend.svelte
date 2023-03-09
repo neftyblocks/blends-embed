@@ -32,7 +32,7 @@
             easing: backIn,
             css: (t, u) =>
                 `transform: translate3d(${-u * (50 * params.key)}%, ${
-                    u * 100
+                    u * 40
                 }%, 0); opacity: ${t}`,
         };
     }
@@ -42,7 +42,6 @@
             if (config && blend) {
                 data = await getBlend({
                     atomic_url: config.atomic_url,
-
                     blend_id: blend.blend_id,
                     contract: blend.contract,
                 });
@@ -74,7 +73,7 @@
             const { matcher, matcher_type, amount } = list[i];
 
             // If the matcher is a token we don't need to auto select
-            if (matcher_type !== 'token_symbol|token_contract') {
+            if (matcher_type !== 'token') {
                 if (selection[matcher] && selection[matcher].length >= amount) {
                     selected[matcher] = selection[matcher].slice(0, amount);
                 }
@@ -103,7 +102,9 @@
     };
 
     const getMarketUrl = (item: any) => {
-        const includeCollection = item.matcher_type !== 'collection_name';
+        const includeCollection = item.matcher_type !== 'collection';
+
+        // TODO: add mapping for matcher_type
 
         return `${marketUrl}?${
             includeCollection ? `collection_name=${collectionName}&` : ''
@@ -161,7 +162,10 @@
                                         : 'needed'}
                                     transition:swoop={{ key }}
                                 >
-                                    {#if item.matcher_type !== 'token_symbol|token_contract'}
+                                    <small class="type"
+                                        >{item.matcher_type}</small
+                                    >
+                                    {#if item.matcher_type === 'collection' || item.matcher_type === 'template'}
                                         <figure class="visual">
                                             {#if item.video}
                                                 <video
@@ -178,6 +182,10 @@
                                                 />
                                             {/if}
                                         </figure>
+                                    {:else if item.matcher_type === 'attributes' || item.matcher_type === 'schema'}
+                                        <span class="visual visual--small">
+                                            {item.description}
+                                        </span>
                                     {:else}
                                         <span class="visual">
                                             {useTokenDisplay(
@@ -189,11 +197,11 @@
 
                                     <h3>{item.name}</h3>
 
-                                    {#if item.matcher_type !== 'token_symbol|token_contract'}
+                                    {#if item.matcher_type !== 'token'}
                                         {#if matchAssetRequirments(selection[item.matcher], data.requirments[item.matcher])}
                                             <nefty-blend-selecter
                                                 items={selection[item.matcher]}
-                                                matcher={item.matcher}
+                                                matchertype={item.matcher_type}
                                                 amount={data.requirments[
                                                     item.matcher
                                                 ].amount}
@@ -209,7 +217,11 @@
                                                 target="_blank"
                                                 rel="noopener"
                                             >
-                                                Get assets
+                                                Get {data.requirments[
+                                                    item.matcher
+                                                ].amount} asset{(data.requirments[
+                                                    item.matcher
+                                                ].amount = 1 ? '' : 's')}
                                             </a>{/if}
                                     {:else if matchTokenRequirments(selection[item.matcher], data.requirments[item.matcher])}
                                         <p class="balance">
@@ -400,7 +412,7 @@
         width: 100%;
         gap: var(--nb-gap);
         padding: 48px 0 72px;
-        overflow: hidden;
+        // overflow: hidden;
     }
 
     .selection-item {
@@ -408,7 +420,7 @@
         align-items: center;
         justify-content: center;
         width: clamp(180px, 30vw, 220px);
-        aspect-ratio: 1/1;
+        aspect-ratio: 1/1.2;
         padding: 4px;
         border-radius: var(--nb-radius);
         background-color: rgba(0, 0, 0, 0.2);
@@ -442,6 +454,12 @@
             padding: 12px;
             position: relative;
             overflow: hidden;
+
+            &--small {
+                font-weight: 500;
+                color: var(--nb-color-secondary);
+                font-size: var(--nb-font-size--small);
+            }
         }
 
         .balance {
