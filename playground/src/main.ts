@@ -11,6 +11,7 @@ const mountEl = ({ collection = 'alpacaworlds', account = 'alpacaworlds' }) => {
         const config = {
             atomic_url: 'https://aa.neftyblocks.com',
             chain_url: 'https://wax-public.neftyblocks.com',
+            chain: 'wax',
         };
 
         const embed = `<neftyblocks-blend 

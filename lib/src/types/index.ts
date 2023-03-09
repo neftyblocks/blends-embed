@@ -3,6 +3,7 @@ export interface Settings {
         atomic_url: string;
         chain_url: string;
         marketplace_url: string;
+        chain: string;
     };
     collection?: string;
     account?: string;
@@ -59,6 +60,7 @@ export interface GetBlendProperty {
     atomic_url: string;
     blend_id: string;
     contract: string;
+    chain: string;
 }
 
 export interface GetBlendResult {

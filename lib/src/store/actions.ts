@@ -1,4 +1,5 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
+
 import type {
     GetBlendsProperty,
     Payload,
@@ -7,6 +8,8 @@ import type {
     GetBlendResult,
 } from '../types';
 import { findAttributeParent, matchRarity, priceForInput } from '../utils';
+
+let tokensJson: any = null;
 
 export const getBlends = async ({
     atomic_url,
@@ -132,6 +135,7 @@ export const getBlend = async ({
     atomic_url,
     blend_id,
     contract,
+    chain,
 }: GetBlendProperty): Promise<GetBlendResult | null> => {
     if (!atomic_url || !blend_id || !contract) return null;
 
@@ -305,16 +309,30 @@ export const getBlend = async ({
                 matcher = `${ft_amount.token_symbol}|${ft_amount.token_contract}`;
                 matcher_type = 'token';
 
-                const { token_symbol } = ft_amount;
+                // fetch is token is not yet cached
+                if (!tokensJson) {
+                    const { data } = await useFetch<any>(
+                        `/api/logos/${chain}`,
+                        {
+                            baseUrl: 'https://rates.neftyblocks.com',
+                        }
+                    );
+
+                    if (data) tokensJson = data;
+                }
+
+                const { token_symbol, token_contract } = ft_amount;
+
+                const img = tokensJson[`${token_symbol}@${token_contract}`];
 
                 value = priceForInput(ft_amount.amount, ft_amount.precision);
 
                 items.push({
-                    name: token_symbol,
+                    name: `${value} ${token_symbol}`,
                     matcher_type,
                     matcher,
                     video: null,
-                    image: null,
+                    image: img ? useImageUrl(img.logo as string) : null,
                     token: {
                         ...ft_amount,
                         value,

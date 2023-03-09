@@ -44,6 +44,7 @@
                     atomic_url: config.atomic_url,
                     blend_id: blend.blend_id,
                     contract: blend.contract,
+                    chain: config.chain,
                 });
 
                 marketUrl = config.marketplace_url;
@@ -165,8 +166,10 @@
                                     <small class="type"
                                         >{item.matcher_type}</small
                                     >
-                                    {#if item.matcher_type === 'collection' || item.matcher_type === 'template'}
-                                        <figure class="visual">
+                                    {#if item.matcher_type === 'collection' || item.matcher_type === 'template' || item.matcher_type === 'token'}
+                                        <figure
+                                            class="visual {item.matcher_type}"
+                                        >
                                             {#if item.video}
                                                 <video
                                                     src={item.video}
@@ -185,13 +188,6 @@
                                     {:else if item.matcher_type === 'attributes' || item.matcher_type === 'schema'}
                                         <span class="visual visual--small">
                                             {item.description}
-                                        </span>
-                                    {:else}
-                                        <span class="visual">
-                                            {useTokenDisplay(
-                                                item.token.value,
-                                                item.token.precision
-                                            )}
                                         </span>
                                     {/if}
 
@@ -454,6 +450,14 @@
             padding: 12px;
             position: relative;
             overflow: hidden;
+
+            &.token {
+                img {
+                    width: 80%;
+                    height: 80%;
+                    padding: 10%;
+                }
+            }
 
             &--small {
                 font-weight: 500;
