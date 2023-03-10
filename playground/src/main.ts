@@ -9,8 +9,8 @@ const mountEl = ({ collection = 'alpacaworlds', account = 'alpacaworlds' }) => {
         el.innerHTML = '';
 
         const config = {
-            atomic_url: 'https://aa.neftyblocks.com',
-            chain_url: 'https://wax-public.neftyblocks.com',
+            atomic_url: 'https://aa-testnet.neftyblocks.com',
+            chain_url: 'https://waxtest.eu.eosamsterdam.net',
             chain: 'wax',
         };
 
