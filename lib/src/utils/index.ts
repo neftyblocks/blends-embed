@@ -1,4 +1,4 @@
-import { useTokenDisplay } from '@nefty/use';
+import { useAssetData, useTokenDisplay } from '@nefty/use';
 
 export const dispatch = (
     name: string,
@@ -30,4 +30,33 @@ export const formatTokenWithoutSymbol = (selection: string, precision = 8) => {
     const [tokenValue] = selection.split(' ');
 
     return useTokenDisplay(tokenValue, precision);
+};
+
+export const blendNameAndImage = (displayData: any, firstResult: any) => {
+    let blend_img;
+    let blend_name;
+
+    if (displayData) {
+        blend_name = displayData.name;
+        blend_img = displayData.image;
+    }
+
+    if (firstResult?.template) {
+        const asset = useAssetData(firstResult.template);
+        const { name, img } = asset;
+
+        if (!blend_name) blend_name = name;
+        if (!blend_img) blend_img = img;
+    } else if (firstResult?.pool) {
+        const displayData = firstResult.pool.display_data
+            ? JSON.parse(firstResult.pool.display_data)
+            : null;
+
+        if (displayData) {
+            blend_name = displayData.name;
+            blend_img = displayData.image;
+        }
+    }
+
+    return { blend_name, blend_img };
 };

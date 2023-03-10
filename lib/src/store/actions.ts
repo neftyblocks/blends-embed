@@ -7,7 +7,7 @@ import type {
     GetBlendProperty,
     GetBlendResult,
 } from '../types';
-import { matchRarity, priceForInput } from '../utils';
+import { blendNameAndImage, matchRarity, priceForInput } from '../utils';
 
 let tokensJson: any = null;
 
@@ -100,33 +100,12 @@ export const getBlends = async ({
                 }
             }
 
-            let blend_img;
-            let blend_name;
-
             const displayData = display_data ? JSON.parse(display_data) : null;
-            const firstResult = rolls[0].outcomes[0].results[0];
 
-            if (displayData) {
-                blend_name = displayData.name;
-                blend_img = displayData.image;
-            }
-
-            if (firstResult?.template) {
-                const asset = useAssetData(firstResult.template);
-                const { name, img } = asset;
-
-                if (!blend_name) blend_name = name;
-                if (!blend_img) blend_img = img;
-            } else if (firstResult?.pool) {
-                const displayData = firstResult.pool.display_data
-                    ? JSON.parse(firstResult.pool.display_data)
-                    : null;
-
-                if (displayData) {
-                    blend_name = displayData.name;
-                    blend_img = displayData.image;
-                }
-            }
+            const { blend_img, blend_name } = blendNameAndImage(
+                displayData,
+                rolls[0].outcomes[0].results[0]
+            );
 
             content.push({
                 blend_id,
@@ -162,6 +141,9 @@ export const getBlend = async ({
         `/neftyblends/v1/blends/${contract}/${blend_id}`,
         {
             baseUrl: atomic_url,
+            params: {
+                render_markdown: 'true',
+            },
         }
     );
 
@@ -184,12 +166,6 @@ export const getBlend = async ({
             category,
             collection_name,
         } = data.data;
-
-        const { template: firstResultTemplate } =
-            rolls[0].outcomes[0].results[0];
-
-        const asset = useAssetData(firstResultTemplate);
-        const { name, img } = asset;
 
         const items = [];
         const result = [];
@@ -388,13 +364,16 @@ export const getBlend = async ({
             }
         }
 
-        const displayData = display_data ? JSON.parse(display_data) : null;
+        const { blend_name } = blendNameAndImage(
+            display_data,
+            rolls[0].outcomes[0].results[0]
+        );
 
         return {
             blend_id,
             contract,
-            name: displayData?.name || name,
-            description: displayData?.description,
+            name: blend_name,
+            description: display_data?.description,
             start_time,
             end_time,
             items,
@@ -403,11 +382,7 @@ export const getBlend = async ({
             ingredients_count,
             result_count: result.length,
             secure: security_id !== '0',
-            display_data: displayData,
             requirments,
-            image: displayData?.image
-                ? useImageUrl(displayData.image)
-                : useImageUrl(img as string),
         };
     }
 

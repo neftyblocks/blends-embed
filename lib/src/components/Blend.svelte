@@ -1,7 +1,6 @@
 <svelte:options tag="nefty-blend-item" />
 
 <script lang="ts">
-    import { useMarkdown } from '@nefty/use';
     import { backIn } from 'svelte/easing';
     import { get_current_component } from 'svelte/internal';
     import { getBlend, getRequirments, settings } from '../store';
@@ -69,6 +68,34 @@
         requirments: GetBlendResult['requirments']
     ) => {
         const list = Object.values(requirments);
+
+        // sort list as follows:
+        // 1. attributes
+        // 2. templates
+        // 3. schemas
+        // 4. collections
+        // 5. tokens
+
+        list.sort((a, b) => {
+            if (a.matcher_type === 'attributes') return -1;
+            if (b.matcher_type === 'attributes') return 1;
+
+            if (a.matcher_type === 'template') return -1;
+            if (b.matcher_type === 'template') return 1;
+
+            if (a.matcher_type === 'schema') return -1;
+            if (b.matcher_type === 'schema') return 1;
+
+            if (a.matcher_type === 'collection') return -1;
+            if (b.matcher_type === 'collection') return 1;
+
+            if (a.matcher_type === 'token') return -1;
+            if (b.matcher_type === 'token') return 1;
+
+            return 0;
+        });
+
+        console.log(list);
 
         for (let i = 0; i < list.length; i++) {
             const { matcher, matcher_type, amount } = list[i];
@@ -254,7 +281,7 @@
         {#if data.description}
             <aside class="blend-text">
                 <article class="markdown">
-                    {@html useMarkdown(data.description)}
+                    {@html data.description}
 
                     <template>
                         <h1>0</h1>
@@ -333,13 +360,15 @@
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid var(--nb-border);
         padding: 12px;
+        max-height: calc(100vh - var(--nb-markdown-offset));
+        overflow: hidden auto;
     }
 
     .blend-results {
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid var(--nb-border);
-        height: 40vh;
+        height: 35vh;
         position: relative;
         overflow: hidden;
         z-index: 0;
@@ -408,7 +437,6 @@
         width: 100%;
         gap: var(--nb-gap);
         padding: 48px 0 72px;
-        // overflow: hidden;
     }
 
     .selection-item {

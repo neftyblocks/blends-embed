@@ -68,7 +68,6 @@ export interface GetBlendResult {
     contract: string;
     name: string;
     description?: string;
-    image: string;
     start_time: number;
     end_time: number;
     items: {
@@ -88,7 +87,6 @@ export interface GetBlendResult {
     ingredients_count: number;
     result_count: number;
     secure: boolean;
-    display_data: any | null;
     requirments: Record<
         string,
         {

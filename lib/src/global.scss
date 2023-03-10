@@ -1,8 +1,13 @@
 :host {
     --nb-font-family: var(--nefty-font-family, sans-serif);
-    --nb-font-size: var(--nefty-font-size, 16px);
+
     --nb-font-size--small: var(--nefty-font-size--small, 14px);
+    --nb-font-size: var(--nefty-font-size, 16px);
+    --nb-font-size--medium: var(--nefty-font-size, 22px);
     --nb-font-size--large: var(--nefty-font-size, 26px);
+    --nb-font-size--extra-large: var(--nefty-font-size, 28px);
+    --nb-font-size--title: var(--nefty-font-size, 32px);
+
     --nb-card-size-min: var(--nefty-card-size-min, 250px);
     --nb-card-size-max: var(--nefty-card-size-max, 1fr);
     --nb-gap: var(--nefty-gap, 24px);
@@ -20,6 +25,7 @@
 
     --nb-color: var(--nefty-color, #fcfcfd);
     --nb-color-secondary: var(--nefty-color-secondary, #777e90);
+    --nb-color-highlight: var(--nefty-color-highlight, #00ffff);
 
     --nb-button-hover: var(--nefty-button-hover, #21b55a);
     --nb-secure-hover: var(--nefty-secure-hover, #21abb5);
@@ -29,6 +35,8 @@
     --nb-rarity-rare: var(--nefty-rarity-rare, #4050b5);
     --nb-rarity-epic: var(--nefty-rarity-epic, #9c27b0);
     --nb-rarity-legendary: var(--nefty-rarity-legendary, #ffd500);
+
+    --nb-markdown-offset: var(--nefty-markdown-offset, 80px);
 
     color: var(--nb-color);
 }
@@ -87,6 +95,8 @@
 
     img {
         display: block;
+        width: 100%;
+        max-width: 800px;
         margin: 0 auto;
     }
 
@@ -96,7 +106,22 @@
     h4,
     h5 {
         margin-bottom: 12px;
+    }
+
+    h1 {
+        font-size: var(--nb-font-size--title);
+    }
+    h2 {
+        font-size: var(--nb-font-size--extra-large);
+    }
+    h3 {
         font-size: var(--nb-font-size--large);
+    }
+    h4 {
+        font-size: var(--nb-font-size--medium);
+    }
+    h5 {
+        font-size: var(--nb-font-size);
     }
 
     h1,
@@ -110,7 +135,7 @@
     }
 
     a {
-        color: var(--nb-color-secondary);
+        color: var(--nb-color-highlight);
         text-decoration: underline;
 
         &:hover {
