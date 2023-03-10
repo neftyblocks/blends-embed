@@ -395,18 +395,11 @@ export const getBlend = async ({
     return null;
 };
 
-const collectionConfig = {
+const templateMintConfig = {
     is_transferable: 'true',
     is_burnable: 'true',
     order: 'desc',
     sort: 'template_mint',
-};
-
-const assetsConfig = {
-    is_transferable: 'true',
-    is_burnable: 'true',
-    order: 'desc',
-    sort: 'asset_id',
 };
 
 const attributeConfig = {
@@ -483,7 +476,7 @@ export const getSchemaAssetId = async ({
             collection_name,
             schema_name,
             owner: account,
-            ...assetsConfig,
+            ...templateMintConfig,
         },
     });
 
@@ -531,7 +524,7 @@ export const getTemplateAssetId = async ({
             collection_name,
             template_id,
             owner: account,
-            ...assetsConfig,
+            ...templateMintConfig,
         },
     });
 
@@ -571,7 +564,7 @@ export const getCollectionAssetId = async ({
         params: {
             collection_name,
             owner: account,
-            ...collectionConfig,
+            ...templateMintConfig,
         },
     });
 
