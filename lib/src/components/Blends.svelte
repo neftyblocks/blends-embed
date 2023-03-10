@@ -124,13 +124,25 @@
                         class="content"
                     >
                         <header>
-                            <figure>
-                                <img
-                                    class="shadow"
-                                    src={blend.image}
-                                    alt={blend.name}
-                                />
-                                <img src={blend.image} alt={blend.name} />
+                            <figure class="visual">
+                                {#if blend.video}
+                                    <video
+                                        src={blend.video}
+                                        loop
+                                        autoplay
+                                        muted
+                                        playsinline
+                                    />
+                                {:else if blend.image}
+                                    <img
+                                        class="shadow"
+                                        src={blend.image}
+                                        alt={blend.name}
+                                    />
+                                    <img src={blend.image} alt={blend.name} />
+                                {:else}
+                                    <small>empty</small>
+                                {/if}
                             </figure>
                             <article>
                                 <time>
@@ -270,11 +282,19 @@
             }
         }
 
-        figure {
+        .visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
             position: relative;
             border-radius: 3px;
             z-index: 0;
+
+            small {
+                color: var(--nb-color-secondary);
+                font-size: var(--nb-font-size--small);
+            }
         }
 
         img {

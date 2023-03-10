@@ -1,7 +1,7 @@
 <svelte:options tag="nefty-blend-item" />
 
 <script lang="ts">
-    import { useMarkdown, useTokenDisplay } from '@nefty/use';
+    import { useMarkdown } from '@nefty/use';
     import { backIn } from 'svelte/easing';
     import { get_current_component } from 'svelte/internal';
     import { getBlend, getRequirments, settings } from '../store';

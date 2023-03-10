@@ -54,11 +54,6 @@ export const getBlends = async ({
 
             if (is_hidden) continue;
 
-            const { template } = rolls[0].outcomes[0].results[0];
-
-            const asset = useAssetData(template);
-            const { name, img } = asset;
-
             const items = [];
             const result = [];
 
@@ -105,12 +100,38 @@ export const getBlends = async ({
                 }
             }
 
+            let blend_img;
+            let blend_name;
+
             const displayData = display_data ? JSON.parse(display_data) : null;
+            const firstResult = rolls[0].outcomes[0].results[0];
+
+            if (displayData) {
+                blend_name = displayData.name;
+                blend_img = displayData.image;
+            }
+
+            if (firstResult?.template) {
+                const asset = useAssetData(firstResult.template);
+                const { name, img } = asset;
+
+                if (!blend_name) blend_name = name;
+                if (!blend_img) blend_img = img;
+            } else if (firstResult?.pool) {
+                const displayData = firstResult.pool.display_data
+                    ? JSON.parse(firstResult.pool.display_data)
+                    : null;
+
+                if (displayData) {
+                    blend_name = displayData.name;
+                    blend_img = displayData.image;
+                }
+            }
 
             content.push({
                 blend_id,
                 contract,
-                name: displayData?.name || name,
+                name: blend_name,
                 start_time,
                 end_time,
                 items,
@@ -120,9 +141,7 @@ export const getBlends = async ({
                 result_count: result.length,
                 secure: security_id !== '0',
                 display_data: displayData,
-                image: displayData?.image
-                    ? useImageUrl(displayData.image)
-                    : useImageUrl(img as string),
+                image: blend_img ? useImageUrl(blend_img) : null,
             });
         }
 
@@ -639,8 +658,6 @@ export const getRequirments = async ({
     atomic_url: string;
     chain_url: string;
     account: string;
-    blend_id: string;
-    contract: string;
 }) => {
     const fetchCalls = [];
     let results = {};
