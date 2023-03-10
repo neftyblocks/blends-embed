@@ -1,0 +1,50 @@
+:host {
+    --nb-font-family: var(--nefty-font-family, sans-serif);
+
+    --nb-font-size--small: var(--nefty-font-size--small, 14px);
+    --nb-font-size: var(--nefty-font-size, 16px);
+    --nb-font-size--medium: var(--nefty-font-size, 22px);
+    --nb-font-size--large: var(--nefty-font-size, 26px);
+    --nb-font-size--extra-large: var(--nefty-font-size, 28px);
+    --nb-font-size--title: var(--nefty-font-size, 32px);
+
+    --nb-card-size-min: var(--nefty-card-size-min, 250px);
+    --nb-card-size-max: var(--nefty-card-size-max, 1fr);
+    --nb-gap: var(--nefty-gap, 24px);
+    --nb-radius: var(--nefty-radius, 12px);
+
+    --nb-border: var(--nefty-border, #353945);
+    --nb-border-card: var(--nefty-border-card, #424652);
+    --nb-border-size: var(--nefty-border-size, 1px);
+    --nb-bg: var(--nefty-bg, #1a1a1a);
+    --nb-bg-card: var(--nefty-bg-card, #23262f);
+    --nb-bg-selected: var(--nefty-bg-selected, #292b31);
+    --nb-bg-footer: var(--nefty-bg-footer, #292c36);
+
+    --nb-shadow: var(--nefty-shadow, rgba(0, 0, 0, 0.5));
+
+    --nb-color: var(--nefty-color, #fcfcfd);
+    --nb-color-secondary: var(--nefty-color-secondary, #777e90);
+    --nb-color-highlight: var(--nefty-color-highlight, #00ffff);
+
+    --nb-button-hover: var(--nefty-button-hover, #21b55a);
+    --nb-secure-hover: var(--nefty-secure-hover, #21abb5);
+
+    --nb-rarity-common: var(--nefty-rarity-common, #353945);
+    --nb-rarity-uncommon: var(--nefty-rarity-uncommon, #4caf50);
+    --nb-rarity-rare: var(--nefty-rarity-rare, #4050b5);
+    --nb-rarity-epic: var(--nefty-rarity-epic, #9c27b0);
+    --nb-rarity-legendary: var(--nefty-rarity-legendary, #ffd500);
+
+    --nb-markdown-offset: var(--nefty-markdown-offset, 80px);
+
+    color: var(--nb-color);
+}
+
+:host * {
+    font-family: var(--nb-font-family);
+    font-size: 16px;
+    box-sizing: border-box;
+    margin: 0;
+    line-height: 1.2;
+}

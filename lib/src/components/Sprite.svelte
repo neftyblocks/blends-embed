@@ -1,9 +1,14 @@
 <svelte:options tag="nefty-sprite" />
 
-<svg aria-hidden="true" width="0" height="0" style="position: absolute">
+<svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="0"
+    height="0"
+    style="position: absolute"
+>
     <symbol
         id="hat"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -18,7 +23,6 @@
     </symbol>
     <symbol
         id="star"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -31,7 +35,6 @@
     </symbol>
     <symbol
         id="lock"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -44,7 +47,6 @@
     </symbol>
     <symbol
         id="check"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -54,7 +56,6 @@
     >
     <symbol
         id="undo"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -67,7 +68,6 @@
     >
     <symbol
         id="chevron_right"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -79,7 +79,6 @@
     </symbol>
     <symbol
         id="hash"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -100,7 +99,6 @@
     </symbol>
     <symbol
         id="grid"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -121,7 +119,6 @@
     >
     <symbol
         id="carousel"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -135,7 +132,6 @@
     </symbol>
     <symbol
         id="arrow_right"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -148,7 +144,6 @@
     >
     <svg
         id="arrow_left"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -161,7 +156,6 @@
     >
     <symbol
         id="close"
-        xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

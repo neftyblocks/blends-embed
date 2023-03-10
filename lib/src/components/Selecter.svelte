@@ -126,7 +126,8 @@
 
 <!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
-    @import '../global.scss';
+    @import '../style/global.scss';
+    @import '../style/button.scss';
 
     .selecter {
         width: 100%;

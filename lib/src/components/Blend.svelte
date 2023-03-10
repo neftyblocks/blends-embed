@@ -69,13 +69,6 @@
     ) => {
         const list = Object.values(requirments);
 
-        // sort list as follows:
-        // 1. attributes
-        // 2. templates
-        // 3. schemas
-        // 4. collections
-        // 5. tokens
-
         list.sort((a, b) => {
             if (a.matcher_type === 'attributes') return -1;
             if (b.matcher_type === 'attributes') return 1;
@@ -95,18 +88,45 @@
             return 0;
         });
 
-        console.log(list);
+        const selected_asset_ids = [];
 
         for (let i = 0; i < list.length; i++) {
-            const { matcher, matcher_type, amount } = list[i];
+            const { matcher, matcher_type, amount, value } = list[i];
 
             // If the matcher is a token we don't need to auto select
-            if (matcher_type !== 'token') {
+            if (matcher_type === 'token') {
+                const [tokenValue] = selection[matcher].split(' ');
+
+                if (+tokenValue >= value) {
+                    selected[matcher] = selection[matcher];
+                }
+            } else {
                 if (selection[matcher] && selection[matcher].length >= amount) {
-                    selected[matcher] = selection[matcher].slice(0, amount);
+                    const temp = [...selection[matcher]];
+
+                    for (let j = 0; j < temp.length; j++) {
+                        const asset = temp[j];
+                        if (selected_asset_ids.includes(asset.asset_id)) {
+                            temp.splice(j, 1);
+                            j--;
+                        }
+                    }
+
+                    selected[matcher] = temp.slice(0, amount);
+
+                    for (let j = 0; j < selected[matcher].length; j++) {
+                        const asset = selected[matcher][j];
+                        selected_asset_ids.push(asset.asset_id);
+                    }
                 }
             }
         }
+    };
+
+    const validateSelection = (selected, requirments) => {
+        console.log(selected, requirments);
+
+        return false;
     };
 
     const matchAssetRequirments = (selection: any, requirments: any) => {
@@ -169,6 +189,7 @@
             </section>
             <section>
                 <button
+                    disabled={validateSelection(selected, data.requirments)}
                     on:click={() => dispatch('sign', { test: 1 }, component)}
                 >
                     Blend
@@ -311,7 +332,9 @@
 {/if}
 
 <style lang="scss">
-    @import '../global.scss';
+    @import '../style/global.scss';
+    @import '../style/markdown.scss';
+    @import '../style/button.scss';
 
     .blend {
         display: grid;
