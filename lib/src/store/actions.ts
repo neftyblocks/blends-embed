@@ -204,37 +204,7 @@ export const getBlend = async ({
             // INGREDIENT - ATTRIBUTE
             if (type === 'ATTRIBUTE_INGREDIENT') {
                 matcher_type = 'attributes';
-
-                const attr = attributes.attributes;
-
-                matcher = `${attributes.collection_name}|${
-                    attributes.schema_name
-                }|${attr.map(({ name }) => name).join('&')}|${index}`;
-
-                // quickly find out where the attribute is nested
-                const { data } = await useFetch<Payload>(
-                    '/atomicassets/v1/assets',
-                    {
-                        baseUrl: atomic_url,
-                        params: {
-                            schema_name: attributes.schema_name,
-                            collection_name,
-                            limit: '1',
-                        },
-                    }
-                );
-
-                if (data) {
-                    for (let i = 0; i < attr.length; i++) {
-                        const { name } = attr[i];
-
-                        const result = findAttributeParent(name, data.data[0]);
-
-                        attr[i].pre = result;
-                    }
-                }
-
-                value = attr;
+                matcher = `${blend_id}|${contract}|${index}`;
 
                 const displayData = display_data
                     ? JSON.parse(display_data)
@@ -425,17 +395,29 @@ export const getBlend = async ({
     return null;
 };
 
-const assetsConfig = {
+const collectionConfig = {
     is_transferable: 'true',
     is_burnable: 'true',
     order: 'desc',
     sort: 'template_mint',
 };
 
+const assetsConfig = {
+    is_transferable: 'true',
+    is_burnable: 'true',
+    order: 'desc',
+    sort: 'asset_id',
+};
+
+const attributeConfig = {
+    order: 'desc',
+    sort: 'asset_id',
+};
+
 export const getAttributesAssetId = async ({
-    schema_name,
-    collection_name,
-    attribute,
+    blend_id,
+    contract,
+    index,
     atomic_url,
     account,
     matcher,
@@ -445,16 +427,16 @@ export const getAttributesAssetId = async ({
         data: {},
     };
 
-    const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
-        baseUrl: atomic_url,
-        params: {
-            schema_name,
-            collection_name,
-            owner: account,
-            [attribute.key]: attribute.value,
-            ...assetsConfig,
-        },
-    });
+    const { data, error } = await useFetch<Payload>(
+        `/neftyblends/v1/blends/${contract}/${blend_id}/ingredients/${index}/assets`,
+        {
+            baseUrl: atomic_url,
+            params: {
+                owner: account,
+                ...attributeConfig,
+            },
+        }
+    );
 
     if (error) console.error(error);
 
@@ -589,7 +571,7 @@ export const getCollectionAssetId = async ({
         params: {
             collection_name,
             owner: account,
-            ...assetsConfig,
+            ...collectionConfig,
         },
     });
 
@@ -664,6 +646,8 @@ export const getRequirments = async ({
     atomic_url: string;
     chain_url: string;
     account: string;
+    blend_id: string;
+    contract: string;
 }) => {
     const fetchCalls = [];
     let results = {};
@@ -674,33 +658,18 @@ export const getRequirments = async ({
         const requirment = list[i];
 
         if (requirment.key === 'ATTRIBUTE_INGREDIENT') {
-            const [, schema] = requirment.matcher.split('|');
+            const [blend_id, contract, index] = requirment.matcher.split('|');
 
-            for (
-                let i = 0;
-                i < (requirment.value as Record<string, any>[]).length;
-                i++
-            ) {
-                const { allowed_values, name, pre } = requirment.value[i];
-
-                for (let a = 0; a < allowed_values.length; a++) {
-                    const value = allowed_values[a];
-
-                    fetchCalls.push(
-                        getAttributesAssetId({
-                            schema_name: schema,
-                            collection_name: requirment.collection_name,
-                            attribute: {
-                                key: `${pre}.${name}`,
-                                value,
-                            },
-                            account,
-                            atomic_url,
-                            matcher: `attribute-${name}-${a}:${requirment.matcher}`,
-                        })
-                    );
-                }
-            }
+            fetchCalls.push(
+                getAttributesAssetId({
+                    blend_id,
+                    contract,
+                    index,
+                    account,
+                    atomic_url,
+                    matcher: requirment.matcher,
+                })
+            );
         } else if (requirment.key === 'SCHEMA_INGREDIENT') {
             const [, schema] = requirment.matcher.split('|');
 
@@ -750,23 +719,7 @@ export const getRequirments = async ({
         const e = result[i];
 
         if (e.status === 'fulfilled') {
-            if (e.value.type === 'attributes') {
-                const keys = Object.keys(e.value.data);
-                const key = keys[0].split(':')[1];
-
-                const temp = [];
-
-                for (let a = 0; a < keys.length; a++) {
-                    temp.push(...e.value.data[keys[a]]);
-                }
-
-                results = {
-                    [key]: temp,
-                    ...results,
-                };
-            } else {
-                results = { ...e.value.data, ...results };
-            }
+            results = { ...e.value.data, ...results };
         }
     }
 
