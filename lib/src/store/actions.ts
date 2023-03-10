@@ -7,7 +7,7 @@ import type {
     GetBlendProperty,
     GetBlendResult,
 } from '../types';
-import { findAttributeParent, matchRarity, priceForInput } from '../utils';
+import { matchRarity, priceForInput } from '../utils';
 
 let tokensJson: any = null;
 
