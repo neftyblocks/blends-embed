@@ -1,23 +1,13 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
 
-import type {
-    GetBlendsProperty,
-    Payload,
-    GetBlendsResult,
-    GetBlendProperty,
-    GetBlendResult,
-} from '../types';
+import type { GetBlendsProperty, Payload, GetBlendsResult, GetBlendProperty, GetBlendResult } from '../types';
 import { blendNameAndImage, matchRarity, priceForInput } from '../utils';
 
 let tokensJson: any = null;
 
-export const getBlends = async ({
-    atomic_url,
-    collection,
-    page = 1,
-}: GetBlendsProperty): Promise<GetBlendsResult[] | null> => {
-    if (!atomic_url || !collection) return null;
-
+export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsProperty): Promise<
+    GetBlendsResult[] | null
+> => {
     const { data, error } = await useFetch<Payload>('/neftyblends/v1/blends', {
         baseUrl: atomic_url,
         params: {
@@ -102,10 +92,7 @@ export const getBlends = async ({
 
             const displayData = display_data ? JSON.parse(display_data) : null;
 
-            const { blend_img, blend_name } = blendNameAndImage(
-                displayData,
-                rolls[0].outcomes[0].results[0]
-            );
+            const { blend_img, blend_name } = blendNameAndImage(displayData, rolls[0].outcomes[0].results[0]);
 
             content.push({
                 blend_id,
@@ -129,23 +116,21 @@ export const getBlends = async ({
 
     return null;
 };
+
 export const getBlend = async ({
     atomic_url,
     blend_id,
     contract,
     chain,
 }: GetBlendProperty): Promise<GetBlendResult | null> => {
-    if (!atomic_url || !blend_id || !contract) return null;
+    if (!contract) return null;
 
-    const { data, error } = await useFetch<Payload>(
-        `/neftyblends/v1/blends/${contract}/${blend_id}`,
-        {
-            baseUrl: atomic_url,
-            params: {
-                render_markdown: 'true',
-            },
-        }
-    );
+    const { data, error } = await useFetch<Payload>(`/neftyblends/v1/blends/${contract}/${blend_id}`, {
+        baseUrl: atomic_url,
+        params: {
+            render_markdown: 'true',
+        },
+    });
 
     if (error) {
         console.error(error);
@@ -169,7 +154,7 @@ export const getBlend = async ({
 
         const items = [];
         const result = [];
-        const requirments = {};
+        const requirements = {};
 
         // ------------------------------
         // INGREDIENTS & REQUIREMENTS
@@ -180,30 +165,20 @@ export const getBlend = async ({
         // which properties it will be checked against
         // ------------------------------
         for (let a = 0; a < ingredients.length; a++) {
-            const {
-                template,
-                collection,
-                attributes,
-                schema,
-                ft_amount,
-                type,
-                amount,
-                index,
-                display_data,
-            } = ingredients[a];
+            const { template, collection, attributes, schema, ft_amount, type, amount, index, display_data } =
+                ingredients[a];
 
             let matcher;
             let matcher_type;
             let value;
+            let token;
 
             // INGREDIENT - ATTRIBUTE
             if (type === 'ATTRIBUTE_INGREDIENT') {
                 matcher_type = 'attributes';
                 matcher = `${blend_id}|${contract}|${index}`;
 
-                const displayData = display_data
-                    ? JSON.parse(display_data)
-                    : null;
+                const displayData = display_data ? JSON.parse(display_data) : null;
 
                 items.push({
                     name: attributes.collection_name,
@@ -220,9 +195,7 @@ export const getBlend = async ({
                 matcher = `${schema.c}|${schema.s}`;
                 matcher_type = 'schema';
 
-                const displayData = display_data
-                    ? JSON.parse(display_data)
-                    : null;
+                const displayData = display_data ? JSON.parse(display_data) : null;
 
                 items.push({
                     name: schema.c,
@@ -276,12 +249,9 @@ export const getBlend = async ({
 
                 // fetch is token is not yet cached
                 if (!tokensJson) {
-                    const { data } = await useFetch<any>(
-                        `/api/logos/${chain}`,
-                        {
-                            baseUrl: 'https://rates.neftyblocks.com',
-                        }
-                    );
+                    const { data } = await useFetch<any>(`/api/logos/${chain}`, {
+                        baseUrl: 'https://rates.neftyblocks.com',
+                    });
 
                     if (data) tokensJson = data;
                 }
@@ -292,24 +262,27 @@ export const getBlend = async ({
 
                 value = priceForInput(ft_amount.amount, ft_amount.precision);
 
+                token = {
+                    ...ft_amount,
+                    value,
+                };
+
                 items.push({
                     name: `${value} ${token_symbol}`,
                     matcher_type,
                     matcher,
                     video: null,
                     image: img ? useImageUrl(img.logo as string) : null,
-                    token: {
-                        ...ft_amount,
-                        value,
-                    },
+                    token,
                 });
             }
 
-            requirments[matcher] = {
+            requirements[matcher] = {
                 key: type,
                 collection_name,
                 amount,
                 value,
+                token,
                 matcher_type,
                 matcher,
             };
@@ -352,10 +325,7 @@ export const getBlend = async ({
                         rarity,
                         mint: {
                             amount: +template.issued_supply,
-                            supply:
-                                +template.max_supply === 0
-                                    ? '∞'
-                                    : template.max_supply,
+                            supply: +template.max_supply === 0 ? '∞' : template.max_supply,
                         },
                         video: video ? useImageUrl(video as string) : null,
                         image: img ? useImageUrl(img as string) : null,
@@ -364,10 +334,7 @@ export const getBlend = async ({
             }
         }
 
-        const { blend_name } = blendNameAndImage(
-            display_data,
-            rolls[0].outcomes[0].results[0]
-        );
+        const { blend_name } = blendNameAndImage(display_data, rolls[0].outcomes[0].results[0]);
 
         return {
             blend_id,
@@ -382,7 +349,7 @@ export const getBlend = async ({
             ingredients_count,
             result_count: result.length,
             secure: security_id !== '0',
-            requirments,
+            requirements,
         };
     }
 
@@ -401,14 +368,7 @@ const attributeConfig = {
     sort: 'asset_id',
 };
 
-export const getAttributesAssetId = async ({
-    blend_id,
-    contract,
-    index,
-    atomic_url,
-    account,
-    matcher,
-}) => {
+export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_url, actor, matcher }) => {
     let result = {
         type: 'attributes',
         data: {},
@@ -419,10 +379,10 @@ export const getAttributesAssetId = async ({
         {
             baseUrl: atomic_url,
             params: {
-                owner: account,
+                owner: actor,
                 ...attributeConfig,
             },
-        }
+        },
     );
 
     if (error) console.error(error);
@@ -452,13 +412,7 @@ export const getAttributesAssetId = async ({
 
     return result;
 };
-export const getSchemaAssetId = async ({
-    collection_name,
-    atomic_url,
-    schema_name,
-    account,
-    matcher,
-}) => {
+export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_name, actor, matcher }) => {
     let result = {
         type: 'schema',
         data: {},
@@ -469,7 +423,7 @@ export const getSchemaAssetId = async ({
         params: {
             collection_name,
             schema_name,
-            owner: account,
+            owner: actor,
             ...templateMintConfig,
         },
     });
@@ -501,12 +455,7 @@ export const getSchemaAssetId = async ({
 
     return result;
 };
-export const getTemplateAssetId = async ({
-    template_id,
-    collection_name,
-    atomic_url,
-    account,
-}) => {
+export const getTemplateAssetId = async ({ template_id, collection_name, atomic_url, actor }) => {
     let result = {
         type: 'template',
         data: {},
@@ -517,7 +466,7 @@ export const getTemplateAssetId = async ({
         params: {
             collection_name,
             template_id,
-            owner: account,
+            owner: actor,
             ...templateMintConfig,
         },
     });
@@ -543,11 +492,7 @@ export const getTemplateAssetId = async ({
 
     return result;
 };
-export const getCollectionAssetId = async ({
-    collection_name,
-    atomic_url,
-    account,
-}) => {
+export const getCollectionAssetId = async ({ collection_name, atomic_url, actor }) => {
     let result = {
         type: 'collection',
         data: {},
@@ -557,7 +502,7 @@ export const getCollectionAssetId = async ({
         baseUrl: atomic_url,
         params: {
             collection_name,
-            owner: account,
+            owner: actor,
             ...templateMintConfig,
         },
     });
@@ -589,30 +534,21 @@ export const getCollectionAssetId = async ({
 
     return result;
 };
-export const getTokenBalance = async ({
-    chain_url,
-    account,
-    code,
-    symbol,
-    matcher,
-}) => {
+export const getTokenBalance = async ({ chain_url, actor, code, symbol, matcher }) => {
     let result = {
         type: 'token',
         data: {},
     };
 
-    const { data, error } = await useFetch<Payload>(
-        '/v1/chain/get_currency_balance',
-        {
-            baseUrl: chain_url,
-            method: 'POST',
-            body: {
-                code,
-                symbol,
-                account,
-            },
-        }
-    );
+    const { data, error } = await useFetch<Payload>('/v1/chain/get_currency_balance', {
+        baseUrl: chain_url,
+        method: 'POST',
+        body: {
+            code,
+            symbol,
+            account: actor,
+        },
+    });
 
     if (error) console.error(error);
 
@@ -623,77 +559,77 @@ export const getTokenBalance = async ({
     return result;
 };
 
-export const getRequirments = async ({
-    requirments,
+export const getRequirements = async ({
+    requirements,
     atomic_url,
     chain_url,
-    account,
+    actor,
 }: {
-    requirments: GetBlendResult['requirments'];
+    requirements: GetBlendResult['requirements'];
     atomic_url: string;
     chain_url: string;
-    account: string;
+    actor: string;
 }) => {
     const fetchCalls = [];
     let results = {};
 
-    const list = Object.values(requirments);
+    const list = Object.values(requirements);
 
     for (let i = 0; i < list.length; i++) {
-        const requirment = list[i];
+        const requirement = list[i];
 
-        if (requirment.key === 'ATTRIBUTE_INGREDIENT') {
-            const [blend_id, contract, index] = requirment.matcher.split('|');
+        if (requirement.key === 'ATTRIBUTE_INGREDIENT') {
+            const [blend_id, contract, index] = requirement.matcher.split('|');
 
             fetchCalls.push(
                 getAttributesAssetId({
                     blend_id,
                     contract,
                     index,
-                    account,
+                    actor,
                     atomic_url,
-                    matcher: requirment.matcher,
-                })
+                    matcher: requirement.matcher,
+                }),
             );
-        } else if (requirment.key === 'SCHEMA_INGREDIENT') {
-            const [, schema] = requirment.matcher.split('|');
+        } else if (requirement.key === 'SCHEMA_INGREDIENT') {
+            const [, schema] = requirement.matcher.split('|');
 
             fetchCalls.push(
                 getSchemaAssetId({
                     schema_name: schema,
-                    collection_name: requirment.collection_name,
-                    account,
+                    collection_name: requirement.collection_name,
+                    actor,
                     atomic_url,
-                    matcher: requirment.matcher,
-                })
+                    matcher: requirement.matcher,
+                }),
             );
-        } else if (requirment.key === 'TEMPLATE_INGREDIENT') {
+        } else if (requirement.key === 'TEMPLATE_INGREDIENT') {
             fetchCalls.push(
                 getTemplateAssetId({
-                    template_id: requirment.matcher,
-                    collection_name: requirment.collection_name,
-                    account,
+                    template_id: requirement.matcher,
+                    collection_name: requirement.collection_name,
+                    actor,
                     atomic_url,
-                })
+                }),
             );
-        } else if (requirment.key === 'COLLECTION_INGREDIENT') {
+        } else if (requirement.key === 'COLLECTION_INGREDIENT') {
             fetchCalls.push(
                 getCollectionAssetId({
-                    collection_name: requirment.matcher,
-                    account,
+                    collection_name: requirement.matcher,
+                    actor,
                     atomic_url,
-                })
+                }),
             );
-        } else if (requirment.key === 'FT_INGREDIENT') {
-            const token = requirment.matcher.split('|');
+        } else if (requirement.key === 'FT_INGREDIENT') {
+            const token = requirement.matcher.split('|');
             fetchCalls.push(
                 getTokenBalance({
                     chain_url,
-                    account,
+                    actor,
                     code: token[1],
                     symbol: token[0],
-                    matcher: requirment.matcher,
-                })
+                    matcher: requirement.matcher,
+                }),
             );
         }
     }

@@ -19,7 +19,7 @@
     settings.set({
         config: config ? JSON.parse(config) : null,
         collection,
-        account,
+        account: account ? JSON.parse(account) : null,
         blend: blend ? JSON.parse(blend) : null,
     });
 

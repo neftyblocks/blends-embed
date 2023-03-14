@@ -39,14 +39,20 @@
             marketplace_url: "https://neftyblocks.com/marketplace/listing",
             chain: 'wax',
         }
+
         const blend = { blend_id: "4111", contract: "blend.nefty" };
         // const blend = '';
+
+        const account = {
+            actor: VITE_ACCOUNT_NAME,
+            permission: 'active'
+        }
 
         const el = document.querySelector('#neftyblocks-blend');
         const embed = `<neftyblocks-blend 
                         config=${JSON.stringify(config)}
                         collection=${VITE_COLLECTION_NAME}
-                        account=${VITE_ACCOUNT_NAME}
+                        account=${JSON.stringify(account)}
                         blend=${JSON.stringify(blend)}
                     />`;
 

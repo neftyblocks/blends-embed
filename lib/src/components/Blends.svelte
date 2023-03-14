@@ -108,8 +108,8 @@
                                 </figure>
                             {/each}
                         </div>
-                        <small>requirments</small>
-                        <div class="requirments">
+                        <small>requirements</small>
+                        <div class="requirements">
                             {#each blend.items as item}
                                 <figure>
                                     <img src={item.image} alt={item.name} />
@@ -192,7 +192,7 @@
                                     </span>
                                 </div>
                                 <button
-                                    class="btn-clear btn-requirments"
+                                    class="btn-clear btn-requirements"
                                     on:click={() => (show = key)}
                                 >
                                     details
@@ -407,7 +407,7 @@
             }
         }
 
-        .btn-requirments {
+        .btn-requirements {
             display: flex;
             align-items: center;
             color: var(--nb-color);
@@ -433,7 +433,7 @@
                 height: 28px;
             }
         }
-        .requirments,
+        .requirements,
         .results {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));

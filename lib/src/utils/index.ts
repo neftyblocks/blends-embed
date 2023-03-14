@@ -1,16 +1,11 @@
 import { useAssetData, useTokenDisplay } from '@nefty/use';
 
-export const dispatch = (
-    name: string,
-    detail: any,
-    component: any,
-    composed = true
-) => {
+export const dispatch = (name: string, detail: any, component: any, composed = true) => {
     component.dispatchEvent(
         new CustomEvent(name, {
             detail,
             composed, // propagate across the shadow DOM
-        })
+        }),
     );
 };
 
@@ -48,9 +43,7 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
         if (!blend_name) blend_name = name;
         if (!blend_img) blend_img = img;
     } else if (firstResult?.pool) {
-        const displayData = firstResult.pool.display_data
-            ? JSON.parse(firstResult.pool.display_data)
-            : null;
+        const displayData = firstResult.pool.display_data ? JSON.parse(firstResult.pool.display_data) : null;
 
         if (displayData) {
             blend_name = displayData.name;
@@ -59,4 +52,29 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
     }
 
     return { blend_name, blend_img };
+};
+
+export const sortedRequirements = (requirements: any): any[] => {
+    const list = Object.values(requirements);
+
+    list.sort((a, b) => {
+        if (a.matcher_type === 'attributes') return -1;
+        if (b.matcher_type === 'attributes') return 1;
+
+        if (a.matcher_type === 'template') return -1;
+        if (b.matcher_type === 'template') return 1;
+
+        if (a.matcher_type === 'schema') return -1;
+        if (b.matcher_type === 'schema') return 1;
+
+        if (a.matcher_type === 'collection') return -1;
+        if (b.matcher_type === 'collection') return 1;
+
+        if (a.matcher_type === 'token') return -1;
+        if (b.matcher_type === 'token') return 1;
+
+        return 0;
+    });
+
+    return list;
 };

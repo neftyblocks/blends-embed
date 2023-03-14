@@ -2,7 +2,6 @@
 
 <script lang="ts">
     import { get_current_component } from 'svelte/internal';
-    import { onMount } from 'svelte/internal';
     import { dispatch } from '../utils';
 
     // COMPONENTS
@@ -21,10 +20,6 @@
     let show = false;
 
     // METHODS
-    onMount(() => {
-        // console.log(matchertype, items);
-    });
-
     const toggleShow = () => {
         show = !show;
     };
@@ -53,7 +48,7 @@
         // to update the list assign the same array
         items = items;
 
-        dispatch('selected', null, component, false);
+        dispatch('selected', selected, component, false);
     };
 </script>
 

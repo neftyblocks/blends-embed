@@ -6,7 +6,10 @@ export interface Settings {
         chain: string;
     };
     collection?: string;
-    account?: string;
+    account?: {
+        actor: string;
+        permission: string;
+    };
     blend?: {
         contract: string;
         blend_id: string;
@@ -87,7 +90,7 @@ export interface GetBlendResult {
     ingredients_count: number;
     result_count: number;
     secure: boolean;
-    requirments: Record<
+    requirements: Record<
         string,
         {
             amount: number;
@@ -100,4 +103,20 @@ export interface GetBlendResult {
             value?: number | Record<string, any>[];
         }
     >;
+}
+
+export interface TransactionAction {
+    account: string;
+    name: string;
+    authorization: TransactionActionAuthorization[];
+    data: {
+        sale_id?: string | null;
+        [key: string]: unknown;
+    };
+    hex_data?: string;
+}
+
+export interface TransactionActionAuthorization {
+    actor: string;
+    permission: string;
 }

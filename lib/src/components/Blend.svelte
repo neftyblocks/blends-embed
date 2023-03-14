@@ -3,14 +3,19 @@
 <script lang="ts">
     import { backIn } from 'svelte/easing';
     import { get_current_component } from 'svelte/internal';
-    import { getBlend, getRequirments, settings } from '../store';
+    import { getBlend, getRequirements, settings } from '../store';
     import type { GetBlendResult } from '../types';
-    import { dispatch, formatTokenWithoutSymbol } from '../utils';
+    import {
+        dispatch,
+        formatTokenWithoutSymbol,
+        sortedRequirements,
+    } from '../utils';
 
     // COMPONENTS
     import './Slider.svelte';
     import './Selecter.svelte';
     import Sprite from './Sprite.svelte';
+    import { blendTransactionActions } from '../utils/transaction';
 
     // GLOBALS
     const component = get_current_component();
@@ -18,10 +23,16 @@
     // STATES
     let data = undefined;
     let selection = undefined;
+    let loading = true;
     let selected = {};
 
     let marketUrl = '';
     let collectionName = '';
+    let user = undefined;
+
+    let selectedAssetsToBlend = [];
+    let selectedTokensToBlend = [];
+    let selectedBalanceAssets = [];
 
     // METHODS
     function swoop(node: any, params: any) {
@@ -48,45 +59,30 @@
 
                 marketUrl = config.marketplace_url;
                 collectionName = collection;
+                user = account;
 
                 if (account) {
-                    selection = await getRequirments({
-                        requirments: data.requirments,
+                    selection = await getRequirements({
+                        requirements: data.requirements,
                         atomic_url: config.atomic_url,
                         chain_url: config.chain_url,
-                        account,
+                        actor: account.actor,
                     });
 
-                    autoSelect(selection, data.requirments);
+                    autoSelect(data.requirements);
                 }
+
+                loading = false;
             }
         }
     );
 
-    const autoSelect = (
-        selection: any,
-        requirments: GetBlendResult['requirments']
-    ) => {
-        const list = Object.values(requirments);
+    const updateSelection = ({ detail }, matcher: string) => {
+        selected[matcher] = detail;
+    };
 
-        list.sort((a, b) => {
-            if (a.matcher_type === 'attributes') return -1;
-            if (b.matcher_type === 'attributes') return 1;
-
-            if (a.matcher_type === 'template') return -1;
-            if (b.matcher_type === 'template') return 1;
-
-            if (a.matcher_type === 'schema') return -1;
-            if (b.matcher_type === 'schema') return 1;
-
-            if (a.matcher_type === 'collection') return -1;
-            if (b.matcher_type === 'collection') return 1;
-
-            if (a.matcher_type === 'token') return -1;
-            if (b.matcher_type === 'token') return 1;
-
-            return 0;
-        });
+    const autoSelect = (requirements: GetBlendResult['requirements']) => {
+        const list = sortedRequirements(requirements);
 
         const selected_asset_ids = [];
 
@@ -123,28 +119,73 @@
         }
     };
 
-    const validateSelection = (selected, requirments) => {
-        console.log(selected, requirments);
+    const validateSelection = (requirements) => {
+        const list = sortedRequirements(requirements);
 
-        return false;
+        // Reset the selected assets and tokens
+        selectedAssetsToBlend = [];
+        selectedTokensToBlend = [];
+        selectedBalanceAssets = [];
+
+        let meetRequirements = true;
+
+        for (let i = 0; i < list.length; i++) {
+            const { matcher, matcher_type, token, amount, value } = list[i];
+
+            if (matcher_type === 'token') {
+                if (matchTokenRequirements(selected[matcher], list[i])) {
+                    // value or amount should be used
+
+                    // TODO: add a check for the amount if multiple the same token is selected
+                    selectedTokensToBlend.push(token);
+                } else {
+                    console.error('missing token');
+
+                    meetRequirements = false;
+                    break;
+                }
+            } else {
+                if (matchAssetRequirements(selected[matcher], list[i])) {
+                    for (let i = 0; i < selected[matcher].length; i++) {
+                        const { asset_id } = selected[matcher][i];
+
+                        if (!selectedAssetsToBlend.includes(asset_id)) {
+                            selectedAssetsToBlend.push(asset_id);
+                        } else {
+                            console.error('duplicate asset');
+
+                            meetRequirements = false;
+                            break;
+                        }
+                    }
+                } else {
+                    console.error('missing asset');
+
+                    meetRequirements = false;
+                    break;
+                }
+            }
+        }
+
+        return meetRequirements;
     };
 
-    const matchAssetRequirments = (selection: any, requirments: any) => {
-        const { amount } = requirments;
+    const matchAssetRequirements = (selectionItems: any, requirements: any) => {
+        const { amount } = requirements;
 
-        if (!selection) return false;
+        if (!selectionItems) return false;
 
-        if (amount > selection.length) return false;
+        if (amount > selectionItems.length) return false;
 
         return true;
     };
 
-    const matchTokenRequirments = (selection: any, requirments: any) => {
-        const { value } = requirments;
+    const matchTokenRequirements = (selectionItems: any, requirements: any) => {
+        const { value } = requirements;
 
-        if (!selection) return false;
+        if (!selectionItems) return false;
 
-        const [tokenValue] = selection.split(' ');
+        const [tokenValue] = selectionItems.split(' ');
 
         return value <= +tokenValue;
     };
@@ -164,6 +205,23 @@
 
         // Avoid onDestroy this doesn't work to clean up the subscription
         unsubscribe();
+    };
+
+    const blend = (requirements) => {
+        const allowed = validateSelection(requirements);
+
+        if (allowed) {
+            const transactions = blendTransactionActions({
+                account: user,
+                blend_id: data.blend_id,
+                contract: data.contract,
+                asset_ids: selectedAssetsToBlend,
+                balance_asset_ids: selectedBalanceAssets,
+                tokens: selectedTokensToBlend,
+            });
+
+            dispatch('sign', transactions, component);
+        }
     };
 </script>
 
@@ -189,10 +247,11 @@
             </section>
             <section>
                 <button
-                    disabled={validateSelection(selected, data.requirments)}
-                    on:click={() => dispatch('sign', { test: 1 }, component)}
+                    disabled={loading}
+                    class="btn btn--primary"
+                    on:click={() => blend(data.requirements)}
                 >
-                    Blend
+                    {loading ? 'Loading' : 'Blend'}
                 </button>
             </section>
             <section class="blend-selection">
@@ -203,9 +262,9 @@
                         <div class="selection-item">
                             {#if selection}
                                 <div
-                                    class={matchAssetRequirments(
+                                    class={matchAssetRequirements(
                                         selection[item.matcher],
-                                        data.requirments[item.matcher]
+                                        data.requirements[item.matcher]
                                     )
                                         ? 'owned'
                                         : 'needed'}
@@ -242,16 +301,21 @@
                                     <h3>{item.name}</h3>
 
                                     {#if item.matcher_type !== 'token'}
-                                        {#if matchAssetRequirments(selection[item.matcher], data.requirments[item.matcher])}
+                                        {#if matchAssetRequirements(selection[item.matcher], data.requirements[item.matcher])}
                                             <nefty-blend-selecter
                                                 items={selection[item.matcher]}
                                                 matchertype={item.matcher_type}
-                                                amount={data.requirments[
+                                                amount={data.requirements[
                                                     item.matcher
                                                 ].amount}
                                                 selected={selected[
                                                     item.matcher
                                                 ]}
+                                                on:selected={(e) =>
+                                                    updateSelection(
+                                                        e,
+                                                        item.matcher
+                                                    )}
                                             />
                                         {:else}
                                             <!-- svelte-ignore security-anchor-rel-noreferrer -->
@@ -261,13 +325,13 @@
                                                 target="_blank"
                                                 rel="noopener"
                                             >
-                                                Get {data.requirments[
+                                                Get {data.requirements[
                                                     item.matcher
-                                                ].amount} asset{(data.requirments[
+                                                ].amount} asset{(data.requirements[
                                                     item.matcher
                                                 ].amount = 1 ? '' : 's')}
                                             </a>{/if}
-                                    {:else if matchTokenRequirments(selection[item.matcher], data.requirments[item.matcher])}
+                                    {:else if matchTokenRequirements(selection[item.matcher], data.requirements[item.matcher])}
                                         <p class="balance">
                                             <small>current balance</small>
                                             {formatTokenWithoutSymbol(

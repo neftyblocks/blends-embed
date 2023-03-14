@@ -23,4 +23,9 @@
     &:hover {
         background-color: var(--nb-button-hover);
     }
+
+    &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 }
