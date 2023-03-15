@@ -10,7 +10,11 @@ declare global {
     }
 }
 
-export function useWallet({ chain_url, chain_id }: { chain_url: string; chain_id: string }) {
+export function useWallet({
+    chain_url,
+    chain_id,
+    callback,
+}: { chain_url: string; chain_id: string; callback: (users: WalletUser[]) => void }) {
     window.global = window;
     const rpcEndpoints = [`${chain_url}:443`];
 
@@ -37,13 +41,3 @@ export function useWallet({ chain_url, chain_id }: { chain_url: string; chain_id
 
     window.provider.init();
 }
-
-const callback = (users: WalletUser[]): void => {
-    const [walletUser] = users;
-
-    window.provider_user = walletUser;
-    window.provider_user.requestPermission = walletUser.requestPermission || 'active';
-
-    const anchorModal = document.querySelector('.anchor-link-active');
-    if (anchorModal) anchorModal.classList.remove('anchor-link-active');
-};
