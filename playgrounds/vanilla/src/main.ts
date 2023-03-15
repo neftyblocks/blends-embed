@@ -41,7 +41,6 @@ const mountEl = () => {
                         broadcast: true,
                         blocksBehind: 3,
                         expireSeconds: 120,
-                        sign: true,
                     },
                 );
 
@@ -69,7 +68,7 @@ const callback = (users: WalletUser[]): void => {
         if (logout) logout.innerHTML = `Logout (${account.actor})`;
 
         logout?.addEventListener('click', () => {
-            window.provider.logoutUser(window.wallet_anchor);
+            window.provider.logoutUser();
             account = null;
 
             login?.classList.remove('hidden');
