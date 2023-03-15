@@ -1,0 +1,20 @@
+{
+    "name": "vue",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev:play": "vite",
+        "build:play": "vue-tsc && vite build",
+        "preview:play": "vite preview"
+    },
+    "dependencies": {
+        "@neftyblocks/blends": "workspace:*",
+        "@nefty/ual-anchor": "^0.2.5",
+        "vue": "^3.2.45"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^4.0.0",
+        "vue-tsc": "^1.0.24"
+    }
+}

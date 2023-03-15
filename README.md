@@ -25,6 +25,13 @@ see [lib/README.md](lib/README.md) for all methodes
 -   Run `pnpm build` to build the library and rebuild after a change, I don't have a nice setup for this yet
 -   Run `pnpm dev` to start the development server
 
+# Testing
+
+-   Run `pnpm install` install all dependencies
+-   Run `pnpm play` to run the tests on the playground in development mode
+-   Run `pnpm play:build` to run the tests on a build
+-   Run `pnpm play:preview` to run the tests on a build and open the preview
+
 # 📦 Publishing
 
 -   Commit all changes (no need to push)

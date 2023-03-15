@@ -18,8 +18,9 @@
     "scripts": {
         "dev": "cd lib && pnpm dev",
         "build": "cd lib && pnpm build",
-        "play": "pnpm build && cd playground && pnpm dev",
-        "play-build": "pnpm build && cd playground && pnpm build",
+        "play": "pnpm build && pnpm -r dev:play",
+        "play:build": "pnpm build && pnpm -r build:play",
+        "play:preview": "pnpm play:build && pnpm -r preview:play",
         "pub": "pnpm build && cd lib && pnpm publish --access public",
         "lint": "rome check .",
         "format": "rome format . --write"
