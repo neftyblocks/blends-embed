@@ -1,6 +1,6 @@
 import './style.scss';
 import '@neftyblocks/blends';
-import { WalletUser } from '@nefty/use/wallet';
+import { WalletUser } from '@nefty/use/dist/wallet';
 import { useWallet } from './wallet';
 
 const el = document.querySelector('#neftyblocks-blend');

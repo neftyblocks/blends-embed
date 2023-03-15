@@ -27,7 +27,7 @@
     },
     "packageManager": "pnpm@7.29.2",
     "dependencies": {
-        "@nefty/use": "^0.1.4"
+        "@nefty/use": "^0.1.5"
     },
     "devDependencies": {
         "vite": "^4.1.3",

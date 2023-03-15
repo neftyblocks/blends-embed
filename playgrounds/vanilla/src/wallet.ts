@@ -1,5 +1,5 @@
 import { Anchor } from '@nefty/ual-anchor';
-import { WalletUAL, WalletUser } from '@nefty/use/wallet';
+import { WalletUAL, WalletUser } from '@nefty/use/dist/wallet';
 
 declare global {
     interface Window {
