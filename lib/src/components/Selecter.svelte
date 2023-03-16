@@ -179,6 +179,7 @@
         border: var(--nb-border-size) solid var(--nb-border-card);
         box-shadow: 0 0 26px 0 var(--nb-shadow);
         overflow: hidden auto;
+        z-index: 1;
 
         header {
             display: flex;

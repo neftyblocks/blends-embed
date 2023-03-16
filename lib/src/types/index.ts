@@ -14,13 +14,13 @@ export interface Settings {
         contract: string;
         blend_id: string;
     };
-    transaction?: Record<string, unknown>;
+    transaction?: Record<string, any>;
 }
 
 export interface Payload {
     success: boolean;
     message?: string;
-    data?: Record<string, unknown>[] | Record<string, unknown>;
+    data?: any[] | any;
     query_time: number;
 }
 

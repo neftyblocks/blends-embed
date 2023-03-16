@@ -190,6 +190,25 @@ export const getBlend = async ({
                 });
             }
 
+            // INGREDIENT - BALANCE
+            else if (type === 'BALANCE_INGREDIENT') {
+                matcher = `${template.template_id}|${template.attribute_name}`;
+                matcher_type = 'balance';
+
+                const asset = useAssetData(template);
+                const { img, video, name } = asset;
+
+                value = template.cost;
+
+                items.push({
+                    name,
+                    matcher_type,
+                    matcher,
+                    video: video ? useImageUrl(video as string) : null,
+                    image: img ? useImageUrl(img as string) : null,
+                });
+            }
+
             // INGREDIENT - SCHEMA
             else if (type === 'SCHEMA_INGREDIENT') {
                 matcher = `${schema.c}|${schema.s}`;
@@ -412,6 +431,51 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
 
     return result;
 };
+export const getBalanceAssetId = async ({
+    template_id,
+    collection_name,
+    atomic_url,
+    actor,
+    matcher,
+    attribute_name,
+}) => {
+    let result = {
+        type: 'balance',
+        data: {},
+    };
+
+    const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
+        baseUrl: atomic_url,
+        params: {
+            collection_name,
+            template_id,
+            owner: actor,
+            ...templateMintConfig,
+        },
+    });
+
+    if (error) console.error(error);
+
+    if (data) {
+        const { data: assets } = data;
+
+        if (assets.length) {
+            result.data[matcher] = [];
+
+            for (let i = 0; i < assets.length; i++) {
+                const { asset_id, template_mint, mutable_data } = assets[i];
+
+                result.data[matcher].push({
+                    asset_id,
+                    mint: template_mint,
+                    value: +mutable_data[attribute_name],
+                });
+            }
+        }
+    }
+
+    return result;
+};
 export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_name, actor, matcher }) => {
     let result = {
         type: 'schema',
@@ -589,6 +653,18 @@ export const getRequirements = async ({
                     actor,
                     atomic_url,
                     matcher: requirement.matcher,
+                }),
+            );
+        } else if (requirement.key === 'BALANCE_INGREDIENT') {
+            const [template_id, attribute_name] = requirement.matcher.split('|');
+            fetchCalls.push(
+                getBalanceAssetId({
+                    template_id,
+                    collection_name: requirement.collection_name,
+                    actor,
+                    atomic_url,
+                    matcher: requirement.matcher,
+                    attribute_name,
                 }),
             );
         } else if (requirement.key === 'SCHEMA_INGREDIENT') {

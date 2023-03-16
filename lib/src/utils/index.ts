@@ -61,6 +61,9 @@ export const sortedRequirements = (requirements: any): any[] => {
     const list = Object.values(requirements);
 
     list.sort((a, b) => {
+        if (a.matcher_type === 'balance') return -1;
+        if (b.matcher_type === 'balance') return 1;
+
         if (a.matcher_type === 'attributes') return -1;
         if (b.matcher_type === 'attributes') return 1;
 
@@ -83,11 +86,16 @@ export const sortedRequirements = (requirements: any): any[] => {
 };
 
 export const matchAssetRequirements = (selectionItems: any, requirements: any) => {
-    const { amount } = requirements;
+    const { amount, matcher_type, value } = requirements;
 
     if (!selectionItems) return false;
 
     if (amount > selectionItems.length) return false;
+
+    // TODO: will have to make sure this is correct with multiple balances
+    if (matcher_type === 'balance') {
+        return selectionItems.some((item: any) => item.value >= value);
+    }
 
     return true;
 };

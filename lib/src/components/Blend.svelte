@@ -37,6 +37,8 @@
     let selectedTokensToBlend = [];
     let selectedBalanceAssets = [];
 
+    const hasVisual = ['collection', 'template', 'token', 'balance'];
+
     // METHODS
     const unsubscribe = settings.subscribe(
         async ({ config, blend, account, transaction }) => {
@@ -98,6 +100,29 @@
 
                 if (+tokenValue >= value) {
                     selected[matcher] = selection[matcher];
+                }
+            } else if (matcher_type === 'balance') {
+                if (selection[matcher] && selection[matcher].length >= amount) {
+                    const temp = [...selection[matcher]];
+
+                    for (let j = 0; j < temp.length; j++) {
+                        const asset = temp[j];
+
+                        if (
+                            selected_asset_ids.includes(asset.asset_id) ||
+                            asset.value <= value
+                        ) {
+                            temp.splice(j, 1);
+                            j--;
+                        }
+                    }
+
+                    selected[matcher] = temp.slice(0, amount);
+
+                    for (let j = 0; j < selected[matcher].length; j++) {
+                        const asset = selected[matcher][j];
+                        selected_asset_ids.push(asset.asset_id);
+                    }
                 }
             } else {
                 if (selection[matcher] && selection[matcher].length >= amount) {
@@ -246,7 +271,7 @@
                                     <small class="type"
                                         >{item.matcher_type}</small
                                     >
-                                    {#if item.matcher_type === 'collection' || item.matcher_type === 'template' || item.matcher_type === 'token'}
+                                    {#if hasVisual.includes(item.matcher_type)}
                                         <figure
                                             class="visual {item.matcher_type}"
                                         >
@@ -265,9 +290,11 @@
                                                 />
                                             {/if}
                                         </figure>
-                                    {:else if item.matcher_type === 'attributes' || item.matcher_type === 'schema'}
+                                    {:else}
                                         <span class="visual visual--small">
-                                            {item.description}
+                                            {item.description
+                                                ? item.description
+                                                : ' '}
                                         </span>
                                     {/if}
 
