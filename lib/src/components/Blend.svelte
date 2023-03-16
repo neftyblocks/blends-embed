@@ -1,7 +1,6 @@
 <svelte:options tag="nefty-blend-item" />
 
 <script lang="ts">
-    import { backIn } from 'svelte/easing';
     import { get_current_component } from 'svelte/internal';
     import { getBlend, getRequirements, settings } from '../store';
     import type { GetBlendResult } from '../types';
@@ -9,18 +8,24 @@
         dispatch,
         formatTokenWithoutSymbol,
         sortedRequirements,
+        matchAssetRequirements,
+        matchTokenRequirements,
+        getMarketUrl,
+        blendTransactionActions,
+        swoop,
     } from '../utils';
 
     // COMPONENTS
+    import Sprite from './Sprite.svelte';
     import './Slider.svelte';
     import './Selecter.svelte';
-    import Sprite from './Sprite.svelte';
-    import { blendTransactionActions } from '../utils/transaction';
 
     // GLOBALS
     const component = get_current_component();
 
     // STATES
+    export let transaction: string | null = null;
+
     let data = undefined;
     let selection = undefined;
     let loading = true;
@@ -35,20 +40,12 @@
     let selectedBalanceAssets = [];
 
     // METHODS
-    function swoop(node: any, params: any) {
-        return {
-            delay: params.key * 100,
-            duration: 500,
-            easing: backIn,
-            css: (t, u) =>
-                `transform: translate3d(${-u * (50 * params.key)}%, ${
-                    u * 40
-                }%, 0); opacity: ${t}`,
-        };
+    $: if (transaction) {
+        console.log(JSON.parse(transaction));
     }
 
     const unsubscribe = settings.subscribe(
-        async ({ config, collection, blend, account }) => {
+        async ({ config, blend, account }) => {
             if (config && blend) {
                 data = await getBlend({
                     atomic_url: config.atomic_url,
@@ -58,7 +55,7 @@
                 });
 
                 marketUrl = config.marketplace_url;
-                collectionName = collection;
+                collectionName = config.collection;
                 user = account;
 
                 if (account) {
@@ -168,36 +165,6 @@
         }
 
         return meetRequirements;
-    };
-
-    const matchAssetRequirements = (selectionItems: any, requirements: any) => {
-        const { amount } = requirements;
-
-        if (!selectionItems) return false;
-
-        if (amount > selectionItems.length) return false;
-
-        return true;
-    };
-
-    const matchTokenRequirements = (selectionItems: any, requirements: any) => {
-        const { value } = requirements;
-
-        if (!selectionItems) return false;
-
-        const [tokenValue] = selectionItems.split(' ');
-
-        return value <= +tokenValue;
-    };
-
-    const getMarketUrl = (item: any) => {
-        const includeCollection = item.matcher_type !== 'collection';
-
-        // TODO: add mapping for matcher_type
-
-        return `${marketUrl}?${
-            includeCollection ? `collection_name=${collectionName}&` : ''
-        }${item.matcher_type}=${item.matcher}`;
     };
 
     const close = () => {
@@ -321,7 +288,11 @@
                                             <!-- svelte-ignore security-anchor-rel-noreferrer -->
                                             <a
                                                 class="btn"
-                                                href={getMarketUrl(item)}
+                                                href={getMarketUrl(
+                                                    item,
+                                                    marketUrl,
+                                                    collectionName
+                                                )}
                                                 target="_blank"
                                                 rel="noopener"
                                             >

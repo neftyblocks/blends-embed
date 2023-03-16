@@ -11,14 +11,13 @@
 
     // STATES
     export let config: string;
-    export let collection: string;
-    export let account: string | null;
-    export let blend: string | null;
+    export let account: string | null = null;
+    export let blend: string | null = null;
+    export let transaction: string | null = null;
 
     // METHODES
     settings.set({
         config: config ? JSON.parse(config) : null,
-        collection,
         account: account ? JSON.parse(account) : null,
         blend: blend ? JSON.parse(blend) : null,
     });
@@ -35,7 +34,7 @@
 
 <main>
     {#if blend}
-        <nefty-blend-item on:blend={handleBlend} />
+        <nefty-blend-item on:blend={handleBlend} {transaction} />
     {:else}
         <nefty-blend-group on:blend={handleBlend} />
     {/if}

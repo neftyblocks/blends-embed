@@ -1,9 +1,8 @@
 <svelte:options tag="nefty-blend-group" />
 
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { fade } from 'svelte/transition';
-    import { get_current_component } from 'svelte/internal';
+    import { get_current_component, onMount } from 'svelte/internal';
     import { useCountDown, useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
     import { dispatch } from '../utils';
@@ -22,18 +21,16 @@
     let now = new Date().getTime();
 
     // METHODS
-    const unsubscribe = settings.subscribe(
-        async ({ config, collection, blend }) => {
-            if (config && collection && !blend) {
-                data = await useSWR(`blends-${collection}`, () =>
-                    getBlends({
-                        atomic_url: config.atomic_url,
-                        collection,
-                    })
-                );
-            }
+    const unsubscribe = settings.subscribe(async ({ config, blend }) => {
+        if (config && !blend) {
+            data = await useSWR(`blends-${config.collection}`, () =>
+                getBlends({
+                    atomic_url: config.atomic_url,
+                    collection: config.collection,
+                })
+            );
         }
-    );
+    });
 
     onMount(() => {
         const interval = setInterval(() => {

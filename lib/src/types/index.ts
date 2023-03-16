@@ -4,8 +4,8 @@ export interface Settings {
         chain_url: string;
         marketplace_url: string;
         chain: string;
+        collection?: string;
     };
-    collection?: string;
     account?: {
         actor: string;
         permission: string;

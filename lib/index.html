@@ -31,16 +31,17 @@
     <div id="neftyblocks-blend"></div>
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
-        const { VITE_COLLECTION_NAME, VITE_ACCOUNT_NAME, VITE_ATOMIC_URL, VITE_CHAIN_URL } = import.meta.env;
+        const { VITE_COLLECTION_NAME, VITE_ACCOUNT_NAME, VITE_ATOMIC_URL, VITE_CHAIN_URL, VITE_TEST_TX } = import.meta.env;
 
         const config = {
             atomic_url: VITE_ATOMIC_URL,
             chain_url: VITE_CHAIN_URL,
-            marketplace_url: "https://neftyblocks.com/marketplace/listing",
             chain: 'wax',
+            collection: VITE_COLLECTION_NAME,
+            marketplace_url: "https://neftyblocks.com/marketplace/listing",
         }
 
-        const blend = { blend_id: "4111", contract: "blend.nefty" };
+        const blend = { blend_id: "3104", contract: "blend.nefty" };
         // const blend = '';
 
         const account = {
@@ -51,7 +52,6 @@
         const el = document.querySelector('#neftyblocks-blend');
         const embed = `<neftyblocks-blend 
                         config=${JSON.stringify(config)}
-                        collection=${VITE_COLLECTION_NAME}
                         account=${JSON.stringify(account)}
                         blend=${JSON.stringify(blend)}
                     />`;
@@ -63,6 +63,22 @@
 
         component.addEventListener("sign", ({ detail }) => {
             console.log("sign", detail)
+
+            const transaction = {
+                status: "executed",
+                transactionId: VITE_TEST_TX,
+                transaction: {
+                    transaction_id: VITE_TEST_TX,
+                    payload: {
+                        tx: VITE_TEST_TX,
+                        processed: {
+                            id: VITE_TEST_TX,
+                        }
+                    }
+                }
+            };
+
+            component.setAttribute("transaction", JSON.stringify(transaction));
         });
 
         component.addEventListener("blend", ({ detail }) => {

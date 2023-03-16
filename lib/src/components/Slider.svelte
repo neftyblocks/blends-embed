@@ -2,7 +2,7 @@
 
 <script lang="ts">
     import { useTokenDisplay } from '@nefty/use';
-    import { onMount } from 'svelte';
+    import { onMount } from 'svelte/internal';
 
     // COMPONENTS
     import Sprite from './Sprite.svelte';

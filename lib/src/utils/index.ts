@@ -1,5 +1,8 @@
 import { useAssetData, useTokenDisplay } from '@nefty/use';
 
+export * from './animations';
+export * from './transaction';
+
 export const dispatch = (name: string, detail: any, component: any, composed = true) => {
     component.dispatchEvent(
         new CustomEvent(name, {
@@ -77,4 +80,34 @@ export const sortedRequirements = (requirements: any): any[] => {
     });
 
     return list;
+};
+
+export const matchAssetRequirements = (selectionItems: any, requirements: any) => {
+    const { amount } = requirements;
+
+    if (!selectionItems) return false;
+
+    if (amount > selectionItems.length) return false;
+
+    return true;
+};
+
+export const matchTokenRequirements = (selectionItems: any, requirements: any) => {
+    const { value } = requirements;
+
+    if (!selectionItems) return false;
+
+    const [tokenValue] = selectionItems.split(' ');
+
+    return value <= +tokenValue;
+};
+
+export const getMarketUrl = (item: any, marketUrl: string, collectionName: string) => {
+    const includeCollection = item.matcher_type !== 'collection';
+
+    // TODO: add mapping for matcher_type
+
+    return `${marketUrl}?${includeCollection ? `collection_name=${collectionName}&` : ''}${item.matcher_type}=${
+        item.matcher
+    }`;
 };
