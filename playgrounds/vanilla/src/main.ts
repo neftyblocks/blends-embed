@@ -20,12 +20,11 @@ const mountEl = () => {
             chain_url: 'https://wax.neftyblocks.com',
             marketplace_url: 'https://neftyblocks.com/marketplace/listing',
             chain: 'wax',
+            collection,
         };
 
         const embed = `<neftyblocks-blend 
                         config=${JSON.stringify(config)} 
-                        collection=${collection} 
-                        account=${JSON.stringify(account)} 
                     />`;
 
         el.innerHTML = embed;
@@ -44,13 +43,15 @@ const mountEl = () => {
                     },
                 );
 
-                console.log(result);
+                component.setAttribute('transaction', JSON.stringify(result));
             });
         }
     }
 };
 
 const callback = (users: WalletUser[]): void => {
+    const component = document.querySelector('neftyblocks-blend');
+
     const [walletUser] = users;
 
     window.provider_user = walletUser;
@@ -65,6 +66,8 @@ const callback = (users: WalletUser[]): void => {
             permission: walletUser.requestPermission || 'active',
         };
 
+        if (component) component.setAttribute('account', JSON.stringify(account));
+
         if (logout) logout.innerHTML = `Logout (${account.actor})`;
 
         logout?.addEventListener('click', () => {
@@ -75,10 +78,8 @@ const callback = (users: WalletUser[]): void => {
             logout.classList.add('hidden');
             logout.innerHTML = '';
 
-            mountEl();
+            if (component) component.setAttribute('account', 'null');
         });
-
-        mountEl();
     }
 
     const anchorModal = document.querySelector('.anchor-link-active');
