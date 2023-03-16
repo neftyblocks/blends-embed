@@ -24,8 +24,6 @@
     const component = get_current_component();
 
     // STATES
-    export let transaction: string | null = null;
-
     let data = undefined;
     let selection = undefined;
     let loading = true;
@@ -40,12 +38,8 @@
     let selectedBalanceAssets = [];
 
     // METHODS
-    $: if (transaction) {
-        console.log(JSON.parse(transaction));
-    }
-
     const unsubscribe = settings.subscribe(
-        async ({ config, blend, account }) => {
+        async ({ config, blend, account, transaction }) => {
             if (config && blend) {
                 data = await getBlend({
                     atomic_url: config.atomic_url,
@@ -56,21 +50,27 @@
 
                 marketUrl = config.marketplace_url;
                 collectionName = config.collection;
-                user = account;
-
-                if (account) {
-                    selection = await getRequirements({
-                        requirements: data.requirements,
-                        atomic_url: config.atomic_url,
-                        chain_url: config.chain_url,
-                        actor: account.actor,
-                    });
-
-                    autoSelect(data.requirements);
-                }
-
-                loading = false;
             }
+
+            if (account) {
+                user = account;
+                selection = await getRequirements({
+                    requirements: data.requirements,
+                    atomic_url: config.atomic_url,
+                    chain_url: config.chain_url,
+                    actor: account.actor,
+                });
+
+                autoSelect(data.requirements);
+            }
+
+            if (transaction) {
+                // do something
+
+                console.log('transaction', transaction);
+            }
+
+            loading = false;
         }
     );
 
@@ -214,11 +214,11 @@
             </section>
             <section>
                 <button
-                    disabled={loading}
+                    disabled={loading || !user}
                     class="btn btn--primary"
                     on:click={() => blend(data.requirements)}
                 >
-                    {loading ? 'Loading' : 'Blend'}
+                    {loading ? 'Loading' : user ? 'Blend' : 'Not logged in'}
                 </button>
             </section>
             <section class="blend-selection">
@@ -325,6 +325,20 @@
                                         </a>
                                     {/if}
                                 </div>
+                            {:else if !user}
+                                <span class="no-user">
+                                    <svg
+                                        role="presentation"
+                                        focusable="false"
+                                        aria-hidden="true"
+                                    >
+                                        <use xlink:href="#ghost" />
+                                    </svg>
+                                    <small>
+                                        Our friendly ghost is here to remind you
+                                        to log in first
+                                    </small>
+                                </span>
                             {:else}
                                 <span class="loading-state" />
                             {/if}
@@ -525,6 +539,20 @@
             }
         }
 
+        .no-user {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+            width: 100%;
+
+            svg {
+                width: 48px;
+                height: 48px;
+                animation: floating 8s ease-in-out infinite;
+            }
+        }
+
         .visual {
             display: flex;
             align-items: center;
@@ -588,6 +616,22 @@
         }
         50% {
             opacity: 0.5;
+        }
+    }
+
+    @keyframes floating {
+        0%,
+        100% {
+            transform: translate3d(0, 0, 0) rotate(-3deg);
+        }
+        25% {
+            transform: translate3d(2px, -10px, 0) rotate(0deg);
+        }
+        50% {
+            transform: translate3d(0, 0, 0) rotate(3deg);
+        }
+        75% {
+            transform: translate3d(-2px, -10px, 0) rotate(0deg);
         }
     }
 </style>

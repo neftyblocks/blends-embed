@@ -20,7 +20,16 @@
         config: config ? JSON.parse(config) : null,
         account: account ? JSON.parse(account) : null,
         blend: blend ? JSON.parse(blend) : null,
+        transaction: transaction ? JSON.parse(transaction) : null,
     });
+
+    $: if (transaction || account) {
+        settings.update((s) => {
+            s.transaction = transaction ? JSON.parse(transaction) : null;
+            s.account = account ? JSON.parse(account) : null;
+            return s;
+        });
+    }
 
     const handleBlend = (e: CustomEvent) => {
         blend = e.detail ? JSON.stringify(e.detail) : null;
@@ -34,7 +43,7 @@
 
 <main>
     {#if blend}
-        <nefty-blend-item on:blend={handleBlend} {transaction} />
+        <nefty-blend-item on:blend={handleBlend} />
     {:else}
         <nefty-blend-group on:blend={handleBlend} />
     {/if}

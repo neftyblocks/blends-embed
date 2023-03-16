@@ -28,9 +28,15 @@
 </head>
 
 <body>
+    <button id="login">login</button>
     <div id="neftyblocks-blend"></div>
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
+        const mount = document.querySelector("#neftyblocks-blend");
+        const login = document.querySelector('#login');
+        // ----------------------------
+        // CONFIG   
+        // ----------------------------
         const { VITE_COLLECTION_NAME, VITE_ACCOUNT_NAME, VITE_ATOMIC_URL, VITE_CHAIN_URL, VITE_TEST_TX } = import.meta.env;
 
         const config = {
@@ -42,24 +48,26 @@
         }
 
         const blend = { blend_id: "3104", contract: "blend.nefty" };
-        // const blend = '';
 
         const account = {
             actor: VITE_ACCOUNT_NAME,
             permission: 'active'
         }
 
-        const el = document.querySelector('#neftyblocks-blend');
+
+        // ----------------------------
+        // MOUNT Component
+        // ----------------------------
         const embed = `<neftyblocks-blend 
                         config=${JSON.stringify(config)}
-                        account=${JSON.stringify(account)}
-                        blend=${JSON.stringify(blend)}
                     />`;
 
-        el.innerHTML = embed;
+        mount.innerHTML = embed;
 
-        // Listen for events
         const component = document.querySelector("neftyblocks-blend");
+        // ----------------------------
+        // EVENTS from Component
+        // ----------------------------
 
         component.addEventListener("sign", ({ detail }) => {
             console.log("sign", detail)
@@ -83,6 +91,16 @@
 
         component.addEventListener("blend", ({ detail }) => {
             console.log("blend", detail)
+        });
+
+
+        // ----------------------------
+        // LOGIN
+        // ----------------------------
+
+        login.addEventListener('click', () => {
+            console.log()
+            component.setAttribute("account", JSON.stringify(account));
         });
     </script>
 </body>

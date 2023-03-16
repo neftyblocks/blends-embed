@@ -14,12 +14,13 @@ export interface Settings {
         contract: string;
         blend_id: string;
     };
+    transaction?: Record<string, unknown>;
 }
 
 export interface Payload {
     success: boolean;
     message?: string;
-    data?: any[] | any;
+    data?: Record<string, unknown>[] | Record<string, unknown>;
     query_time: number;
 }
 
@@ -56,7 +57,7 @@ export interface GetBlendsResult {
     ingredients_count: number;
     result_count: number;
     secure: boolean;
-    display_data: any | null;
+    display_data: Record<string, unknown> | null;
 }
 
 export interface GetBlendProperty {
@@ -100,7 +101,7 @@ export interface GetBlendResult {
             matcher?: string;
             // the type of matcher will let you know which property was used: template, collection, token, schema, or attributes
             matcher_type: string;
-            value?: number | Record<string, any>[];
+            value?: number | Record<string, unknown>[];
         }
     >;
 }
