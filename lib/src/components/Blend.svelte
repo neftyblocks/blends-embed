@@ -40,6 +40,7 @@
     // METHODS
     const unsubscribe = settings.subscribe(
         async ({ config, blend, account, transaction }) => {
+            // config flow
             if (config && blend) {
                 data = await getBlend({
                     atomic_url: config.atomic_url,
@@ -52,8 +53,10 @@
                 collectionName = config.collection;
             }
 
+            // user flow
+            user = account;
+
             if (account) {
-                user = account;
                 selection = await getRequirements({
                     requirements: data.requirements,
                     atomic_url: config.atomic_url,
@@ -62,8 +65,11 @@
                 });
 
                 autoSelect(data.requirements);
+            } else {
+                selection = undefined;
             }
 
+            // transaction flow
             if (transaction) {
                 // do something
 
@@ -326,7 +332,10 @@
                                     {/if}
                                 </div>
                             {:else if !user}
-                                <span class="no-user">
+                                <span
+                                    transition:swoop={{ key }}
+                                    class="no-user"
+                                >
                                     <svg
                                         role="presentation"
                                         focusable="false"
@@ -517,16 +526,17 @@
         justify-content: center;
         width: clamp(180px, 30vw, 220px);
         aspect-ratio: 1/1.2;
-        padding: 4px;
         border-radius: var(--nb-radius);
         background-color: rgba(0, 0, 0, 0.2);
         border: var(--nb-border-size) dashed var(--nb-border-card);
+        position: relative;
 
         > div {
-            width: 100%;
-            height: 100%;
+            width: calc(100% - 4px);
+            height: calc(100% - 4px);
             background-color: var(--nb-bg-card);
             border-radius: 8px;
+            position: absolute;
             border: var(--nb-border-size) solid var(--nb-border-card);
             transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             box-shadow: 0 0 26px 0 var(--nb-shadow);
@@ -545,6 +555,7 @@
             gap: 24px;
             align-items: center;
             width: 100%;
+            position: absolute;
 
             svg {
                 width: 48px;

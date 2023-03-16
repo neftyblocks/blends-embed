@@ -29,11 +29,13 @@
 
 <body>
     <button id="login">login</button>
+    <button id="logout">logout</button>
     <div id="neftyblocks-blend"></div>
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
         const mount = document.querySelector("#neftyblocks-blend");
         const login = document.querySelector('#login');
+        const logout = document.querySelector('#logout');
         // ----------------------------
         // CONFIG   
         // ----------------------------
@@ -101,6 +103,10 @@
         login.addEventListener('click', () => {
             console.log()
             component.setAttribute("account", JSON.stringify(account));
+        });
+
+        logout.addEventListener('click', () => {
+            component.setAttribute("account", 'null');
         });
     </script>
 </body>
