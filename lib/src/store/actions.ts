@@ -192,18 +192,19 @@ export const getBlend = async ({
 
             // INGREDIENT - BALANCE
             else if (type === 'BALANCE_INGREDIENT') {
-                matcher = `${template.template_id}|${template.attribute_name}`;
+                matcher = `${blend_id}|${contract}|${index}|${template.attribute_name}`;
                 matcher_type = 'balance';
 
                 const asset = useAssetData(template);
-                const { img, video, name } = asset;
+                const { img, video } = asset;
 
                 value = template.cost;
 
                 items.push({
-                    name,
+                    name: template.attribute_name,
                     matcher_type,
                     matcher,
+                    value,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
                 });
@@ -431,28 +432,22 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
 
     return result;
 };
-export const getBalanceAssetId = async ({
-    template_id,
-    collection_name,
-    atomic_url,
-    actor,
-    matcher,
-    attribute_name,
-}) => {
+export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url, actor, matcher, attribute_name }) => {
     let result = {
         type: 'balance',
         data: {},
     };
 
-    const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
-        baseUrl: atomic_url,
-        params: {
-            collection_name,
-            template_id,
-            owner: actor,
-            ...templateMintConfig,
+    const { data, error } = await useFetch<Payload>(
+        `/neftyblends/v1/blends/${contract}/${blend_id}/ingredients/${index}/assets`,
+        {
+            baseUrl: atomic_url,
+            params: {
+                owner: actor,
+                ...attributeConfig,
+            },
         },
-    });
+    );
 
     if (error) console.error(error);
 
@@ -467,6 +462,7 @@ export const getBalanceAssetId = async ({
 
                 result.data[matcher].push({
                     asset_id,
+                    name: attribute_name,
                     mint: template_mint,
                     value: +mutable_data[attribute_name],
                 });
@@ -656,11 +652,12 @@ export const getRequirements = async ({
                 }),
             );
         } else if (requirement.key === 'BALANCE_INGREDIENT') {
-            const [template_id, attribute_name] = requirement.matcher.split('|');
+            const [blend_id, contract, index, attribute_name] = requirement.matcher.split('|');
             fetchCalls.push(
                 getBalanceAssetId({
-                    template_id,
-                    collection_name: requirement.collection_name,
+                    blend_id,
+                    contract,
+                    index,
                     actor,
                     atomic_url,
                     matcher: requirement.matcher,

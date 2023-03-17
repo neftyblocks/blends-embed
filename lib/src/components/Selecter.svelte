@@ -101,6 +101,9 @@
                             {/if}
                         {/if}
                         <article>
+                            {#if matchertype === 'balance'}
+                                <p class="name">{item.name}: {item.value}</p>
+                            {/if}
                             {#if matchertype === 'collection' || matchertype === 'attributes' || matchertype === 'schema'}
                                 <p class="name">{item.name}</p>
                             {/if}
@@ -247,7 +250,8 @@
 
                 &.collection,
                 &.attributes,
-                &.schema {
+                &.schema,
+                &.balance {
                     .name {
                         color: var(--nb-color-secondary);
                         font-size: var(--nb-font-size--small);

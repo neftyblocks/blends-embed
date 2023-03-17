@@ -86,16 +86,11 @@ export const sortedRequirements = (requirements: any): any[] => {
 };
 
 export const matchAssetRequirements = (selectionItems: any, requirements: any) => {
-    const { amount, matcher_type, value } = requirements;
+    const { amount } = requirements;
 
     if (!selectionItems) return false;
 
     if (amount > selectionItems.length) return false;
-
-    // TODO: will have to make sure this is correct with multiple balances
-    if (matcher_type === 'balance') {
-        return selectionItems.some((item: any) => item.value >= value);
-    }
 
     return true;
 };

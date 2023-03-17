@@ -101,29 +101,6 @@
                 if (+tokenValue >= value) {
                     selected[matcher] = selection[matcher];
                 }
-            } else if (matcher_type === 'balance') {
-                if (selection[matcher] && selection[matcher].length >= amount) {
-                    const temp = [...selection[matcher]];
-
-                    for (let j = 0; j < temp.length; j++) {
-                        const asset = temp[j];
-
-                        if (
-                            selected_asset_ids.includes(asset.asset_id) ||
-                            asset.value <= value
-                        ) {
-                            temp.splice(j, 1);
-                            j--;
-                        }
-                    }
-
-                    selected[matcher] = temp.slice(0, amount);
-
-                    for (let j = 0; j < selected[matcher].length; j++) {
-                        const asset = selected[matcher][j];
-                        selected_asset_ids.push(asset.asset_id);
-                    }
-                }
             } else {
                 if (selection[matcher] && selection[matcher].length >= amount) {
                     const temp = [...selection[matcher]];
@@ -298,7 +275,10 @@
                                         </span>
                                     {/if}
 
-                                    <h3>{item.name}</h3>
+                                    <h3>
+                                        {#if item.value} {item.value} {/if}
+                                        {item.name}
+                                    </h3>
 
                                     {#if item.matcher_type !== 'token'}
                                         {#if matchAssetRequirements(selection[item.matcher], data.requirements[item.matcher])}
@@ -476,7 +456,7 @@
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid var(--nb-border);
-        height: 35vh;
+        height: 350px;
         position: relative;
         overflow: hidden;
         z-index: 0;
@@ -603,7 +583,8 @@
             position: relative;
             overflow: hidden;
 
-            &.token {
+            &.token,
+            &.balance {
                 img {
                     width: 80%;
                     height: 80%;
