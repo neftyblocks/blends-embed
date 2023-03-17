@@ -154,8 +154,13 @@
                     for (let i = 0; i < selected[matcher].length; i++) {
                         const { asset_id } = selected[matcher][i];
 
-                        if (!selectedAssetsToBlend.includes(asset_id)) {
-                            selectedAssetsToBlend.push(asset_id);
+                        if (
+                            !selectedAssetsToBlend.includes(asset_id) &&
+                            !selectedBalanceAssets.includes(asset_id)
+                        ) {
+                            matcher_type === 'balance'
+                                ? selectedBalanceAssets.push(asset_id)
+                                : selectedAssetsToBlend.push(asset_id);
                         } else {
                             console.error('duplicate asset');
 
