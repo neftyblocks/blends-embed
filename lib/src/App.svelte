@@ -13,19 +13,19 @@
     export let config: string;
     export let account: string | null = null;
     export let blend: string | null = null;
-    export let transaction: string | null = null;
+    export let transactionid: string | null = null;
 
     // METHODES
     settings.set({
         config: config ? JSON.parse(config) : null,
         account: account ? JSON.parse(account) : null,
         blend: blend ? JSON.parse(blend) : null,
-        transaction: transaction ? JSON.parse(transaction) : null,
+        transactionId: transactionid,
     });
 
-    $: if (transaction || account) {
+    $: if (transactionid || account) {
         settings.update((s) => {
-            s.transaction = transaction ? JSON.parse(transaction) : null;
+            s.transactionId = transactionid;
             s.account = account ? JSON.parse(account) : null;
             return s;
         });

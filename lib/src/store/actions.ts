@@ -314,11 +314,17 @@ export const getBlend = async ({
         // Locked to first array as we don't support multiple outcomes yet
         const totalOdds = rolls[0].total_odds;
         const outcomes = rolls[0].outcomes;
+        let oddbased = true;
 
         for (let a = 0; a < outcomes.length; a++) {
             const { results, odds } = outcomes[a];
 
             const dropRate = (odds / totalOdds) * 100;
+
+            if (dropRate === 100) {
+                oddbased = false;
+            }
+
             const rarity = matchRarity(dropRate);
 
             if (!results.length) {
@@ -369,6 +375,7 @@ export const getBlend = async ({
             ingredients_count,
             result_count: result.length,
             secure: security_id !== '0',
+            odds: oddbased,
             requirements,
         };
     }
@@ -718,4 +725,39 @@ export const getRequirements = async ({
     }
 
     return results;
+};
+
+export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
+    const result = [];
+
+    const { data, error } = await useFetch<Payload>(`/neftyblends/v1/blends/${contract}/${blend_id}/claims`, {
+        baseUrl: atomic_url,
+        params: {
+            tx_id,
+        },
+    });
+
+    if (error) console.error(error);
+
+    if (data) {
+        const outcomes = data.data[0].results;
+
+        for (let b = 0; b < outcomes.length; b++) {
+            const { template } = outcomes[b];
+
+            if (!template) continue;
+
+            const asset = useAssetData(template);
+            const { img, video, name } = asset;
+
+            result.push({
+                name,
+                mint: null,
+                video: video ? useImageUrl(video as string) : null,
+                image: img ? useImageUrl(img as string) : null,
+            });
+        }
+    }
+
+    return result;
 };

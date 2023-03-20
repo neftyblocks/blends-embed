@@ -14,7 +14,7 @@ export interface Settings {
         contract: string;
         blend_id: string;
     };
-    transaction?: Record<string, any>;
+    transactionId?: string;
 }
 
 export interface Payload {
@@ -91,6 +91,7 @@ export interface GetBlendResult {
     ingredients_count: number;
     result_count: number;
     secure: boolean;
+    odds: boolean;
     requirements: Record<
         string,
         {

@@ -49,7 +49,7 @@
             marketplace_url: "https://neftyblocks.com/marketplace/listing",
         }
 
-        const blend = { blend_id: "4106", contract: "blend.nefty" };
+        const blend = { blend_id: "4071", contract: "blend.nefty" };
 
         const account = {
             actor: VITE_ACCOUNT_NAME,
@@ -75,21 +75,8 @@
         component.addEventListener("sign", ({ detail }) => {
             console.log("sign", detail)
 
-            const transaction = {
-                status: "executed",
-                transactionId: VITE_TEST_TX,
-                transaction: {
-                    transaction_id: VITE_TEST_TX,
-                    payload: {
-                        tx: VITE_TEST_TX,
-                        processed: {
-                            id: VITE_TEST_TX,
-                        }
-                    }
-                }
-            };
 
-            component.setAttribute("transaction", JSON.stringify(transaction));
+            component.setAttribute("transactionid", VITE_TEST_TX);
         });
 
         component.addEventListener("blend", ({ detail }) => {
