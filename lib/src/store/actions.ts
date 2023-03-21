@@ -742,21 +742,31 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
     if (data) {
         const outcomes = data.data[0].results;
 
-        for (let b = 0; b < outcomes.length; b++) {
-            const { template } = outcomes[b];
-
-            if (!template) continue;
-
-            const asset = useAssetData(template);
-            const { img, video, name } = asset;
-
+        if (!outcomes.length) {
             result.push({
-                name,
-                mint: null,
+                name: 'empty',
                 rarity: 'common',
-                video: video ? useImageUrl(video as string) : null,
-                image: img ? useImageUrl(img as string) : null,
+                mint: null,
+                empty: true,
+                image: null,
             });
+        } else {
+            for (let b = 0; b < outcomes.length; b++) {
+                const { template } = outcomes[b];
+
+                if (!template) continue;
+
+                const asset = useAssetData(template);
+                const { img, video, name } = asset;
+
+                result.push({
+                    name,
+                    mint: null,
+                    rarity: 'common',
+                    video: video ? useImageUrl(video as string) : null,
+                    image: img ? useImageUrl(img as string) : null,
+                });
+            }
         }
     }
 

@@ -45,7 +45,7 @@
 <Sprite />
 
 {#if items}
-    <div class="slider">
+    <div class="slider {claims ? 'claims' : ''}">
         {#if items.length > 1 && !gridView}
             <button class="btn-clear prev" on:click={prev}>
                 <svg role="presentation" focusable="false" aria-hidden="true">
@@ -139,6 +139,21 @@
         gap: 72px;
         position: relative;
         overflow: hidden;
+
+        &.claims {
+            opacity: 0;
+            animation: show 0.6s ease forwards;
+            animation-delay: 5s;
+
+            @keyframes show {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+        }
     }
 
     .btn-clear {

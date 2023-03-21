@@ -30,6 +30,8 @@
     let selected = {};
     let claims = null;
 
+    let selectionGroupElement;
+
     let showClaims = false;
 
     let marketUrl = '';
@@ -227,8 +229,48 @@
                 tokens: selectedTokensToBlend,
             });
 
+            animateCards();
+
             dispatch('sign', transactions, component);
         }
+    };
+
+    const animateCards = () => {
+        const selectedAssets = selectionGroupElement.querySelectorAll(
+            '.selection-item > div'
+        );
+
+        const center =
+            selectionGroupElement.getBoundingClientRect().left +
+            selectionGroupElement.getBoundingClientRect().width / 2;
+
+        selectedAssets.forEach((asset, index) => {
+            const assetCenter = asset.getBoundingClientRect().left + 100;
+            const distance = center - assetCenter;
+
+            // animate the asset to the center of the screen
+            asset.animate(
+                [
+                    {
+                        transform: 'translate3d(0, 0, 0)',
+                    },
+                    {
+                        transform: `translate3d(${distance}px, -200%, 0)`,
+                        opacity: 1,
+                    },
+                    {
+                        transform: `translate3d(${distance}px, -200%, 0)`,
+                        opacity: 0,
+                    },
+                ],
+                {
+                    duration: 1000,
+                    delay: 50 * index,
+                    easing: 'cubic-bezier(0.7, 0.06, 0.42, 0.99)',
+                    fill: 'forwards',
+                }
+            );
+        });
     };
 </script>
 
@@ -243,17 +285,15 @@
     </button>
     <div
         class="blend {data.description ? '' : 'no-text'} {showClaims
-            ? 'full-stage'
+            ? 'claims'
             : ''}"
     >
-        {#if showClaims}
+        {#if showClaims && claims}
             <section class="blend-results">
                 <nefty-blend-slider items={claims} claims={true} />
-                <img
+                <div
                     class="result-bg"
-                    src={claims[0].image}
-                    alt=""
-                    loading="lazy"
+                    style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTguNSAxNC41QTIuNSAyLjUgMCAwIDAgMTEgMTJjMC0xLjM4LS41LTItMS0zLTEuMDcyLTIuMTQzLS4yMjQtNC4wNTQgMi02IC41IDIuNSAyIDQuOSA0IDYuNSAyIDEuNiAzIDMuNSAzIDUuNWE3IDcgMCAxIDEtMTQgMGMwLTEuMTUzLjQzMy0yLjI5NCAxLTNhMi41IDIuNSAwIDAgMCAyLjUgMi41eiI+PC9wYXRoPjwvc3ZnPgo=');"
                 />
             </section>
         {:else}
@@ -279,7 +319,10 @@
                 <section class="blend-selection">
                     <h2>Ingredients</h2>
                     <small>Ingredients will be consumed</small>
-                    <div class="selection-group">
+                    <div
+                        class="selection-group"
+                        bind:this={selectionGroupElement}
+                    >
                         {#each data.items as item, key}
                             <div class="selection-item">
                                 {#if selection}
@@ -460,7 +503,7 @@
             grid-template-columns: 1fr;
         }
 
-        &.full-stage {
+        &.claims {
             // animate grid to full width
             grid-template-columns: 1fr 0fr;
             transition: grid;
@@ -469,10 +512,38 @@
             .blend-text,
             .blend-selection {
                 opacity: 0;
+                transition: opacity 0.3s ease;
             }
 
             .blend-results {
                 height: 500px;
+                transition: height 0.6s ease;
+            }
+
+            .result-bg {
+                animation: bganimation 5s linear forwards;
+            }
+
+            @keyframes bganimation {
+                0% {
+                    filter: blur(120px);
+                    background-position: 0% 0%;
+                    background-size: 5% 14%;
+                    transform: rotate(9deg) scale(1.5);
+                }
+                20% {
+                    filter: blur(0px);
+                }
+
+                80% {
+                    filter: blur(0px);
+                }
+                100% {
+                    filter: blur(120px);
+                    background-position: 100% 0%;
+                    background-size: 5% 14%;
+                    transform: rotate(9deg) scale(1.5);
+                }
             }
         }
 
@@ -516,7 +587,6 @@
         padding: 12px;
         max-height: calc(100vh - var(--nb-markdown-offset));
         overflow: hidden auto;
-        transition: opacity 0.3s ease;
     }
 
     .blend-results {
@@ -545,7 +615,6 @@
 
     .blend-selection {
         text-align: center;
-        transition: opacity 0.3s ease;
 
         h2 {
             color: var(--nb-color-secondary);
