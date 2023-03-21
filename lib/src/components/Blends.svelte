@@ -41,6 +41,9 @@
     });
 
     const viewBlend = (blend: GetBlendsResult) => {
+        // Avoid onDestroy this doesn't work to clean up the subscription
+        unsubscribe();
+
         dispatch(
             'blend',
             {
@@ -49,9 +52,6 @@
             },
             component
         );
-
-        // Avoid onDestroy this doesn't work to clean up the subscription
-        unsubscribe();
     };
 
     const displayTime = (time, now, end = false) => {
@@ -271,6 +271,7 @@
                     background-color: var(--nb-bg-card);
                     display: block;
                     filter: blur(3px);
+                    transform: translate3d(0, 0, 0);
                     height: 100%;
                     left: calc(50% - 55px);
                     top: 0;
@@ -306,6 +307,7 @@
                 left: 0;
                 z-index: -1;
                 filter: blur(40px);
+                transform: translate3d(0, 0, 0);
             }
         }
 

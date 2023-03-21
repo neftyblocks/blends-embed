@@ -753,6 +753,7 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
             result.push({
                 name,
                 mint: null,
+                rarity: 'common',
                 video: video ? useImageUrl(video as string) : null,
                 image: img ? useImageUrl(img as string) : null,
             });

@@ -63,7 +63,7 @@
             // user flow
             user = account;
 
-            if (account) {
+            if (account && data?.requirements) {
                 selection = await getRequirements({
                     requirements: data.requirements,
                     atomic_url: config.atomic_url,
@@ -199,8 +199,6 @@
     };
 
     const close = () => {
-        dispatch('blend', null, component);
-
         // Avoid onDestroy this doesn't work to clean up the subscription
         unsubscribe();
 
@@ -210,6 +208,8 @@
         selected = {};
         claims = null;
         showClaims = false;
+
+        dispatch('blend', null, component);
     };
 
     const blend = (requirements) => {
@@ -239,7 +239,11 @@
         </svg>
         back
     </button>
-    <div class="blend {data.description && !showClaims ? '' : 'no-text'}">
+    <div
+        class="blend {data.description ? '' : 'no-text'} {showClaims
+            ? 'full-stage'
+            : ''}"
+    >
         {#if showClaims}
             <section class="blend-results">
                 <nefty-blend-slider items={claims} />
@@ -454,6 +458,22 @@
             grid-template-columns: 1fr;
         }
 
+        &.full-stage {
+            // animate grid to full width
+            grid-template-columns: 1fr 0fr;
+            transition: grid;
+            transition: 0.6s;
+
+            .blend-text,
+            .blend-selection {
+                opacity: 0;
+            }
+
+            .blend-results {
+                height: 500px;
+            }
+        }
+
         & main {
             display: flex;
             flex-direction: column;
@@ -494,6 +514,7 @@
         padding: 12px;
         max-height: calc(100vh - var(--nb-markdown-offset));
         overflow: hidden auto;
+        transition: opacity 0.3s ease;
     }
 
     .blend-results {
@@ -514,6 +535,7 @@
         height: 100%;
         object-fit: cover;
         filter: blur(120px);
+        transform: translate3d(0, 0, 0);
         opacity: 0.3;
         z-index: -1;
         user-select: none;
@@ -521,6 +543,7 @@
 
     .blend-selection {
         text-align: center;
+        transition: opacity 0.3s ease;
 
         h2 {
             color: var(--nb-color-secondary);
@@ -547,6 +570,7 @@
                 background-color: var(--nb-bg);
                 display: block;
                 filter: blur(3px);
+                transform: translate3d(0, 0, 0);
                 height: 100%;
                 left: calc(50% - 97px);
                 top: 0;

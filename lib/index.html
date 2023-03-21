@@ -63,6 +63,7 @@
         const embed = `<neftyblocks-blend 
                         config=${JSON.stringify(config)}
                         blend=${JSON.stringify(blend)}
+                        account=${JSON.stringify(account)}
                     />`;
 
         mount.innerHTML = embed;
@@ -81,6 +82,8 @@
 
         component.addEventListener("blend", ({ detail }) => {
             console.log("blend", detail)
+
+            component.setAttribute("transactionid", 'null');
         });
 
 

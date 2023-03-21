@@ -25,7 +25,7 @@
 
     $: if (transactionid || account) {
         settings.update((s) => {
-            s.transactionId = transactionid;
+            s.transactionId = transactionid !== 'null' ? transactionid : null;
             s.account = account ? JSON.parse(account) : null;
             return s;
         });

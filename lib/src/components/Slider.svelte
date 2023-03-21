@@ -82,9 +82,11 @@
                     </figure>
                     <article>
                         <h3>{item.name}</h3>
-                        <small>
-                            {useTokenDisplay(item.drop_rate, 2)}% Drop rate
-                        </small>
+                        {#if item.drop_rate}
+                            <small>
+                                {useTokenDisplay(item.drop_rate, 2)}% Drop rate
+                            </small>
+                        {/if}
                         {#if item.mint}
                             <p>
                                 <svg
