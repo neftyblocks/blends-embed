@@ -88,6 +88,8 @@
                     tx_id: transactionId,
                 });
 
+                console.log('claims', claims);
+
                 showClaims = true;
 
                 settings.update((s) => {
@@ -246,7 +248,7 @@
     >
         {#if showClaims}
             <section class="blend-results">
-                <nefty-blend-slider items={claims} />
+                <nefty-blend-slider items={claims} claims={true} />
                 <img
                     class="result-bg"
                     src={claims[0].image}

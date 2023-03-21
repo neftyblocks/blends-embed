@@ -43,7 +43,7 @@ const mountEl = () => {
                     },
                 );
 
-                component.setAttribute('transaction', JSON.stringify(result));
+                component.setAttribute('transaction', result.transaction.transaction_id);
             });
         }
     }
@@ -102,6 +102,12 @@ form?.addEventListener('submit', (e) => {
         collection = collectionData as string;
 
         mountEl();
+
+        if (account) {
+            const component = document.querySelector('neftyblocks-blend');
+
+            if (component) component.setAttribute('account', JSON.stringify(account));
+        }
     }
 });
 

@@ -11,6 +11,7 @@
 
     // STATES
     export let items: any[] = undefined;
+    export let claims = false;
 
     let active = 0;
     let gridView = false;
