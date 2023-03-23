@@ -1,4 +1,4 @@
-import { useAssetData, useTokenDisplay } from '@nefty/use';
+import { useAssetData, useCountDown, useTokenDisplay } from '@nefty/use';
 
 export * from './animations';
 export * from './transaction';
@@ -113,4 +113,14 @@ export const getMarketUrl = (item: any, marketUrl: string, collectionName: strin
     return `${marketUrl}?${includeCollection ? `collection_name=${collectionName}&` : ''}${item.matcher_type}=${
         item.matcher
     }`;
+};
+
+export const displayTime = (time, now, end = false) => {
+    const countdown = useCountDown(time, now);
+
+    if (countdown === '0') {
+        return end ? 'no end' : 'live';
+    } else {
+        return end ? `ending ${countdown}` : countdown;
+    }
 };

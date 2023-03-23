@@ -3,9 +3,9 @@
 <script lang="ts">
     import { fade } from 'svelte/transition';
     import { get_current_component, onMount } from 'svelte/internal';
-    import { useCountDown, useSWR } from '@nefty/use';
+    import { useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
-    import { dispatch } from '../utils';
+    import { dispatch, displayTime } from '../utils';
 
     // COMPONENTS
     import Sprite from './Sprite.svelte';
@@ -52,16 +52,6 @@
             },
             component
         );
-    };
-
-    const displayTime = (time, now, end = false) => {
-        const countdown = useCountDown(time, now);
-
-        if (countdown === '0') {
-            return end ? 'no end' : 'live';
-        } else {
-            return end ? `ending ${countdown}` : countdown;
-        }
     };
 </script>
 
@@ -214,14 +204,25 @@
         {/each}
     </div>
 {:else if data === null}
-    <div>An error happend</div>
+    <p class="error">
+        <svg role="presentation" focusable="false" aria-hidden="true">
+            <use xlink:href="#blender" />
+        </svg>
+        Whoops someone spilled the juice!
+    </p>
 {:else}
-    <div>loading blends...</div>
+    <p class="loading">
+        <svg role="presentation" focusable="false" aria-hidden="true">
+            <use xlink:href="#blender" />
+        </svg>
+        loading blends...
+    </p>
 {/if}
 
 <!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
     @import '../style/global.scss';
+    @import '../style/states.scss';
     @import '../style/button.scss';
 
     .blends-group {

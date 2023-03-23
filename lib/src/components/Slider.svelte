@@ -197,7 +197,6 @@
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid;
         transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-        box-shadow: 0 0 26px 0 var(--nb-shadow);
 
         &::before {
             content: '';
@@ -326,14 +325,15 @@
         &.next {
             z-index: 2;
             transform: translate3d(30%, 0, 0) rotate(5deg) scale(0.9);
+            filter: brightness(0.5);
 
             &.next-depth {
                 z-index: 1;
                 transform: translate3d(55%, 0, 0) rotate(12deg) scale(0.8);
+                filter: brightness(0.2);
 
                 & + & {
                     z-index: 0;
-                    box-shadow: none;
                 }
             }
         }
@@ -341,14 +341,12 @@
         &.prev {
             z-index: 2;
             transform: translate3d(-30%, 0, 0) rotate(-5deg) scale(0.9);
+            filter: brightness(0.5);
 
             &.prev-depth {
                 z-index: 1;
                 transform: translate3d(-55%, 0, 0) rotate(-12deg) scale(0.8);
-
-                & + & {
-                    box-shadow: none;
-                }
+                filter: brightness(0.2);
             }
         }
     }

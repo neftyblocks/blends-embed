@@ -1,8 +1,9 @@
 <svelte:options tag="nefty-blend-item" />
 
 <script lang="ts">
-    import { get_current_component } from 'svelte/internal';
+    import { get_current_component, onMount } from 'svelte/internal';
     import { getBlend, getClaims, getRequirements, settings } from '../store';
+    import { useSWR } from '@nefty/use';
     import type { GetBlendResult } from '../types';
     import {
         dispatch,
@@ -13,6 +14,7 @@
         getMarketUrl,
         blendTransactionActions,
         swoop,
+        displayTime,
     } from '../utils';
 
     // COMPONENTS
@@ -32,6 +34,8 @@
 
     let selectionGroupElement;
 
+    let now = new Date().getTime();
+
     let showClaims = false;
 
     let marketUrl = '';
@@ -49,12 +53,14 @@
         async ({ config, blend, account, transactionId }) => {
             // config flow
             if (config && blend) {
-                data = await getBlend({
-                    atomic_url: config.atomic_url,
-                    blend_id: blend.blend_id,
-                    contract: blend.contract,
-                    chain: config.chain,
-                });
+                data = await useSWR(`blend-${blend.blend_id}`, () =>
+                    getBlend({
+                        atomic_url: config.atomic_url,
+                        blend_id: blend.blend_id,
+                        contract: blend.contract,
+                        chain: config.chain,
+                    })
+                );
 
                 console.log('blend', data);
 
@@ -103,6 +109,14 @@
             loading = false;
         }
     );
+
+    onMount(() => {
+        const interval = setInterval(() => {
+            now = new Date().getTime();
+        }, 1000);
+
+        return () => clearInterval(interval);
+    });
 
     const updateSelection = ({ detail }, matcher: string) => {
         selected[matcher] = detail;
@@ -288,209 +302,222 @@
             ? 'claims'
             : ''}"
     >
-        {#if showClaims && claims}
+        <main>
             <section class="blend-results">
-                <nefty-blend-slider items={claims} claims={true} />
-                <div
-                    class="result-bg"
-                    style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTguNSAxNC41QTIuNSAyLjUgMCAwIDAgMTEgMTJjMC0xLjM4LS41LTItMS0zLTEuMDcyLTIuMTQzLS4yMjQtNC4wNTQgMi02IC41IDIuNSAyIDQuOSA0IDYuNSAyIDEuNiAzIDMuNSAzIDUuNWE3IDcgMCAxIDEtMTQgMGMwLTEuMTUzLjQzMy0yLjI5NCAxLTNhMi41IDIuNSAwIDAgMCAyLjUgMi41eiI+PC9wYXRoPjwvc3ZnPgo=');"
-                />
-            </section>
-        {:else}
-            <main>
-                <section class="blend-results">
-                    <nefty-blend-slider items={data.results} />
+                {#if showClaims && claims}
+                    <nefty-blend-slider items={claims} claims={showClaims} />
+                    <div
+                        class="result-bg"
+                        style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjIiIGZpbGw9IiNmZmYiIGNsaXAtcnVsZT0iZXZlbm9kZCIgdmlld0JveD0iMCAwIDQ4IDQ4Ij48cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGQ9Ik0xNSA0NGMtLjggMC0xLjUtLjMtMi4xLS45LS42LS42LS45LTEuMy0uOS0yLjF2LTJhOC44IDguOCAwIDAgMSA0LjQtNy42bC0yLTEwSDljLS44IDAtMS41LS4zLTIuMS0xLS42LS41LS45LTEuMi0uOS0yVjkuNWMwLS44LjMtMS41LjktMi4xLjYtLjYgMS4zLS45IDIuMS0uOWgyN2wtNC40IDI0LjljMS40IDEgMi41IDIgMy4zIDMuNEE3LjQgNy40IDAgMCAxIDM2IDM5djJjMCAuOC0uMyAxLjUtLjkgMi4xLS42LjYtMS4zLjktMi4xLjlIMTVabS0xLjItMjUuNkwxMiA5LjVIOXY4LjhsNC44LjFabTUuMyAxMS4xaDkuOGwzLjUtMjBIMTUuMWw0IDIwWk0xNSA0MWgxOHYtMmMwLTEuOC0uNy0zLjMtMi00LjZhNyA3IDAgMCAwLTUtMS45aC00Yy0yIDAtMy43LjctNSAyYTYuMiA2LjIgMCAwIDAtMiA0LjV2MloiLz48L3N2Zz4=');"
+                    />
+                {:else}
+                    <nefty-blend-slider items={data.results} claims={false} />
                     <img
                         class="result-bg"
                         src={data.results[0].image}
                         alt=""
                         loading="lazy"
                     />
-                </section>
-                <section>
-                    <button
-                        disabled={loading || !user}
-                        class="btn btn--primary"
-                        on:click={() => blend(data.requirements)}
-                    >
-                        {loading ? 'Loading' : user ? 'Blend' : 'Not logged in'}
-                    </button>
-                </section>
-                <section class="blend-selection">
-                    <h2>Ingredients</h2>
-                    <small>Ingredients will be consumed</small>
-                    <div
-                        class="selection-group"
-                        bind:this={selectionGroupElement}
-                    >
-                        {#each data.items as item, key}
-                            <div class="selection-item">
-                                {#if selection}
-                                    <div
-                                        class={matchAssetRequirements(
-                                            selection[item.matcher],
-                                            data.requirements[item.matcher]
-                                        )
-                                            ? 'owned'
-                                            : 'needed'}
-                                        transition:swoop={{ key }}
+                {/if}
+            </section>
+            <section class="blend-actions">
+                <button
+                    disabled={loading || !user}
+                    class="btn btn--primary"
+                    on:click={() => blend(data.requirements)}
+                >
+                    {loading ? 'Loading' : user ? 'Blend' : 'Not logged in'}
+                </button>
+
+                <h1>{data.name}</h1>
+
+                <time>
+                    {displayTime(data.start_time, now)} · {displayTime(
+                        data.end_time,
+                        now,
+                        true
+                    )}
+                </time>
+            </section>
+            <section class="blend-selection">
+                <h2>Ingredients</h2>
+                <small>Ingredients will be consumed</small>
+                <div class="selection-group" bind:this={selectionGroupElement}>
+                    {#each data.items as item, key}
+                        <div class="selection-item">
+                            {#if selection}
+                                <div
+                                    class={matchAssetRequirements(
+                                        selection[item.matcher],
+                                        data.requirements[item.matcher]
+                                    )
+                                        ? 'owned'
+                                        : 'needed'}
+                                    transition:swoop={{ key }}
+                                >
+                                    <small class="type"
+                                        >{item.matcher_type}</small
                                     >
-                                        <small class="type"
-                                            >{item.matcher_type}</small
+                                    {#if hasVisual.includes(item.matcher_type)}
+                                        <figure
+                                            class="visual {item.matcher_type}"
                                         >
-                                        {#if hasVisual.includes(item.matcher_type)}
-                                            <figure
-                                                class="visual {item.matcher_type}"
-                                            >
-                                                {#if item.video}
-                                                    <video
-                                                        src={item.video}
-                                                        loop
-                                                        autoplay
-                                                        muted
-                                                        playsinline
-                                                    />
-                                                {:else if item.image}
-                                                    <img
-                                                        src={item.image}
-                                                        alt={item.name}
-                                                    />
-                                                {/if}
-                                            </figure>
-                                        {:else}
-                                            <span class="visual visual--small">
-                                                {item.description
-                                                    ? item.description
-                                                    : ' '}
-                                            </span>
-                                        {/if}
-
-                                        <h3>
-                                            {#if item.value} {item.value} {/if}
-                                            {item.name}
-                                        </h3>
-
-                                        {#if item.matcher_type !== 'token'}
-                                            {#if matchAssetRequirements(selection[item.matcher], data.requirements[item.matcher])}
-                                                <nefty-blend-selecter
-                                                    items={selection[
-                                                        item.matcher
-                                                    ]}
-                                                    matchertype={item.matcher_type}
-                                                    amount={data.requirements[
-                                                        item.matcher
-                                                    ].amount}
-                                                    selected={selected[
-                                                        item.matcher
-                                                    ]}
-                                                    on:selected={(e) =>
-                                                        updateSelection(
-                                                            e,
-                                                            item.matcher
-                                                        )}
+                                            {#if item.video}
+                                                <video
+                                                    src={item.video}
+                                                    loop
+                                                    autoplay
+                                                    muted
+                                                    playsinline
                                                 />
-                                            {:else}
-                                                <!-- svelte-ignore security-anchor-rel-noreferrer -->
-                                                <a
-                                                    class="btn"
-                                                    href={getMarketUrl(
-                                                        item,
-                                                        marketUrl,
-                                                        collectionName
+                                            {:else if item.image}
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                />
+                                            {/if}
+                                        </figure>
+                                    {:else}
+                                        <span class="visual visual--small">
+                                            {item.description
+                                                ? item.description
+                                                : ' '}
+                                        </span>
+                                    {/if}
+
+                                    <h3>
+                                        {#if item.value} {item.value} {/if}
+                                        {item.name}
+                                    </h3>
+
+                                    {#if item.matcher_type !== 'token'}
+                                        {#if matchAssetRequirements(selection[item.matcher], data.requirements[item.matcher])}
+                                            <nefty-blend-selecter
+                                                items={selection[item.matcher]}
+                                                matchertype={item.matcher_type}
+                                                amount={data.requirements[
+                                                    item.matcher
+                                                ].amount}
+                                                selected={selected[
+                                                    item.matcher
+                                                ]}
+                                                on:selected={(e) =>
+                                                    updateSelection(
+                                                        e,
+                                                        item.matcher
                                                     )}
-                                                    target="_blank"
-                                                    rel="noopener"
-                                                >
-                                                    Get {data.requirements[
-                                                        item.matcher
-                                                    ].amount} asset{(data.requirements[
-                                                        item.matcher
-                                                    ].amount = 1 ? '' : 's')}
-                                                </a>{/if}
-                                        {:else if matchTokenRequirements(selection[item.matcher], data.requirements[item.matcher])}
-                                            <p class="balance">
-                                                <small>current balance</small>
-                                                {formatTokenWithoutSymbol(
-                                                    selection[item.matcher],
-                                                    2
-                                                )}
-                                                <span>
-                                                    {item.token.token_symbol}
-                                                </span>
-                                            </p>
+                                            />
                                         {:else}
                                             <!-- svelte-ignore security-anchor-rel-noreferrer -->
                                             <a
                                                 class="btn"
-                                                href=""
+                                                href={getMarketUrl(
+                                                    item,
+                                                    marketUrl,
+                                                    collectionName
+                                                )}
                                                 target="_blank"
                                                 rel="noopener"
                                             >
-                                                Get more {item.token
-                                                    .token_symbol}
-                                            </a>
-                                        {/if}
-                                    </div>
-                                {:else if !user}
-                                    <span
-                                        transition:swoop={{ key }}
-                                        class="no-user"
-                                    >
-                                        <svg
-                                            role="presentation"
-                                            focusable="false"
-                                            aria-hidden="true"
+                                                Get {data.requirements[
+                                                    item.matcher
+                                                ].amount} asset{(data.requirements[
+                                                    item.matcher
+                                                ].amount = 1 ? '' : 's')}
+                                            </a>{/if}
+                                    {:else if matchTokenRequirements(selection[item.matcher], data.requirements[item.matcher])}
+                                        <p class="balance">
+                                            <small>current balance</small>
+                                            {formatTokenWithoutSymbol(
+                                                selection[item.matcher],
+                                                2
+                                            )}
+                                            <span>
+                                                {item.token.token_symbol}
+                                            </span>
+                                        </p>
+                                    {:else}
+                                        <!-- svelte-ignore security-anchor-rel-noreferrer -->
+                                        <a
+                                            class="btn"
+                                            href=""
+                                            target="_blank"
+                                            rel="noopener"
                                         >
-                                            <use xlink:href="#ghost" />
-                                        </svg>
-                                        <small>
-                                            Our friendly ghost is here to remind
-                                            you to log in first
-                                        </small>
-                                    </span>
-                                {:else}
-                                    <span class="loading-state" />
-                                {/if}
-                            </div>
-                        {/each}
-                    </div>
-                </section>
-            </main>
-            {#if data.description}
-                <aside class="blend-text">
-                    <article class="markdown">
-                        {@html data.description}
+                                            Get more {item.token.token_symbol}
+                                        </a>
+                                    {/if}
+                                </div>
+                            {:else if !user}
+                                <span
+                                    transition:swoop={{ key }}
+                                    class="no-user"
+                                >
+                                    <svg
+                                        role="presentation"
+                                        focusable="false"
+                                        aria-hidden="true"
+                                    >
+                                        <use xlink:href="#ghost" />
+                                    </svg>
+                                    <small>
+                                        Our friendly ghost is here to remind you
+                                        to log in first
+                                    </small>
+                                </span>
+                            {:else}
+                                <span class="loading-state" />
+                            {/if}
+                        </div>
+                    {/each}
+                </div>
+            </section>
+        </main>
+        {#if data.description && !showClaims}
+            <aside class="blend-text">
+                <article class="markdown">
+                    {@html data.description}
 
-                        <template>
-                            <h1>0</h1>
-                            <h2>0</h2>
-                            <h3>0</h3>
-                            <h4>0</h4>
-                            <h5>0</h5>
-                            <strong />
-                            <p />
-                            <ul />
-                            <li />
-                            <a href="#0">0</a>
-                            <img alt="" />
-                            <table>
-                                <th />
-                                <td />
-                            </table>
-                        </template>
-                    </article>
-                </aside>
-            {/if}
+                    <template>
+                        <h1>0</h1>
+                        <h2>0</h2>
+                        <h3>0</h3>
+                        <h4>0</h4>
+                        <h5>0</h5>
+                        <strong />
+                        <p />
+                        <ul />
+                        <li />
+                        <a href="#0">0</a>
+                        <img alt="" />
+                        <table>
+                            <th />
+                            <td />
+                        </table>
+                    </template>
+                </article>
+            </aside>
         {/if}
     </div>
 {:else if data === null}
-    <div>An error happend</div>
+    <p class="error">
+        <svg role="presentation" focusable="false" aria-hidden="true">
+            <use xlink:href="#blender" />
+        </svg>
+        Whoops someone spilled the juice!
+    </p>
 {:else}
-    <div>loading blend...</div>
+    <p class="loading">
+        <svg role="presentation" focusable="false" aria-hidden="true">
+            <use xlink:href="#blender" />
+        </svg>
+        loading blend...
+    </p>
 {/if}
 
 <style lang="scss">
     @import '../style/global.scss';
+    @import '../style/states.scss';
     @import '../style/markdown.scss';
     @import '../style/button.scss';
 
@@ -536,10 +563,12 @@
                 }
 
                 80% {
-                    filter: blur(0px);
+                    opacity: 0.3;
                 }
+
                 100% {
-                    filter: blur(120px);
+                    filter: blur(0px);
+                    opacity: 0;
                     background-position: 100% 0%;
                     background-size: 5% 14%;
                     transform: rotate(9deg) scale(1.5);
