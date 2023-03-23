@@ -3,6 +3,7 @@ export interface Settings {
         atomic_url: string;
         chain_url: string;
         marketplace_url: string;
+        profile_url: string;
         chain: string;
         collection?: string;
     };

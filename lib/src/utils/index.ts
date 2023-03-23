@@ -121,6 +121,6 @@ export const displayTime = (time, now, end = false) => {
     if (countdown === '0') {
         return end ? 'no end' : 'live';
     } else {
-        return end ? `ending ${countdown}` : countdown;
+        return end ? `ending in ${countdown}` : `live in ${countdown}`;
     }
 };

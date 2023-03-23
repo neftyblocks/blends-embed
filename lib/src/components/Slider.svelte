@@ -196,7 +196,8 @@
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
         border: var(--nb-border-size) solid;
-        transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1),
+            filter 0.1s linear;
 
         &::before {
             content: '';
@@ -325,12 +326,12 @@
         &.next {
             z-index: 2;
             transform: translate3d(30%, 0, 0) rotate(5deg) scale(0.9);
-            filter: brightness(0.5);
+            filter: brightness(0.8);
 
             &.next-depth {
                 z-index: 1;
                 transform: translate3d(55%, 0, 0) rotate(12deg) scale(0.8);
-                filter: brightness(0.2);
+                filter: brightness(0.5);
 
                 & + & {
                     z-index: 0;
@@ -341,12 +342,12 @@
         &.prev {
             z-index: 2;
             transform: translate3d(-30%, 0, 0) rotate(-5deg) scale(0.9);
-            filter: brightness(0.5);
+            filter: brightness(0.8);
 
             &.prev-depth {
                 z-index: 1;
                 transform: translate3d(-55%, 0, 0) rotate(-12deg) scale(0.8);
-                filter: brightness(0.2);
+                filter: brightness(0.5);
             }
         }
     }
@@ -377,15 +378,16 @@
                 &.prev,
                 &.next {
                     z-index: 0;
+                    filter: brightness(1);
                     transform: translate3d(0, 0, 0) rotate(0) scale(1);
                 }
 
                 &.prev.prev-depth + .slider-item.prev.prev-depth {
-                    box-shadow: 0 0 26px 0 var(--nb-shadow);
+                    filter: brightness(1);
                 }
 
                 &.next.next-depth + .slider-item.next.next-depth {
-                    box-shadow: 0 0 26px 0 var(--nb-shadow);
+                    filter: brightness(1);
                 }
 
                 &:hover {

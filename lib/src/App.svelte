@@ -29,6 +29,8 @@
             s.account = account ? JSON.parse(account) : null;
             return s;
         });
+
+        if (transactionid) transactionid = null;
     }
 
     const handleBlend = (e: CustomEvent) => {

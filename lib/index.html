@@ -47,6 +47,7 @@
             chain: 'wax',
             collection: VITE_COLLECTION_NAME,
             marketplace_url: "https://neftyblocks.com/marketplace/listing",
+            profile_url: "https://test.neftyblocks.com/profile/",
         }
 
         const blend = { blend_id: "4117", contract: "blend.nefty" };
@@ -76,14 +77,11 @@
         component.addEventListener("sign", ({ detail }) => {
             console.log("sign", detail)
 
-
             component.setAttribute("transactionid", VITE_TEST_TX);
         });
 
         component.addEventListener("blend", ({ detail }) => {
             console.log("blend", detail)
-
-            component.setAttribute("transactionid", 'null');
         });
 
 
@@ -97,7 +95,7 @@
         });
 
         logout.addEventListener('click', () => {
-            component.setAttribute("account", 'null');
+            component.setAttribute("account", null);
         });
     </script>
 </body>

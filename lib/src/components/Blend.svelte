@@ -26,22 +26,27 @@
     const component = get_current_component();
 
     // STATES
+    // settings data
+    let user = undefined;
+    let localConfig = undefined;
+
+    // blend data
     let data = undefined;
     let selection = undefined;
-    let loading = true;
     let selected = {};
     let claims = null;
 
+    // DOM
     let selectionGroupElement;
 
+    // TIMERS
     let now = new Date().getTime();
 
+    // FLAGS
+    let loading = true;
     let showClaims = false;
 
-    let marketUrl = '';
-    let collectionName = '';
-    let user = undefined;
-
+    // TRANSACTION
     let selectedAssetsToBlend = [];
     let selectedTokensToBlend = [];
     let selectedBalanceAssets = [];
@@ -51,8 +56,10 @@
     // METHODS
     const unsubscribe = settings.subscribe(
         async ({ config, blend, account, transactionId }) => {
+            console.log({ config, blend, account, transactionId });
+
             // config flow
-            if (config && blend) {
+            if (config && blend && !transactionId) {
                 data = await useSWR(`blend-${blend.blend_id}`, () =>
                     getBlend({
                         atomic_url: config.atomic_url,
@@ -62,24 +69,14 @@
                     })
                 );
 
-                console.log('blend', data);
-
-                marketUrl = config.marketplace_url;
-                collectionName = config.collection;
+                localConfig = config;
             }
 
             // user flow
             user = account;
 
             if (account && data?.requirements) {
-                selection = await getRequirements({
-                    requirements: data.requirements,
-                    atomic_url: config.atomic_url,
-                    chain_url: config.chain_url,
-                    actor: account.actor,
-                });
-
-                autoSelect(data.requirements);
+                await updateRequirments();
             } else {
                 selection = undefined;
             }
@@ -117,6 +114,19 @@
 
         return () => clearInterval(interval);
     });
+
+    const updateRequirments = async () => {
+        selection = undefined;
+
+        selection = await getRequirements({
+            requirements: data.requirements,
+            atomic_url: localConfig.atomic_url,
+            chain_url: localConfig.chain_url,
+            actor: user.actor,
+        });
+
+        autoSelect(data.requirements);
+    };
 
     const updateSelection = ({ detail }, matcher: string) => {
         selected[matcher] = detail;
@@ -249,6 +259,15 @@
         }
     };
 
+    const reset = async () => {
+        loading = true;
+        await updateRequirments();
+
+        showClaims = false;
+        claims = null;
+        loading = false;
+    };
+
     const animateCards = () => {
         const selectedAssets = selectionGroupElement.querySelectorAll(
             '.selection-item > div'
@@ -321,23 +340,67 @@
                 {/if}
             </section>
             <section class="blend-actions">
-                <button
-                    disabled={loading || !user}
-                    class="btn btn--primary"
-                    on:click={() => blend(data.requirements)}
-                >
-                    {loading ? 'Loading' : user ? 'Blend' : 'Not logged in'}
-                </button>
+                <article>
+                    <h1>{data.name}</h1>
+                    <p>
+                        <time>
+                            {displayTime(data.start_time, now)} - {displayTime(
+                                data.end_time,
+                                now,
+                                true
+                            )}
+                        </time>
+                    </p>
+                </article>
 
-                <h1>{data.name}</h1>
+                {#if showClaims}
+                    <div class="btn-group">
+                        <button
+                            disabled={loading}
+                            class="btn btn--primary"
+                            on:click={reset}
+                        >
+                            {loading ? 'Loading' : 'Blend again'}
+                        </button>
+                        <a
+                            href="{localConfig.profile_url}{user.actor}?collection_name={localConfig.collection}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn btn--primary"
+                        >
+                            See profile
+                        </a>
+                    </div>
+                {:else}
+                    <div class="btn-group">
+                        <button
+                            disabled={loading || !user}
+                            class="btn btn--primary"
+                            on:click={() => blend(data.requirements)}
+                        >
+                            {loading
+                                ? 'Loading'
+                                : user
+                                ? data.secure
+                                    ? 'Secure blend'
+                                    : 'Blend'
+                                : 'Not logged in'}
+                        </button>
 
-                <time>
-                    {displayTime(data.start_time, now)} · {displayTime(
-                        data.end_time,
-                        now,
-                        true
-                    )}
-                </time>
+                        <button
+                            class="btn btn--primary btn-refresh"
+                            on:click={() => updateRequirments()}
+                        >
+                            <svg
+                                role="presentation"
+                                focusable="false"
+                                aria-hidden="true"
+                            >
+                                <use xlink:href="#refresh" />
+                            </svg>
+                        </button>
+                    </div>
+                {/if}
             </section>
             <section class="blend-selection">
                 <h2>Ingredients</h2>
@@ -345,7 +408,7 @@
                 <div class="selection-group" bind:this={selectionGroupElement}>
                     {#each data.items as item, key}
                         <div class="selection-item">
-                            {#if selection}
+                            {#if selection && !claims}
                                 <div
                                     class={matchAssetRequirements(
                                         selection[item.matcher],
@@ -413,8 +476,8 @@
                                                 class="btn"
                                                 href={getMarketUrl(
                                                     item,
-                                                    marketUrl,
-                                                    collectionName
+                                                    localConfig.marketplace_url,
+                                                    localConfig.collection
                                                 )}
                                                 target="_blank"
                                                 rel="noopener"
@@ -528,6 +591,7 @@
 
         &.no-text {
             grid-template-columns: 1fr;
+            gap: 0px;
         }
 
         &.claims {
@@ -548,14 +612,14 @@
             }
 
             .result-bg {
-                animation: bganimation 5s linear forwards;
+                animation: bganimation 5s ease-out forwards;
             }
 
             @keyframes bganimation {
                 0% {
                     filter: blur(120px);
                     background-position: 0% 0%;
-                    background-size: 5% 14%;
+                    background-size: 70px;
                     transform: rotate(9deg) scale(1.5);
                 }
                 20% {
@@ -568,9 +632,9 @@
 
                 100% {
                     filter: blur(0px);
-                    opacity: 0;
+                    opacity: 0.1;
                     background-position: 100% 0%;
-                    background-size: 5% 14%;
+                    background-size: 70px;
                     transform: rotate(9deg) scale(1.5);
                 }
             }
@@ -579,7 +643,7 @@
         & main {
             display: flex;
             flex-direction: column;
-            gap: 48px;
+            gap: 12px 48px;
         }
     }
 
@@ -616,6 +680,50 @@
         padding: 12px;
         max-height: calc(100vh - var(--nb-markdown-offset));
         overflow: hidden auto;
+    }
+
+    .blend-actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+
+        h1 {
+            font-size: var(--nb-font-size--title);
+        }
+
+        article {
+            min-width: 350px;
+        }
+
+        p {
+            color: var(--nb-color-secondary);
+
+            svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+    }
+
+    .btn-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-refresh {
+        svg {
+            display: block;
+            width: 18px;
+            height: 18px;
+            transition: transform 0.15s ease;
+        }
+
+        &:hover {
+            svg {
+                transform: rotate(60deg);
+            }
+        }
     }
 
     .blend-results {
