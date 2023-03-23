@@ -375,6 +375,7 @@ export const getBlend = async ({
             ingredients_count,
             result_count: result.length,
             secure: security_id !== '0',
+
             odds: oddbased,
             requirements,
         };
@@ -771,4 +772,22 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
     }
 
     return result;
+};
+
+export const getJobsCount = async ({ chain_url }) => {
+    const { data, error } = await useFetch<any>('/v1/chain/get_table_by_scope', {
+        baseUrl: chain_url,
+        method: 'POST',
+        body: {
+            code: 'orng.wax',
+            table: 'jobs.a',
+            reverse: false,
+            limit: 100,
+            show_payer: false,
+        },
+    });
+
+    if (error) console.error(error);
+
+    return data ? data.rows.length : 0;
 };

@@ -2,7 +2,13 @@
 
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
-    import { getBlend, getClaims, getRequirements, settings } from '../store';
+    import {
+        getBlend,
+        getClaims,
+        getJobsCount,
+        getRequirements,
+        settings,
+    } from '../store';
     import { useSWR } from '@nefty/use';
     import type { GetBlendResult } from '../types';
     import {
@@ -68,6 +74,8 @@
                         chain: config.chain,
                     })
                 );
+
+                await getJobsCount({ chain_url: config.chain_url });
 
                 localConfig = config;
             }
