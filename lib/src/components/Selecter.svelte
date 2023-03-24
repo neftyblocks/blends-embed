@@ -6,7 +6,6 @@
 
     // COMPONENTS
     import './Slider.svelte';
-    import Sprite from './Sprite.svelte';
 
     // GLOBALS
     const component = get_current_component();
@@ -52,7 +51,46 @@
     };
 </script>
 
-<Sprite />
+<svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="0"
+    height="0"
+    style="position: absolute"
+>
+    <symbol
+        id="check"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></symbol
+    >
+    <symbol
+        id="undo"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path d="M3 7v6h6" /><path
+            d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"
+        /></symbol
+    >
+    <symbol
+        id="chevron_right"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <polyline points="9 18 15 12 9 6" />
+    </symbol>
+</svg>
 
 <div class="selecter">
     <button class="btn-clear selecter-items" on:click={toggleShow}>

@@ -5,7 +5,6 @@
     import { onMount } from 'svelte/internal';
 
     // COMPONENTS
-    import Sprite from './Sprite.svelte';
 
     // GLOBALS
 
@@ -42,7 +41,91 @@
     };
 </script>
 
-<Sprite />
+<svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="0"
+    height="0"
+    style="position: absolute"
+>
+    <symbol
+        id="hash"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><line x1="4" y1="9" x2="20" y2="9" /><line
+            x1="4"
+            y1="15"
+            x2="20"
+            y2="15"
+        /><line x1="10" y1="3" x2="8" y2="21" /><line
+            x1="16"
+            y1="3"
+            x2="14"
+            y2="21"
+        />
+    </symbol>
+    <symbol
+        id="grid"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><rect x="3" y="3" width="7" height="7" /><rect
+            x="14"
+            y="3"
+            width="7"
+            height="7"
+        /><rect x="14" y="14" width="7" height="7" /><rect
+            x="3"
+            y="14"
+            width="7"
+            height="7"
+        /></symbol
+    >
+    <symbol
+        id="carousel"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path
+            d="M7.556 4h8.888v16H7.556V4zm8.888 1.333H22v13.334h-5.556V5.333zM2 5.333h5.556v13.334H2V5.333z"
+        />
+    </symbol>
+    <symbol
+        id="arrow_right"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><line x1="5" y1="12" x2="19" y2="12" /><polyline
+            points="12 5 19 12 12 19"
+        /></symbol
+    >
+    <symbol
+        id="arrow_left"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><line x1="19" y1="12" x2="5" y2="12" /><polyline
+            points="12 19 5 12 12 5"
+        /></symbol
+    >
+</svg>
 
 {#if items}
     <div class="slider {claims ? 'claims' : ''}">

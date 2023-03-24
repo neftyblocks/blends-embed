@@ -6,10 +6,9 @@
     import { useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
     import { dispatch, displayTime } from '../utils';
+    import type { GetBlendsResult } from '../types';
 
     // COMPONENTS
-    import Sprite from './Sprite.svelte';
-    import type { GetBlendsResult } from '../types';
 
     // GLOBALS
     const component = get_current_component();
@@ -55,7 +54,80 @@
     };
 </script>
 
-<Sprite />
+<svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    width="0"
+    height="0"
+    style="position: absolute"
+>
+    <symbol
+        id="blender"
+        xml:space="preserve"
+        fill-rule="evenodd"
+        fill="currentColor"
+        stroke-linejoin="round"
+        stroke-miterlimit="2"
+        clip-rule="evenodd"
+        viewBox="0 0 48 48"
+        ><path
+            fill-rule="nonzero"
+            d="M15 44c-.8 0-1.5-.3-2.1-.9-.6-.6-.9-1.3-.9-2.1v-2a8.8 8.8 0 0 1 4.4-7.6l-2-10H9c-.8 0-1.5-.3-2.1-1-.6-.5-.9-1.2-.9-2V9.5c0-.8.3-1.5.9-2.1.6-.6 1.3-.9 2.1-.9h27l-4.4 24.9c1.4 1 2.5 2 3.3 3.4A7.4 7.4 0 0 1 36 39v2c0 .8-.3 1.5-.9 2.1-.6.6-1.3.9-2.1.9H15Zm-1.2-25.6L12 9.5H9v8.8l4.8.1Zm5.3 11.1h9.8l3.5-20H15.1l4 20ZM15 41h18v-2c0-1.8-.7-3.3-2-4.6a7 7 0 0 0-5-1.9h-4c-2 0-3.7.7-5 2a6.2 6.2 0 0 0-2 4.5v2Z"
+        /></symbol
+    >
+    <symbol
+        id="hat"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path
+            d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"
+        />
+        <line x1="6" y1="17" x2="18" y2="17" />
+    </symbol>
+    <symbol
+        id="star"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+        />
+    </symbol>
+    <symbol
+        id="chevron_right"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <polyline points="9 18 15 12 9 6" />
+    </symbol>
+    <symbol
+        id="close"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><circle cx="12" cy="12" r="10" /><line
+            x1="15"
+            y1="9"
+            x2="9"
+            y2="15"
+        /><line x1="9" y1="9" x2="15" y2="15" /></symbol
+    >
+</svg>
 
 {#if data}
     <div class="blends-group">
