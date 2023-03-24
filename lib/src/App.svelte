@@ -6,6 +6,7 @@
     // COMPONENTS
     import './components/Blends.svelte';
     import './components/Blend.svelte';
+    import { onDestroy } from 'svelte/internal';
 
     // GLOBALS
 
@@ -22,6 +23,8 @@
         blend: blend ? JSON.parse(blend) : null,
         transactionId: transactionid,
     });
+
+    $: console.log('update', config, account, blend, transactionid);
 
     $: if (transactionid || account) {
         settings.update((s) => {
@@ -41,6 +44,23 @@
             return s;
         });
     };
+
+    onDestroy(() => {
+        settings.update((s) => {
+            s.blend = null;
+            s.transactionId = null;
+            s.account = null;
+            s.config = null;
+            return s;
+        });
+
+        blend = null;
+        transactionid = null;
+        account = null;
+        config = null;
+
+        console.log('destroyed');
+    });
 </script>
 
 <main>
