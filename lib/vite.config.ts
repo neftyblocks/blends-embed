@@ -8,7 +8,7 @@ export default defineConfig({
         lib: {
             entry: 'src/main.ts',
             formats: ['es', 'cjs'],
-            fileName: (format) => `main.${format}.js`,
+            fileName: (format) => `main.${format === 'es' ? 'mjs' : 'cjs'}`,
         },
     },
 });
