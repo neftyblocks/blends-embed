@@ -82,9 +82,9 @@
             // user flow
             user = account;
 
-            if (account && data?.requirements) {
+            if (account && data?.requirements && !transactionId) {
                 await updateRequirments();
-            } else {
+            } else if (!transactionId) {
                 selection = undefined;
             }
 
@@ -104,10 +104,12 @@
 
                 showClaims = true;
 
-                settings.update((s) => {
-                    s.transactionId = undefined;
-                    return s;
-                });
+                setTimeout(() => {
+                    settings.update((s) => {
+                        s.transactionId = undefined;
+                        return s;
+                    });
+                }, 1000);
             }
 
             loading = false;
@@ -472,7 +474,7 @@
                 <div class="selection-group" bind:this={selectionGroupElement}>
                     {#each data.items as item, key}
                         <div class="selection-item">
-                            {#if selection && !claims}
+                            {#if selection}
                                 <div
                                     class={matchAssetRequirements(
                                         selection[item.matcher],
@@ -670,36 +672,30 @@
                 transition: opacity 0.3s ease;
             }
 
+            .selection-group {
+                display: none;
+            }
+
             .blend-results {
                 height: 500px;
                 transition: height 0.6s ease;
             }
 
             .result-bg {
-                animation: bganimation 5s ease-out forwards;
+                filter: blur(0px);
+                background-position: 0% 0%;
+                background-size: 70px;
+                transform: scale(1.5);
+                animation: bganimation 1s ease-in-out 5 forwards;
             }
 
             @keyframes bganimation {
-                0% {
-                    filter: blur(120px);
-                    background-position: 0% 0%;
-                    background-size: 70px;
-                    transform: rotate(9deg) scale(1.5);
-                }
-                20% {
-                    filter: blur(0px);
-                }
-
-                80% {
-                    opacity: 0.3;
-                }
-
+                0%,
                 100% {
-                    filter: blur(0px);
                     opacity: 0.1;
-                    background-position: 100% 0%;
-                    background-size: 70px;
-                    transform: rotate(9deg) scale(1.5);
+                }
+                50% {
+                    opacity: 0.3;
                 }
             }
         }

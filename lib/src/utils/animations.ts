@@ -1,6 +1,7 @@
 import { backIn } from 'svelte/easing';
 
 export function swoop(node: any, params: any) {
+
     return {
         delay: params.key * 100,
         duration: 500,

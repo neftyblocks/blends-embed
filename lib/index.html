@@ -77,7 +77,10 @@
         component.addEventListener("sign", ({ detail }) => {
             console.log("sign", detail)
 
-            component.setAttribute("transactionid", VITE_TEST_TX);
+
+            setTimeout(() => {
+                component.setAttribute("transactionid", VITE_TEST_TX);
+            }, 1000);
         });
 
         component.addEventListener("blend", ({ detail }) => {

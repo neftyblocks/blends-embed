@@ -24,21 +24,21 @@
     });
 
     $: {
-        if (config) {
+        if (config && !$settings.config) {
             settings.update((s) => {
                 s.config = JSON.parse(config);
                 return s;
             });
         }
 
-        if (account) {
+        if (account && !$settings.account) {
             settings.update((s) => {
                 s.account = JSON.parse(account);
                 return s;
             });
         }
 
-        if (transactionid) {
+        if (transactionid && !$settings.transactionId) {
             settings.update((s) => {
                 s.transactionId = transactionid;
                 return s;
@@ -47,7 +47,7 @@
             transactionid = null;
         }
 
-        if (blend) {
+        if (blend && !$settings.blend) {
             settings.update((s) => {
                 s.blend = JSON.parse(blend);
                 return s;
