@@ -30,9 +30,9 @@
         "@nefty/use": "^0.1.5"
     },
     "devDependencies": {
-        "vite": "^4.1.3",
+        "rome": "11.0.0",
+        "sass": "^1.60.0",
         "typescript": "^4.9.5",
-        "sass": "^1.58.3",
-        "rome": "11.0.0"
+        "vite": "^4.2.1"
     }
 }
