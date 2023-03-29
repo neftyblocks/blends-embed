@@ -92,6 +92,7 @@ export interface GetBlendResult {
     ingredients_count: number;
     result_count: number;
     secure: boolean;
+    security_id: string;
     odds: boolean;
     requirements: Record<
         string,

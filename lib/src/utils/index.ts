@@ -124,3 +124,24 @@ export const displayTime = (time, now, end = false) => {
         return end ? `ending in ${countdown}` : `live in ${countdown}`;
     }
 };
+
+export const switchFn =
+    (lookupObject: Record<string, () => unknown>, defaultCase = '_default') => (expression: string) =>
+        (lookupObject[expression] || lookupObject[defaultCase])();
+
+export const comparisonOperator = {
+    0: (a: number, b: number) => a === b,
+    1: (a: number, b: number) => a !== b,
+    2: (a: number, b: number) => a > b,
+    3: (a: number, b: number) => a >= b,
+    4: (a: number, b: number) => a < b,
+    5: (a: number, b: number) => a <= b,
+};
+
+export const matchSecurityReason = {
+    TOKEN_HOLDING: 'You do not hold enough tokens',
+    TEMPLATE_HOLDINGS: 'You do not hold enough templates',
+    COLLECTION_HOLDINGS: 'You do not hold enough collections',
+    SCHEMA_HOLDINGS: 'You do not hold enough schemas',
+    '': '',
+};

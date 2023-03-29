@@ -7,9 +7,9 @@ export const blendTransactionActions = ({
     asset_ids,
     tokens,
     balance_asset_ids,
+    security_check,
 }): TransactionAction[] => {
     const { actor, permission } = account;
-    const security_check = false;
 
     const actions = [];
 

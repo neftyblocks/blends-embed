@@ -262,7 +262,7 @@ export const getBlend = async ({
             ingredients_count,
             result_count: result.length,
             secure: security_id !== '0',
-
+            security_id,
             odds: oddbased,
             requirements,
         };

@@ -7,6 +7,7 @@
         getClaims,
         getJobsCount,
         getRequirements,
+        getSecurityCheck,
         settings,
     } from '../store';
     import { useSWR } from '@nefty/use';
@@ -50,21 +51,27 @@
     // FLAGS
     let loading = true;
     let showClaims = false;
+    let allowBlend = true;
 
     // TRANSACTION
     let selectedAssetsToBlend = [];
     let selectedTokensToBlend = [];
     let selectedBalanceAssets = [];
+    let selectedSecurity: null | any[] = null;
 
     const hasVisual = ['collection', 'template', 'token', 'balance'];
 
     // METHODS
     const unsubscribe = settings.subscribe(
         async ({ config, blend, account, transactionId }) => {
+            user = account;
+
             console.log({ config, blend, account, transactionId });
 
             // config flow
             if (config && blend && !transactionId) {
+                localConfig = config;
+
                 data = await useSWR(`blend-${blend.blend_id}`, () =>
                     getBlend({
                         atomic_url: config.atomic_url,
@@ -74,23 +81,39 @@
                     })
                 );
 
-                await getJobsCount({ chain_url: config.chain_url });
-
-                localConfig = config;
+                // await getJobsCount({ chain_url: config.chain_url });
             }
 
             // user flow
-            user = account;
+            if (account && !transactionId) {
+                if (data?.requirements) {
+                    await updateRequirments();
+                } else {
+                    selection = undefined;
+                }
 
-            if (account && data?.requirements && !transactionId) {
-                await updateRequirments();
-            } else if (!transactionId) {
-                selection = undefined;
+                if (data.secure) {
+                    allowBlend = false;
+
+                    const { allowed, result, reason } = await getSecurityCheck({
+                        atomic_url: config.atomic_url,
+                        chain_url: config.chain_url,
+                        security_id: data.security_id,
+                        actor: user.actor,
+                        collection: config.collection,
+                    });
+
+                    if (allowed) {
+                        allowBlend = true;
+                        selectedSecurity = result;
+                    } else {
+                        console.log('not allowed', reason);
+                    }
+                }
             }
 
             // transaction flow
             if (transactionId) {
-                // do something
                 loading = true;
 
                 claims = await getClaims({
@@ -99,8 +122,6 @@
                     contract: blend.contract,
                     tx_id: transactionId,
                 });
-
-                console.log('claims', claims);
 
                 showClaims = true;
 
@@ -260,6 +281,7 @@
                 asset_ids: selectedAssetsToBlend,
                 balance_asset_ids: selectedBalanceAssets,
                 tokens: selectedTokensToBlend,
+                security_check: selectedSecurity,
             });
 
             animateCards();
@@ -440,9 +462,11 @@
                 {:else}
                     <div class="btn-group">
                         <button
-                            disabled={loading || !user}
+                            disabled={!allowBlend || loading || !user}
                             class="btn btn--primary"
-                            on:click={() => blend(data.requirements)}
+                            on:click={() => {
+                                if (allowBlend) blend(data.requirements);
+                            }}
                         >
                             {loading
                                 ? 'Loading'
