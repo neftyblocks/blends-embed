@@ -565,9 +565,9 @@
                                             <a
                                                 class="btn"
                                                 href={getMarketUrl(
-                                                    item,
-                                                    localConfig.marketplace_url,
-                                                    localConfig.collection
+                                                    item.matcher_type,
+                                                    item.market_data,
+                                                    localConfig.marketplace_url
                                                 )}
                                                 target="_blank"
                                                 rel="noopener"
@@ -593,7 +593,7 @@
                                         <!-- svelte-ignore security-anchor-rel-noreferrer -->
                                         <a
                                             class="btn"
-                                            href=""
+                                            href="#"
                                             target="_blank"
                                             rel="noopener"
                                         >

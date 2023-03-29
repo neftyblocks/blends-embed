@@ -68,6 +68,15 @@ export interface GetBlendProperty {
     chain: string;
 }
 
+export interface BlendResultItem {
+    name: string;
+    matcher_type: string;
+    matcher?: string;
+    market_data: string | null;
+    image: string | null;
+    video: string | null;
+}
+
 export interface GetBlendResult {
     blend_id: string;
     contract: string;
@@ -75,13 +84,7 @@ export interface GetBlendResult {
     description?: string;
     start_time: number;
     end_time: number;
-    items: {
-        name: string;
-        matcher_type: string;
-        matcher?: string;
-        image: string | null;
-        video: string | null;
-    }[];
+    items: BlendResultItem[];
     results: {
         name: string;
         image: string | null;

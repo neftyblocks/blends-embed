@@ -1,4 +1,5 @@
 import { useAssetData, useCountDown, useTokenDisplay } from '@nefty/use';
+import type { BlendResultItem } from '../types';
 
 export * from './animations';
 export * from './transaction';
@@ -105,14 +106,18 @@ export const matchTokenRequirements = (selectionItems: any, requirements: any) =
     return value <= +tokenValue;
 };
 
-export const getMarketUrl = (item: any, marketUrl: string, collectionName: string) => {
-    const includeCollection = item.matcher_type !== 'collection';
+export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem['market_data'], marketUrl: string) => {
+    const marketArray = market_data.split('|');
 
-    // TODO: add mapping for matcher_type
+    const url = {
+        attributes: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}`,
+        collection: `${marketUrl}?collection_name=${marketArray[0]}`,
+        schema: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}`,
+        template: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}`,
+        balance: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}`,
+    };
 
-    return `${marketUrl}?${includeCollection ? `collection_name=${collectionName}&` : ''}${item.matcher_type}=${
-        item.matcher
-    }`;
+    return url[matcher_type];
 };
 
 export const displayTime = (time, now, end = false) => {
@@ -138,10 +143,12 @@ export const comparisonOperator = {
     5: (a: number, b: number) => a <= b,
 };
 
+const text = 'You do not hold enough';
+
 export const matchSecurityReason = {
-    TOKEN_HOLDING: 'You do not hold enough tokens',
-    TEMPLATE_HOLDINGS: 'You do not hold enough templates',
-    COLLECTION_HOLDINGS: 'You do not hold enough collections',
-    SCHEMA_HOLDINGS: 'You do not hold enough schemas',
+    TOKEN_HOLDING: `${text} tokens`,
+    TEMPLATE_HOLDINGS: `${text} NFTs from a templates`,
+    COLLECTION_HOLDINGS: `${text} NFTs from a collections`,
+    SCHEMA_HOLDINGS: `${text} NFTs from a schemas`,
     '': '',
 };

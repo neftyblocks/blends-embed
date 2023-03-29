@@ -72,6 +72,7 @@ export const getBlend = async ({
                     description: displayData?.description,
                     matcher_type,
                     matcher,
+                    market_data: `${attributes.collection_name}|${attributes.schema_name}`,
                     video: null,
                     image: null,
                 });
@@ -91,6 +92,7 @@ export const getBlend = async ({
                     name: template.attribute_name,
                     matcher_type,
                     matcher,
+                    market_data: `${template.collection.collection_name}|${template.template_id}`,
                     value,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
@@ -109,6 +111,7 @@ export const getBlend = async ({
                     description: displayData?.description,
                     matcher_type,
                     matcher,
+                    market_data: `${schema.c}|${schema.s}`,
                     video: null,
                     image: null,
                 });
@@ -126,6 +129,7 @@ export const getBlend = async ({
                     name,
                     matcher_type,
                     matcher,
+                    market_data: `${template.collection.collection_name}|${template.template_id}`,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
                 });
@@ -144,6 +148,7 @@ export const getBlend = async ({
                     name: matcher,
                     matcher_type,
                     matcher,
+                    market_data: `${collection.collection_name}`,
                     video: null,
                     image: img ? useImageUrl(img as string) : null,
                 });
@@ -179,6 +184,7 @@ export const getBlend = async ({
                     matcher_type,
                     matcher,
                     video: null,
+                    market_data: null,
                     image: img ? useImageUrl(img.logo as string) : null,
                     token,
                 });
