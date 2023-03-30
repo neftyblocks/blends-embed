@@ -66,8 +66,6 @@
         async ({ config, blend, account, transactionId }) => {
             user = account;
 
-            console.log({ config, blend, account, transactionId });
-
             // config flow
             if (config && blend && !transactionId) {
                 localConfig = config;

@@ -22,7 +22,6 @@
     // METHODS
     const unsubscribe = settings.subscribe(async ({ config, blend }) => {
         if (config && !blend) {
-            console.log('blends-config', config);
             data = await useSWR(`blends-${config.collection}`, () =>
                 getBlends({
                     atomic_url: config.atomic_url,

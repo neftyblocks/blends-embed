@@ -24,14 +24,28 @@
     });
 
     $: {
-        if (config && !$settings.config) {
+        console.log('All', config, account, blend, transactionid);
+        console.log(
+            'Settings',
+            $settings.config,
+            $settings.account,
+            $settings.blend,
+            $settings.transactionId
+        );
+        console.log('-----------------');
+
+        if (config !== JSON.stringify($settings.config)) {
+            console.log('Config', config);
+
             settings.update((s) => {
                 s.config = JSON.parse(config);
                 return s;
             });
         }
 
-        if (account && !$settings.account) {
+        if (account !== JSON.stringify($settings.account)) {
+            console.log('Account', account);
+
             settings.update((s) => {
                 s.account = JSON.parse(account);
                 return s;
@@ -39,6 +53,8 @@
         }
 
         if (transactionid && !$settings.transactionId) {
+            console.log('Transaction', transactionid);
+
             settings.update((s) => {
                 s.transactionId = transactionid;
                 return s;
@@ -48,6 +64,8 @@
         }
 
         if (blend && !$settings.blend) {
+            console.log('Blend', blend);
+
             settings.update((s) => {
                 s.blend = JSON.parse(blend);
                 return s;

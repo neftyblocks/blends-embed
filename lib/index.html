@@ -28,14 +28,18 @@
 </head>
 
 <body>
-    <button id="login">login</button>
-    <button id="logout">logout</button>
+    <div>
+        <button id="login">login</button>
+        <button id="logout">logout</button>
+        <button id="switch">switch collection</button>
+    </div>
     <div id="neftyblocks-blend"></div>
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
         const mount = document.querySelector("#neftyblocks-blend");
         const login = document.querySelector('#login');
         const logout = document.querySelector('#logout');
+        const switchEl = document.querySelector('#switch');
         // ----------------------------
         // CONFIG   
         // ----------------------------
@@ -56,7 +60,6 @@
             actor: VITE_ACCOUNT_NAME,
             permission: 'active'
         }
-
 
         // ----------------------------
         // MOUNT Component
@@ -86,13 +89,23 @@
             console.log("blend", detail)
         });
 
+        let toggle = true;
+
+        switchEl.addEventListener('click', () => {
+            component.setAttribute("config", JSON.stringify({
+                ...config,
+                collection: toggle ? 'alpacaworlds' : VITE_COLLECTION_NAME
+            }));
+
+            toggle = !toggle;
+        });
+
 
         // ----------------------------
         // LOGIN
         // ----------------------------
 
         login.addEventListener('click', () => {
-            console.log()
             component.setAttribute("account", JSON.stringify(account));
         });
 
