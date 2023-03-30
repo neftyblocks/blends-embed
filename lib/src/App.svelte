@@ -27,7 +27,7 @@
         // console.log('All', config, account, blend, transactionid);
         // console.log('-----------------');
 
-        if (config !== JSON.stringify($settings.config)) {
+        if (config !== 'null' && config !== JSON.stringify($settings.config)) {
             console.log('Config', config);
 
             settings.update((s) => {
