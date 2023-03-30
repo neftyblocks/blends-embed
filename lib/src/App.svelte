@@ -36,6 +36,8 @@
 
             settings.update((s) => {
                 s.config = JSON.parse(config);
+                config = null;
+
                 return s;
             });
         }
@@ -54,10 +56,11 @@
 
         //     settings.update((s) => {
         //         s.transactionId = transactionid;
+        //         transactionid = null;
         //         return s;
         //     });
 
-        //     transactionid = null;
+        //
         // }
 
         // if (blend && !$settings.blend) {
