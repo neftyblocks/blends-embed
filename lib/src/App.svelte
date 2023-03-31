@@ -1,4 +1,4 @@
-<svelte:options tag="neftyblocks-blend" />
+<svelte:options tag="neftyblocks-blends" />
 
 <script lang="ts">
     import { settings } from './store';
