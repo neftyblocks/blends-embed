@@ -1,7 +1,8 @@
 <template>
     <main>
         <header>
-            <button @click="login" class="btn">Login</button>
+            <button v-if="!user" @click="login" class="btn">Login</button>
+            <button v-else @click="logout" class="btn">Logout</button>
             <router-link class="btn" to="/">Home</router-link>
             <router-link class="btn" to="/alpacaworlds"
                 >Alpacaworlds</router-link
@@ -28,6 +29,11 @@ const setUser = () => {
 
 const login = () => {
     window.provider.loginUser(window.wallet_anchor);
+};
+
+const logout = () => {
+    window.provider.logoutUser();
+    user.value = null;
 };
 
 const callback = (users: WalletUser[]): void => {

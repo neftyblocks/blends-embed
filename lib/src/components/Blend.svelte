@@ -507,7 +507,6 @@
                                     )
                                         ? 'owned'
                                         : 'needed'}
-                                    transition:swoop={{ key }}
                                 >
                                     <small class="type"
                                         >{item.matcher_type}</small
@@ -603,10 +602,7 @@
                                     {/if}
                                 </div>
                             {:else if !user}
-                                <span
-                                    transition:swoop={{ key }}
-                                    class="no-user"
-                                >
+                                <span class="no-user">
                                     <svg
                                         role="presentation"
                                         focusable="false"

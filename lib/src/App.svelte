@@ -35,7 +35,9 @@
 
             settings.update((s) => {
                 s.config = JSON.parse(config);
+                s.blend = null;
                 config = null;
+                blend = null;
 
                 return s;
             });
@@ -45,18 +47,19 @@
             console.log('Account', account);
 
             settings.update((s) => {
-                s.account = JSON.parse(account);
+                s.account = account !== 'unset' ? JSON.parse(account) : null;
                 account = null;
 
                 return s;
             });
         }
 
-        if (transactionid && !$settings.transactionId) {
+        if (transactionid) {
             console.log('Transaction', transactionid);
 
             settings.update((s) => {
-                s.transactionId = transactionid;
+                s.transactionId =
+                    transactionid !== 'unset' ? transactionid : null;
                 transactionid = null;
 
                 return s;

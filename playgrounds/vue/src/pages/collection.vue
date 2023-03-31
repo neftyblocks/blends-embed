@@ -1,9 +1,8 @@
 <template>
     <main>
         <neftyblocks-blends
-            ref="blendEl"
             :config="setup"
-            :account="user"
+            :account="account"
             :transactionId="transactionId"
             @sign="signHandler"
         />
@@ -11,33 +10,47 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { user } from '../composables/states';
 
 import '@neftyblocks/blends';
 
 const { currentRoute } = useRouter();
-const collection = currentRoute.value.params.collection as string;
+const collection = ref(currentRoute.value.params.collection as string);
 
-const blendEl = ref<HTMLElement | null>(null);
 const transactionId = ref<string | null>(null);
+const account = ref<string | null>(null);
+
 const setup = ref<any | null>(
     JSON.stringify({
         atomic_url: 'https://aa-testnet.neftyblocks.com',
         chain_url: 'https://waxtest.eu.eosamsterdam.net',
         marketplace_url: 'https://test.neftyblocks.com/marketplace/listing',
         chain: 'wax',
-        collection: collection,
+        collection: collection.value,
         profile_url: 'https://test.neftyblocks.com/profile/',
         back_btn: false,
     })
 );
 
-onUnmounted(() => {
-    if (blendEl.value) {
-        blendEl.value.remove();
-    }
+watch(user, () => {
+    if (user.value) account.value = user.value;
+    else account.value = 'unset';
+});
+
+watch(currentRoute, (vnew, vold) => {
+    if (vnew.params.collection === vold.params.collection) return;
+
+    setup.value = JSON.stringify({
+        atomic_url: 'https://aa-testnet.neftyblocks.com',
+        chain_url: 'https://waxtest.eu.eosamsterdam.net',
+        marketplace_url: 'https://test.neftyblocks.com/marketplace/listing',
+        chain: 'wax',
+        collection: vnew.params.collection,
+        profile_url: 'https://test.neftyblocks.com/profile/',
+        back_btn: false,
+    });
 });
 
 const signHandler = async ({ detail }: any) => {
@@ -58,6 +71,8 @@ const signHandler = async ({ detail }: any) => {
         }
     } catch (error) {
         console.log('error', error);
+
+        transactionId.value = 'unset';
     }
 };
 </script>
