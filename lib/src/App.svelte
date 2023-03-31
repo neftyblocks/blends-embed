@@ -16,22 +16,20 @@
     export let transactionid: string | null = null;
 
     // METHODES
-    // settings.set({
-    //     config: config ? JSON.parse(config) : null,
-    //     account: account ? JSON.parse(account) : null,
-    //     blend: blend ? JSON.parse(blend) : null,
-    //     transactionId: transactionid ? transactionid : null,
-    // });
-
     $: {
-        // console.log('All', config, account, blend, transactionid);
-        // console.log('-----------------');
+        console.log(
+            'All Types',
+            typeof config,
+            config,
+            typeof account,
+            account,
+            typeof blend,
+            blend,
+            typeof transactionid,
+            transactionid
+        );
 
-        if (
-            config &&
-            config !== 'null' &&
-            config !== JSON.stringify($settings.config)
-        ) {
+        if (config && config !== JSON.stringify($settings.config)) {
             console.log('Config', config);
 
             settings.update((s) => {
@@ -42,35 +40,38 @@
             });
         }
 
-        // if (account !== JSON.stringify($settings.account)) {
-        //     console.log('Account', account);
+        if (account && account !== JSON.stringify($settings.account)) {
+            console.log('Account', account);
 
-        //     settings.update((s) => {
-        //         s.account = JSON.parse(account);
-        //         return s;
-        //     });
-        // }
+            settings.update((s) => {
+                s.account = JSON.parse(account);
+                account = null;
 
-        // if (transactionid && !$settings.transactionId) {
-        //     console.log('Transaction', transactionid);
+                return s;
+            });
+        }
 
-        //     settings.update((s) => {
-        //         s.transactionId = transactionid;
-        //         transactionid = null;
-        //         return s;
-        //     });
+        if (transactionid && !$settings.transactionId) {
+            console.log('Transaction', transactionid);
 
-        //
-        // }
+            settings.update((s) => {
+                s.transactionId = transactionid;
+                transactionid = null;
 
-        // if (blend && !$settings.blend) {
-        //     console.log('Blend', blend);
+                return s;
+            });
+        }
 
-        //     settings.update((s) => {
-        //         s.blend = JSON.parse(blend);
-        //         return s;
-        //     });
-        // }
+        if (blend && !$settings.blend) {
+            console.log('Blend', blend);
+
+            settings.update((s) => {
+                s.blend = JSON.parse(blend);
+                blend = null;
+
+                return s;
+            });
+        }
     }
 
     const handleBlend = (e: CustomEvent) => {

@@ -1,7 +1,6 @@
 <svelte:options tag="nefty-blend-group" />
 
 <script lang="ts">
-    import { fade } from 'svelte/transition';
     import { get_current_component, onMount } from 'svelte/internal';
     import { useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
@@ -134,11 +133,7 @@
         {#each data as blend, key}
             <div class="blends-item">
                 {#if show === key}
-                    <div
-                        in:fade={{ delay: 100, duration: 100 }}
-                        out:fade={{ duration: 100 }}
-                        class="content"
-                    >
+                    <div class="content">
                         <button
                             class="btn-clear btn-close"
                             on:click={() => (show = undefined)}
@@ -177,11 +172,7 @@
                         </div>
                     </div>
                 {:else}
-                    <div
-                        in:fade={{ delay: 100, duration: 100 }}
-                        out:fade={{ duration: 100 }}
-                        class="content"
-                    >
+                    <div class="content">
                         <header>
                             <figure class="visual">
                                 {#if blend.video}
