@@ -23,7 +23,7 @@ const mountEl = () => {
             collection,
         };
 
-        const embed = `<neftyblocks-blend 
+        const embed = `<neftyblocks-blends 
                         config=${JSON.stringify(config)} 
                     />`;
 

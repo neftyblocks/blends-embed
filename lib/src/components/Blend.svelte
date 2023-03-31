@@ -140,7 +140,10 @@
             now = new Date().getTime();
         }, 1000);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            unsubscribe();
+        };
     });
 
     const updateRequirments = async () => {

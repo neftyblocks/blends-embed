@@ -9,7 +9,6 @@
         "preview:play": "vite preview"
     },
     "dependencies": {
-        "@nefty/ual-anchor": "^0.2.5",
         "@neftyblocks/blends": "workspace:*",
         "vue": "^3.2.47",
         "vue-router": "4.1.6"

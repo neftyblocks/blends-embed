@@ -2,6 +2,7 @@
 
 <script lang="ts">
     import { settings } from './store';
+    import { onMount } from 'svelte/internal';
 
     // COMPONENTS
     import './components/Blends.svelte';
@@ -16,19 +17,19 @@
     export let transactionid: string | null = null;
 
     // METHODES
-    $: {
-        console.log(
-            'All Types',
-            typeof config,
-            config,
-            typeof account,
-            account,
-            typeof blend,
-            blend,
-            typeof transactionid,
-            transactionid
-        );
+    onMount(() => {
+        // onDestroy clean up store
+        return () => {
+            $settings = {
+                config: null,
+                account: null,
+                blend: null,
+                transactionId: null,
+            };
+        };
+    });
 
+    $: {
         if (config && config !== JSON.stringify($settings.config)) {
             console.log('Config', config);
 

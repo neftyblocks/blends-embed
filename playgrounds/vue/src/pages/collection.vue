@@ -1,6 +1,6 @@
 <template>
     <main>
-        <neftyblocks-blend
+        <neftyblocks-blends
             ref="blendEl"
             :config="setup"
             :account="user"
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { user } from '../composables/states';
 
@@ -34,14 +34,11 @@ const setup = ref<any | null>(
     })
 );
 
-// watch(
-//     user,
-//     (value) => {
-//         if (value) {
-//             blendEl.value?.setAttribute('account', value);
-//         }
-//     }
-// );
+onUnmounted(() => {
+    if (blendEl.value) {
+        blendEl.value.remove();
+    }
+});
 
 const signHandler = async ({ detail }: any) => {
     console.log('signHandler', detail);

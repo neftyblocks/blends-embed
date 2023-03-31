@@ -8,7 +8,7 @@ export default defineConfig({
             template: {
                 compilerOptions: {
                     // treat all tags with a dash as custom elements
-                    isCustomElement: (tag: string) => ['neftyblocks-blend'].includes(tag),
+                    isCustomElement: (tag: string) => ['neftyblocks-blends'].includes(tag),
                 },
             },
         }),

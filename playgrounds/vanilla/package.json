@@ -9,7 +9,6 @@
         "preview:play": "vite preview"
     },
     "dependencies": {
-        "@neftyblocks/blends": "workspace:*",
-        "@nefty/ual-anchor": "^0.2.5"
+        "@neftyblocks/blends": "workspace:*"
     }
 }

@@ -27,6 +27,8 @@
                     collection: config.collection,
                 })
             );
+
+            console.log(data, config.collection);
         }
     });
 
@@ -35,7 +37,10 @@
             now = new Date().getTime();
         }, 1000);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            unsubscribe();
+        };
     });
 
     const viewBlend = (blend: GetBlendsResult) => {
