@@ -3,7 +3,7 @@
         <neftyblocks-blend
             ref="blendEl"
             :config="setup"
-            :account="JSON.stringify(user)"
+            :account="user"
             :transactionId="transactionId"
             @sign="signHandler"
         />
