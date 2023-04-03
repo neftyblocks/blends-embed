@@ -22,6 +22,7 @@
         blendTransactionActions,
         swoop,
         displayTime,
+        displayStatus,
     } from '../utils';
 
     // COMPONENTS
@@ -440,7 +441,13 @@
                     <h1>{data.name}</h1>
                     <p>
                         <time>
-                            {displayTime(data.start_time, data.end_time, now)}
+                            {['active', 'ended'].includes(data.status)
+                                ? displayTime(
+                                      data.start_time,
+                                      data.end_time,
+                                      now
+                                  )
+                                : displayStatus(data.status)}
                         </time>
                     </p>
                 </article>
@@ -466,7 +473,10 @@
                 {:else}
                     <div class="btn-group">
                         <button
-                            disabled={!allowBlend || loading || !user}
+                            disabled={!allowBlend ||
+                                loading ||
+                                !user ||
+                                data.status !== 'active'}
                             class="btn btn--primary"
                             on:click={() => {
                                 if (allowBlend) blend(data.requirements);
@@ -475,7 +485,9 @@
                             {loading
                                 ? 'Loading'
                                 : user
-                                ? data.secure
+                                ? data.status !== 'active'
+                                    ? displayStatus(data.status)
+                                    : data.secure
                                     ? 'Secure blend'
                                     : 'Blend'
                                 : 'Not logged in'}

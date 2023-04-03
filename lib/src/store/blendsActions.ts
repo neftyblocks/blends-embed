@@ -38,10 +38,12 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
                 display_data,
                 is_hidden,
                 category,
+                max,
+                use_count,
             } = data.data[i];
 
             if (is_hidden) continue;
-
+            let max_reached = false;
             const items = [];
             const result = [];
 
@@ -77,6 +79,12 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
 
                         if (!template) continue;
 
+                        const issued_supply = +template.issued_supply;
+                        const max_supply = +template.max_supply;
+                        const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
+
+                        if (maxReached) max_reached = true;
+
                         const asset = useAssetData(template);
                         const { img, name } = asset;
 
@@ -92,6 +100,8 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
 
             const { blend_img, blend_name } = blendNameAndImage(displayData, rolls[0].outcomes[0].results[0]);
 
+            const soldOut = +max !== 0 && +use_count >= +max;
+
             content.push({
                 blend_id,
                 contract,
@@ -105,7 +115,14 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
                 result_count: result.length,
                 secure: security_id !== '0',
                 display_data: displayData,
-                status: displayTime(start_time, end_time, now) === 'ended' ? 'ended' : 'active',
+                status:
+                    displayTime(start_time, end_time, now) === 'ended'
+                        ? 'ended'
+                        : soldOut
+                        ? 'sold-out'
+                        : max_reached
+                        ? 'max-reached'
+                        : 'active',
                 image: blend_img ? useImageUrl(blend_img) : null,
             });
         }

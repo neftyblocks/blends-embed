@@ -1,6 +1,6 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
 import type { Payload, GetBlendProperty, GetBlendResult } from '../types';
-import { blendNameAndImage, matchRarity, priceForInput } from '../utils';
+import { blendNameAndImage, displayTime, matchRarity, priceForInput } from '../utils';
 
 let tokensJson: any = null;
 
@@ -37,7 +37,11 @@ export const getBlend = async ({
             display_data,
             category,
             collection_name,
+            use_count,
+            max,
         } = data.data;
+
+        const now = new Date().getTime();
 
         const items = [];
         const result = [];
@@ -208,6 +212,7 @@ export const getBlend = async ({
         const totalOdds = rolls[0].total_odds;
         const outcomes = rolls[0].outcomes;
         let oddbased = true;
+        let max_reached = false;
 
         let backgroundImg = null;
 
@@ -237,6 +242,12 @@ export const getBlend = async ({
 
                     if (!template) continue;
 
+                    const issued_supply = +template.issued_supply;
+                    const max_supply = +template.max_supply;
+                    const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
+
+                    if (maxReached) max_reached = true;
+
                     const asset = useAssetData(template);
                     const { img, video, name } = asset;
 
@@ -261,6 +272,8 @@ export const getBlend = async ({
 
         const { blend_name } = blendNameAndImage(display_data, rolls[0].outcomes[0].results[0]);
 
+        const soldOut = +max !== 0 && +use_count >= +max;
+
         return {
             blend_id,
             contract,
@@ -277,6 +290,14 @@ export const getBlend = async ({
             security_id,
             odds: oddbased,
             requirements,
+            status:
+                displayTime(start_time, end_time, now) === 'ended'
+                    ? 'ended'
+                    : soldOut
+                    ? 'sold-out'
+                    : max_reached
+                    ? 'max-reached'
+                    : 'active',
             backgroundImg,
         };
     }

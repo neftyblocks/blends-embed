@@ -134,6 +134,10 @@ export const displayTime = (start_time, end_time, now) => {
     }
 };
 
+export const displayStatus = (status: string) => {
+    return status.split('-').join(' ');
+};
+
 export const switchFn =
     (lookupObject: Record<string, () => unknown>, defaultCase = '_default') => (expression: string) =>
         (lookupObject[expression] || lookupObject[defaultCase])();

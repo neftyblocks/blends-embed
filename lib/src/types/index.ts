@@ -58,7 +58,7 @@ export interface GetBlendsResult {
     ingredients_count: number;
     result_count: number;
     secure: boolean;
-    status: string;
+    status: 'active' | 'ended' | 'sold-out' | 'max-reached';
     display_data: Record<string, unknown> | null;
 }
 
@@ -111,6 +111,7 @@ export interface GetBlendResult {
             value?: number | Record<string, unknown>[];
         }
     >;
+    status: 'active' | 'ended' | 'sold-out' | 'max-reached';
     backgroundImg: string | null;
 }
 

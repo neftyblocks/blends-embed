@@ -4,7 +4,7 @@
     import { get_current_component, onMount } from 'svelte/internal';
     import { useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
-    import { dispatch, displayTime } from '../utils';
+    import { dispatch, displayStatus, displayTime } from '../utils';
     import type { GetBlendsResult } from '../types';
 
     // COMPONENTS
@@ -199,11 +199,13 @@
                         </figure>
                         <article>
                             <time>
-                                {displayTime(
-                                    blend.start_time,
-                                    blend.end_time,
-                                    now
-                                )}
+                                {['active', 'ended'].includes(blend.status)
+                                    ? displayTime(
+                                          blend.start_time,
+                                          blend.end_time,
+                                          now
+                                      )
+                                    : displayStatus(blend.status)}
                             </time>
                             <h3 data-title={blend.name}>{blend.name}</h3>
                             <div class="stats">
@@ -249,7 +251,7 @@
                             </button> -->
                         </div>
                     </main>
-                    <footer>
+                    <footer class={blend.status}>
                         {#if blend.status === 'active'}
                             <button
                                 class={blend.secure ? 'secure' : ''}
@@ -258,6 +260,10 @@
                                     ? 'Secure blend'
                                     : 'Blend'}</button
                             >
+                        {:else}
+                            <button on:click={() => viewBlend(blend)}>
+                                {displayStatus(blend.status)}
+                            </button>
                         {/if}
                     </footer>
                 </div>
@@ -524,6 +530,28 @@
             min-height: 55px;
             background-color: var(--nb-bg-footer);
             border-radius: 0 0 var(--nb-radius) var(--nb-radius);
+
+            &.ended,
+            &.sold-out,
+            &.max-reached {
+                background-color: var(--nb-inactive);
+
+                button {
+                    &:hover {
+                        background-color: rgba(0, 0, 0, 0);
+
+                        &.secure {
+                            background-color: rgba(0, 0, 0, 0);
+                        }
+                    }
+                }
+            }
+
+            p {
+                padding: 18px 6px;
+                width: 100%;
+                text-align: center;
+            }
 
             button {
                 padding: 18px 6px;

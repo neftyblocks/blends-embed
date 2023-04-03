@@ -37,7 +37,6 @@
                 s.config = JSON.parse(config);
                 s.blend = null;
                 config = null;
-                blend = null;
 
                 return s;
             });
