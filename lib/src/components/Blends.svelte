@@ -27,8 +27,6 @@
                     collection: config.collection,
                 })
             );
-
-            console.log(data, config.collection);
         }
     });
 
@@ -137,7 +135,7 @@
     <div class="blends-group">
         {#each data as blend, key}
             <div class="blends-item">
-                {#if show === key}
+                <!-- {#if show === key}
                     <div class="content">
                         <button
                             class="btn-clear btn-close"
@@ -176,88 +174,83 @@
                             {/each}
                         </div>
                     </div>
-                {:else}
-                    <div class="content">
-                        <header>
-                            <figure class="visual">
-                                {#if blend.video}
-                                    <video
-                                        src={blend.video}
-                                        loop
-                                        autoplay
-                                        muted
-                                        playsinline
-                                    />
-                                {:else if blend.image}
-                                    <img
-                                        class="shadow"
-                                        src={blend.image}
-                                        alt={blend.name}
-                                    />
-                                    <img src={blend.image} alt={blend.name} />
-                                {:else}
-                                    <small>empty</small>
-                                {/if}
-                            </figure>
-                            <article>
-                                <time>
-                                    {displayTime(blend.start_time, now)} · {displayTime(
-                                        blend.end_time,
-                                        now,
-                                        true
-                                    )}
-                                </time>
-                                <h3 data-title={blend.name}>{blend.name}</h3>
-                                <div class="stats">
-                                    {#if blend.category}
-                                        <div class="stat">
-                                            <small>category</small>
-                                            <span>
-                                                {blend.category}
-                                            </span>
-                                        </div>
-                                    {/if}
-                                    {#if blend.secure}
-                                        <div class="stat">
-                                            <small>secure</small>
-                                            <span>Yes</span>
-                                        </div>
-                                    {/if}
-                                </div>
-                            </article>
-                        </header>
-                        <main>
+                {:else} -->
+                <div class="content">
+                    <header>
+                        <figure class="visual">
+                            {#if blend.video}
+                                <video
+                                    src={blend.video}
+                                    loop
+                                    autoplay
+                                    muted
+                                    playsinline
+                                />
+                            {:else if blend.image}
+                                <img
+                                    class="shadow"
+                                    src={blend.image}
+                                    alt={blend.name}
+                                />
+                                <img src={blend.image} alt={blend.name} />
+                            {:else}
+                                <small>empty</small>
+                            {/if}
+                        </figure>
+                        <article>
+                            <time>
+                                {displayTime(
+                                    blend.start_time,
+                                    blend.end_time,
+                                    now
+                                )}
+                            </time>
+                            <h3 data-title={blend.name}>{blend.name}</h3>
                             <div class="stats">
-                                <div class="stat">
-                                    <small>ingredients</small>
-                                    <span>
-                                        <svg>
-                                            <use href="#hat" />
-                                        </svg>
-                                        {blend.ingredients_count}
-                                    </span>
-                                </div>
-                                <div class="stat">
-                                    <small>results</small>
-                                    <span>
-                                        <svg>
-                                            <use href="#star" />
-                                        </svg>
-                                        {blend.result_count}
-                                    </span>
-                                </div>
-                                <button
-                                    class="btn-clear btn-requirements"
-                                    on:click={() => (show = key)}
-                                >
-                                    details
-                                    <svg>
-                                        <use href="#chevron_right" />
-                                    </svg>
-                                </button>
+                                {#if blend.category}
+                                    <div class="stat">
+                                        <small>category</small>
+                                        <span>
+                                            {blend.category}
+                                        </span>
+                                    </div>
+                                {/if}
                             </div>
-                        </main>
-                        <footer>
+                        </article>
+                    </header>
+                    <main>
+                        <div class="stats">
+                            <div class="stat">
+                                <small>ingredients</small>
+                                <span>
+                                    <svg>
+                                        <use href="#hat" />
+                                    </svg>
+                                    {blend.ingredients_count}
+                                </span>
+                            </div>
+                            <div class="stat">
+                                <small>results</small>
+                                <span>
+                                    <svg>
+                                        <use href="#star" />
+                                    </svg>
+                                    {blend.result_count}
+                                </span>
+                            </div>
+                            <!-- <button
+                                class="btn-clear btn-requirements"
+                                on:click={() => (show = key)}
+                            >
+                                details
+                                <svg>
+                                    <use href="#chevron_right" />
+                                </svg>
+                            </button> -->
+                        </div>
+                    </main>
+                    <footer>
+                        {#if blend.status === 'active'}
                             <button
                                 class={blend.secure ? 'secure' : ''}
                                 on:click={() => viewBlend(blend)}
@@ -265,9 +258,10 @@
                                     ? 'Secure blend'
                                     : 'Blend'}</button
                             >
-                        </footer>
-                    </div>
-                {/if}
+                        {/if}
+                    </footer>
+                </div>
+                <!-- {/if} -->
             </div>
         {/each}
     </div>
@@ -527,6 +521,7 @@
 
         footer {
             margin: 0 -6px;
+            min-height: 55px;
             background-color: var(--nb-bg-footer);
             border-radius: 0 0 var(--nb-radius) var(--nb-radius);
 

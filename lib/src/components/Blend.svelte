@@ -114,21 +114,28 @@
             if (transactionId) {
                 loading = true;
 
-                claims = await getClaims({
-                    atomic_url: config.atomic_url,
-                    blend_id: blend.blend_id,
-                    contract: blend.contract,
-                    tx_id: transactionId,
-                });
+                if (transactionId !== 'unset') {
+                    claims = await getClaims({
+                        atomic_url: config.atomic_url,
+                        blend_id: blend.blend_id,
+                        contract: blend.contract,
+                        tx_id: transactionId,
+                    });
 
-                showClaims = true;
+                    showClaims = true;
 
-                setTimeout(() => {
+                    setTimeout(() => {
+                        settings.update((s) => {
+                            s.transactionId = null;
+                            return s;
+                        });
+                    }, 1000);
+                } else {
                     settings.update((s) => {
-                        s.transactionId = undefined;
+                        s.transactionId = null;
                         return s;
                     });
-                }, 1000);
+                }
             }
 
             loading = false;
@@ -403,7 +410,7 @@
         <svg role="presentation" focusable="false" aria-hidden="true">
             <use xlink:href="#arrow_left" />
         </svg>
-        back
+        Blends
     </button>
     <div
         class="blend {data.description ? '' : 'no-text'} {showClaims
@@ -422,7 +429,7 @@
                     <nefty-blend-slider items={data.results} claims={false} />
                     <img
                         class="result-bg"
-                        src={data.results[0].image}
+                        src={data.backgroundImg || ''}
                         alt=""
                         loading="lazy"
                     />
@@ -433,11 +440,7 @@
                     <h1>{data.name}</h1>
                     <p>
                         <time>
-                            {displayTime(data.start_time, now)} - {displayTime(
-                                data.end_time,
-                                now,
-                                true
-                            )}
+                            {displayTime(data.start_time, data.end_time, now)}
                         </time>
                     </p>
                 </article>
@@ -499,7 +502,21 @@
                 <div class="selection-group" bind:this={selectionGroupElement}>
                     {#each data.items as item, key}
                         <div class="selection-item">
-                            {#if selection}
+                            {#if !user}
+                                <span class="no-user">
+                                    <svg
+                                        role="presentation"
+                                        focusable="false"
+                                        aria-hidden="true"
+                                    >
+                                        <use xlink:href="#ghost" />
+                                    </svg>
+                                    <small>
+                                        Our friendly ghost is here to remind you
+                                        to log in first
+                                    </small>
+                                </span>
+                            {:else if selection}
                                 <div
                                     class={matchAssetRequirements(
                                         selection[item.matcher],
@@ -601,20 +618,6 @@
                                         </a>
                                     {/if}
                                 </div>
-                            {:else if !user}
-                                <span class="no-user">
-                                    <svg
-                                        role="presentation"
-                                        focusable="false"
-                                        aria-hidden="true"
-                                    >
-                                        <use xlink:href="#ghost" />
-                                    </svg>
-                                    <small>
-                                        Our friendly ghost is here to remind you
-                                        to log in first
-                                    </small>
-                                </span>
                             {:else}
                                 <span class="loading-state" />
                             {/if}

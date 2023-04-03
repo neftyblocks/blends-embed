@@ -1,6 +1,6 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
 import type { GetBlendsProperty, Payload, GetBlendsResult } from '../types';
-import { blendNameAndImage } from '../utils';
+import { blendNameAndImage, displayTime } from '../utils';
 
 export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsProperty): Promise<
     GetBlendsResult[] | null
@@ -22,6 +22,7 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
     }
 
     if (data) {
+        const now = new Date().getTime();
         const content: GetBlendsResult[] = [];
 
         for (let i = 0; i < data.data.length; i++) {
@@ -104,6 +105,7 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
                 result_count: result.length,
                 secure: security_id !== '0',
                 display_data: displayData,
+                status: displayTime(start_time, end_time, now) === 'ended' ? 'ended' : 'active',
                 image: blend_img ? useImageUrl(blend_img) : null,
             });
         }

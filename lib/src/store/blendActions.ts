@@ -209,6 +209,8 @@ export const getBlend = async ({
         const outcomes = rolls[0].outcomes;
         let oddbased = true;
 
+        let backgroundImg = null;
+
         for (let a = 0; a < outcomes.length; a++) {
             const { results, odds } = outcomes[a];
 
@@ -249,6 +251,10 @@ export const getBlend = async ({
                         video: video ? useImageUrl(video as string) : null,
                         image: img ? useImageUrl(img as string) : null,
                     });
+
+                    if (!backgroundImg) {
+                        backgroundImg = useImageUrl(img, 300, true);
+                    }
                 }
             }
         }
@@ -271,6 +277,7 @@ export const getBlend = async ({
             security_id,
             odds: oddbased,
             requirements,
+            backgroundImg,
         };
     }
 

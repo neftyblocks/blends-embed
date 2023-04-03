@@ -50,8 +50,8 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
         const displayData = firstResult.pool.display_data ? JSON.parse(firstResult.pool.display_data) : null;
 
         if (displayData) {
-            blend_name = displayData.name;
-            blend_img = displayData.image;
+            if (!blend_name) blend_name = displayData.name;
+            if (!blend_img) blend_img = displayData.image;
         }
     }
 
@@ -120,13 +120,17 @@ export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem[
     return url[matcher_type];
 };
 
-export const displayTime = (time, now, end = false) => {
-    const countdown = useCountDown(time, now);
+export const displayTime = (start_time, end_time, now) => {
+    const countdownStart = useCountDown(start_time, now);
+    const countdownEnd = useCountDown(end_time, now);
 
-    if (countdown === '0') {
-        return end ? 'no end' : 'live';
-    } else {
-        return end ? `ending in ${countdown}` : `live in ${countdown}`;
+    if (start_time !== 0) {
+        if (countdownStart === '0') {
+            if (+end_time !== 0) {
+                if (countdownEnd === '0') return 'ended';
+                else return `ending in ${countdownEnd}`;
+            } else return 'live';
+        } else return `live in ${countdownStart}`;
     }
 };
 

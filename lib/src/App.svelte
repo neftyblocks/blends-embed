@@ -58,8 +58,7 @@
             console.log('Transaction', transactionid);
 
             settings.update((s) => {
-                s.transactionId =
-                    transactionid !== 'unset' ? transactionid : null;
+                s.transactionId = transactionid;
                 transactionid = null;
 
                 return s;

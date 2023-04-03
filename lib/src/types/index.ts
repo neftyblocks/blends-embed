@@ -58,6 +58,7 @@ export interface GetBlendsResult {
     ingredients_count: number;
     result_count: number;
     secure: boolean;
+    status: string;
     display_data: Record<string, unknown> | null;
 }
 
@@ -110,6 +111,7 @@ export interface GetBlendResult {
             value?: number | Record<string, unknown>[];
         }
     >;
+    backgroundImg: string | null;
 }
 
 export interface TransactionAction {
