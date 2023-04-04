@@ -20,7 +20,6 @@
         matchTokenRequirements,
         getMarketUrl,
         blendTransactionActions,
-        swoop,
         displayTime,
         displayStatus,
     } from '../utils';

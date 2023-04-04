@@ -5,7 +5,7 @@
     import SuggestifyEngine from '@suggestify/engine';
     import { useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
-    import { dispatch, displayStatus, displayTime } from '../utils';
+    import { dispatch, displayStatus, displayTime, sortBlends } from '../utils';
     import type { GetBlendsResponse, GetBlendsResult } from '../types';
 
     // COMPONENTS
@@ -39,7 +39,7 @@
         );
 
         if (indexedData) {
-            data = Object.values(indexedData.content);
+            data = sortBlends(Object.values(indexedData.content));
             searchValue = undefined;
 
             suggestifyEngine = new SuggestifyEngine({

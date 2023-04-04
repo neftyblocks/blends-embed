@@ -57,7 +57,7 @@ const signHandler = async ({ detail }: any) => {
     console.log('signHandler', detail);
 
     try {
-        const result = await window.provider_user.signTransaction(
+        const result: any = await window.provider_user.signTransaction(
             { actions: detail },
             {
                 broadcast: true,
