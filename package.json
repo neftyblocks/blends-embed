@@ -25,7 +25,7 @@
         "lint": "rome check .",
         "format": "rome format . --write"
     },
-    "packageManager": "pnpm@7.29.2",
+    "packageManager": "pnpm@8.1.1",
     "dependencies": {
         "@nefty/use": "^0.1.5",
         "@nefty/ual-anchor": "^0.2.5"

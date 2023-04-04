@@ -1,10 +1,16 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
-import type { GetBlendsProperty, Payload, GetBlendsResult } from '../types';
+import type { GetBlendsProperty, Payload, GetBlendsResult, GetBlendsResponse } from '../types';
 import { blendNameAndImage, displayTime } from '../utils';
 
-export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsProperty): Promise<
-    GetBlendsResult[] | null
-> => {
+export const getBlends = async ({
+    atomic_url,
+    collection,
+    page = 1,
+    ingredient_match,
+    ingredient_owner,
+}: GetBlendsProperty): Promise<null | GetBlendsResponse> => {
+    const optionalMatch = ingredient_match && ingredient_owner ? { ingredient_match, ingredient_owner } : {};
+
     const { data, error } = await useFetch<Payload>('/neftyblends/v1/blends', {
         baseUrl: atomic_url,
         params: {
@@ -13,6 +19,7 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
             limit: '1000',
             page: `${page}`,
             order: 'asc',
+            ...optionalMatch,
         },
     });
 
@@ -23,7 +30,8 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
 
     if (data) {
         const now = new Date().getTime();
-        const content: GetBlendsResult[] = [];
+        const content: Record<string, GetBlendsResult> = {};
+        const search: Record<string, string> = {};
 
         for (let i = 0; i < data.data.length; i++) {
             const {
@@ -97,12 +105,11 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
             }
 
             const displayData = display_data ? JSON.parse(display_data) : null;
-
             const { blend_img, blend_name } = blendNameAndImage(displayData, rolls[0].outcomes[0].results[0]);
 
             const soldOut = +max !== 0 && +use_count >= +max;
 
-            content.push({
+            content[`${contract}_${blend_id}`] = {
                 blend_id,
                 contract,
                 name: blend_name,
@@ -124,10 +131,12 @@ export const getBlends = async ({ atomic_url, collection, page = 1 }: GetBlendsP
                         ? 'max-reached'
                         : 'active',
                 image: blend_img ? useImageUrl(blend_img) : null,
-            });
+            };
+
+            search[`${blend_name}`] = `${contract}_${blend_id}`;
         }
 
-        return content;
+        return { content, search };
     }
 
     return null;

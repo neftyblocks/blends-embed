@@ -29,6 +29,13 @@ export interface GetBlendsProperty {
     atomic_url: string;
     collection: string;
     page?: number;
+    ingredient_match?: string;
+    ingredient_owner?: string;
+}
+
+export interface GetBlendsResponse {
+    content: Record<string, GetBlendsResult>;
+    search: Record<string, string>;
 }
 
 export interface GetBlendsResult {

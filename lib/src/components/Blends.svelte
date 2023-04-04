@@ -2,10 +2,11 @@
 
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
+    import SuggestifyEngine from '@suggestify/engine';
     import { useSWR } from '@nefty/use';
     import { getBlends, settings } from '../store';
     import { dispatch, displayStatus, displayTime } from '../utils';
-    import type { GetBlendsResult } from '../types';
+    import type { GetBlendsResponse, GetBlendsResult } from '../types';
 
     // COMPONENTS
 
@@ -14,21 +15,56 @@
 
     // STATES
     let data = undefined;
+    let indexedData = undefined;
 
     let show;
     let now = new Date().getTime();
+    let timeout: ReturnType<typeof setTimeout> = setTimeout(() => '', 250);
+    let suggestifyEngine: SuggestifyEngine;
+    let searchValue;
+    let selectedMatch;
+    let owner;
 
     // METHODS
-    const unsubscribe = settings.subscribe(async ({ config, blend }) => {
-        if (config && !blend) {
-            data = await useSWR(`blends-${config.collection}`, () =>
+    const asyncData = async (config) => {
+        indexedData = await useSWR<GetBlendsResponse>(
+            `blends-${config.collection}-${selectedMatch}`,
+            () =>
                 getBlends({
                     atomic_url: config.atomic_url,
                     collection: config.collection,
+                    ingredient_match: selectedMatch,
+                    ingredient_owner: owner,
                 })
-            );
+        );
+
+        if (indexedData) {
+            data = Object.values(indexedData.content);
+            searchValue = undefined;
+
+            suggestifyEngine = new SuggestifyEngine({
+                defaultItems: Object.keys(indexedData.search),
+                options: {
+                    MIN_DISTANCE: 3,
+                    ITEM_CAP: 50,
+                },
+            });
         }
-    });
+    };
+
+    const unsubscribe = settings.subscribe(
+        async ({ config, blend, account }) => {
+            if (config && !blend) {
+                await asyncData(config);
+            }
+
+            if (account) {
+                owner = account.actor;
+            } else {
+                owner = undefined;
+            }
+        }
+    );
 
     onMount(() => {
         const interval = setInterval(() => {
@@ -53,6 +89,39 @@
             },
             component
         );
+    };
+
+    const search = () => {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            let temp = [];
+            if (searchValue.length > 0) {
+                const results = suggestifyEngine.getResults(searchValue);
+
+                if (results) {
+                    for (let i = 0; i < results.length; i++) {
+                        const id = indexedData.search[results[i]];
+                        temp.push(indexedData.content[id]);
+                    }
+                    data = undefined;
+                }
+            } else {
+                temp = Object.values(indexedData.content);
+            }
+
+            setTimeout(() => {
+                data = temp;
+            }, 100);
+        }, 250);
+    };
+
+    const selectMatch = () => {
+        data = undefined;
+
+        setTimeout(() => {
+            console.log('selectedMatch', selectedMatch);
+            asyncData($settings.config);
+        }, 100);
     };
 </script>
 
@@ -131,6 +200,20 @@
     >
 </svg>
 
+<div class="blends-actions">
+    <input
+        type="search"
+        bind:value={searchValue}
+        placeholder="Search name"
+        on:input={search}
+    />
+    <select bind:value={selectedMatch} name="" id="" on:input={selectMatch}>
+        <option value="">Show all</option>
+        <option value="all">Own all requirements</option>
+        <option value="missing_x">Missing one requirement</option>
+        <option value="any">Own atleast one requirment</option>
+    </select>
+</div>
 {#if data}
     <div class="blends-group">
         {#each data as blend, key}
@@ -292,6 +375,14 @@
     @import '../style/global.scss';
     @import '../style/states.scss';
     @import '../style/button.scss';
+    @import '../style/input.scss';
+
+    .blends-actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 12px;
+    }
 
     .blends-group {
         display: grid;

@@ -30,6 +30,9 @@
         "preview": "vite preview",
         "check": "svelte-check --tsconfig ./tsconfig.json"
     },
+    "dependencies": {
+        "@suggestify/engine": "^1.1.1"
+    },
     "devDependencies": {
         "@sveltejs/vite-plugin-svelte": "^2.0.4",
         "@tsconfig/svelte": "^4.0.1",

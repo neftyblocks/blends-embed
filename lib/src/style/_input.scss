@@ -1,0 +1,21 @@
+input,
+select {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: var(--nb-border-size) solid var(--nb-border);
+    background-color: var(--nb-bg-card);
+    color: var(--nb-color);
+    font-size: var(--nb-font-size--small);
+    outline: none;
+
+    &::placeholder {
+        color: var(--nb-color);
+        opacity: 0.5;
+    }
+
+    &:active,
+    &:focus {
+        border-color: var(--nb-color-highlight);
+    }
+}
