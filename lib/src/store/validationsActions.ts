@@ -36,22 +36,29 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
         const { data: assets } = data;
 
         if (assets.length) {
-            result.data[matcher] = [];
+            const normal = [];
+            const backed = [];
 
             for (let i = 0; i < assets.length; i++) {
-                const { asset_id, template_mint } = assets[i];
+                const { asset_id, template_mint, backed_tokens } = assets[i];
 
                 const asset = useAssetData(assets[i]);
                 const { video, img, name } = asset;
+                const backedByTokens = backed_tokens.length > 0;
 
-                result.data[matcher].push({
+                const content = {
                     asset_id,
                     name,
                     mint: template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
-                });
+                    backedByTokens,
+                };
+
+                backedByTokens ? backed.push(content) : normal.push(content);
             }
+
+            result.data[matcher] = [...normal, ...backed];
         }
     }
 
@@ -80,18 +87,26 @@ export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url,
         const { data: assets } = data;
 
         if (assets.length) {
-            result.data[matcher] = [];
+            const normal = [];
+            const backed = [];
 
             for (let i = 0; i < assets.length; i++) {
-                const { asset_id, template_mint, mutable_data } = assets[i];
+                const { asset_id, template_mint, mutable_data, backed_tokens } = assets[i];
 
-                result.data[matcher].push({
+                const backedByTokens = backed_tokens.length > 0;
+
+                const content = {
                     asset_id,
                     name: attribute_name,
                     mint: template_mint,
                     value: +mutable_data[attribute_name],
-                });
+                    backedByTokens,
+                };
+
+                backedByTokens ? backed.push(content) : normal.push(content);
             }
+
+            result.data[matcher] = [...normal, ...backed];
         }
     }
 
@@ -119,22 +134,29 @@ export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_nam
         const { data: assets } = data;
 
         if (assets.length) {
-            result.data[matcher] = [];
+            const normal = [];
+            const backed = [];
 
             for (let i = 0; i < assets.length; i++) {
-                const { asset_id, template_mint } = assets[i];
+                const { asset_id, template_mint, backed_tokens } = assets[i];
 
                 const asset = useAssetData(assets[i]);
                 const { video, img, name } = asset;
+                const backedByTokens = backed_tokens.length > 0;
 
-                result.data[matcher].push({
+                const content = {
                     asset_id,
                     name,
                     mint: template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
-                });
+                    backedByTokens,
+                };
+
+                backedByTokens ? backed.push(content) : normal.push(content);
             }
+
+            result.data[matcher] = [...normal, ...backed];
         }
     }
 
@@ -162,16 +184,23 @@ export const getTemplateAssetId = async ({ template_id, collection_name, atomic_
         const { data: assets } = data;
 
         if (assets.length) {
-            result.data[template_id] = [];
+            const normal = [];
+            const backed = [];
 
             for (let i = 0; i < assets.length; i++) {
-                const { asset_id, template_mint } = assets[i];
+                const { asset_id, template_mint, backed_tokens } = assets[i];
+                const backedByTokens = backed_tokens.length > 0;
 
-                result.data[template_id].push({
+                const content = {
                     asset_id,
                     mint: template_mint,
-                });
+                    backedByTokens,
+                };
+
+                backedByTokens ? backed.push(content) : normal.push(content);
             }
+
+            result.data[template_id] = [...normal, ...backed];
         }
     }
 
@@ -198,22 +227,29 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
         const { data: assets } = data;
 
         if (assets.length) {
-            result.data[collection_name] = [];
+            const normal = [];
+            const backed = [];
 
             for (let i = 0; i < assets.length; i++) {
-                const { asset_id, template_mint } = assets[i];
+                const { asset_id, template_mint, backed_tokens } = assets[i];
 
                 const asset = useAssetData(assets[i]);
                 const { video, img, name } = asset;
+                const backedByTokens = backed_tokens.length > 0;
 
-                result.data[collection_name].push({
+                const content = {
                     asset_id,
                     name,
                     mint: template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
-                });
+                    backedByTokens,
+                };
+
+                backedByTokens ? backed.push(content) : normal.push(content);
             }
+
+            result.data[collection_name] = [...normal, ...backed];
         }
     }
 

@@ -146,6 +146,9 @@
                                 <p class="name">{item.name}</p>
                             {/if}
                             <p>#{item.mint}</p>
+                            {#if item.backedByTokens}
+                                <p class="badge">Backed with Tokens</p>
+                            {/if}
                         </article>
 
                         {#if isSelected(item)}
@@ -306,5 +309,13 @@
                 }
             }
         }
+    }
+
+    .badge {
+        padding: 3px 6px;
+        margin-top: 6px;
+        border-radius: 6px;
+        font-size: var(--nb-font-size--small);
+        background-color: var(--nb-inactive);
     }
 </style>
