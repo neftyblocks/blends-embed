@@ -58,7 +58,7 @@
             profile_url: "https://test.neftyblocks.com/profile/",
         }
 
-        const blend = { blend_id: "4117", contract: "blend.nefty" };
+        const blend = { blend_id: "4071", contract: "blend.nefty" };
 
         const account = {
             actor: VITE_ACCOUNT_NAME,
@@ -71,6 +71,7 @@
         const embed = `<neftyblocks-blends 
                         config=${JSON.stringify(config)}
                         account=${JSON.stringify(account)}
+                        blend=${JSON.stringify(blend)}
 
                     />`;
 
@@ -86,8 +87,8 @@
 
 
             setTimeout(() => {
-                // component.setAttribute("transactionid", VITE_TEST_TX);
-                component.setAttribute("transactionid", 'unset');
+                component.setAttribute("transactionid", VITE_TEST_TX);
+                // component.setAttribute("transactionid", 'unset');
             }, 1000);
         });
 

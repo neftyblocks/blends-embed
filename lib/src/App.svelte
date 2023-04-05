@@ -31,8 +31,6 @@
 
     $: {
         if (config && config !== JSON.stringify($settings.config)) {
-            console.log('Config', config);
-
             settings.update((s) => {
                 s.config = JSON.parse(config);
                 s.blend = null;
@@ -43,8 +41,6 @@
         }
 
         if (account && account !== JSON.stringify($settings.account)) {
-            console.log('Account', account);
-
             settings.update((s) => {
                 s.account = account !== 'unset' ? JSON.parse(account) : null;
                 account = null;
@@ -54,8 +50,6 @@
         }
 
         if (transactionid) {
-            console.log('Transaction', transactionid);
-
             settings.update((s) => {
                 s.transactionId = transactionid;
                 transactionid = null;
@@ -65,8 +59,6 @@
         }
 
         if (blend && !$settings.blend) {
-            console.log('Blend', blend);
-
             settings.update((s) => {
                 s.blend = JSON.parse(blend);
                 blend = null;

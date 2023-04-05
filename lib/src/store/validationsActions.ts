@@ -1,4 +1,4 @@
-import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
+import { useFetch, useImageUrl, useAssetData, useRetry } from '@nefty/use';
 import type { Payload, GetBlendResult } from '../types';
 
 const templateMintConfig = {
@@ -384,11 +384,17 @@ export const getRequirements = async ({
 export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
     const result = [];
 
-    const { data, error } = await useFetch<Payload>(`/neftyblends/v1/blends/${contract}/${blend_id}/claims`, {
-        baseUrl: atomic_url,
-        params: {
-            tx_id,
-        },
+    const { data, error } = await useRetry({
+        retries: 3,
+        delay: 1500,
+        retryOn: ({ data }) => data.length === 0,
+        call: () =>
+            useFetch<Payload>(`/neftyblends/v1/blends/${contract}/${blend_id}/claims`, {
+                baseUrl: atomic_url,
+                params: {
+                    tx_id,
+                },
+            }),
     });
 
     if (error) console.error(error);

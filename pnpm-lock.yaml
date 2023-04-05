@@ -8,8 +8,8 @@ importers:
         specifier: ^0.2.5
         version: 0.2.5
       '@nefty/use':
-        specifier: ^0.1.5
-        version: 0.1.5
+        specifier: ^0.1.6
+        version: 0.1.6
     devDependencies:
       rome:
         specifier: 12.0.0
@@ -326,8 +326,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@mvdschee/use@0.0.29:
-    resolution: {integrity: sha512-2I7FU0j5Ohqa4BYXJSv465lNYjc6MXxVZVHFsk3y/IY0hWZdUQcMgNFxR1vH71IqOnKNSdWT2xUDV/VvfmPMFA==}
+  /@mvdschee/use@0.0.30:
+    resolution: {integrity: sha512-0modP+xmZ8qUeqbvw6S+snc3ZuN0VCc4Fw/lhxxFqrFeg2ZR5udorHypkgLI+j1wWhOZGURdaHWbrTJN7RceJg==}
     dev: false
 
   /@nefty/ual-anchor@0.2.5:
@@ -344,10 +344,10 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@nefty/use@0.1.5:
-    resolution: {integrity: sha512-Hd98anZ0LXEefsUcbQroNXQz91BSlhoh9Wiv8uqahF0mUHaG9FTdu104UJ2CC6lZ4Uq3lu6DdEWiIyEceACHSg==}
+  /@nefty/use@0.1.6:
+    resolution: {integrity: sha512-VRhdPz2NsCJ0nkae4582+z4+rmLgud3NZdZp4HitjFx/ZhCXogsfAZjVFngl9lecEDmSeqdge4TecbWIDO7j2w==}
     dependencies:
-      '@mvdschee/use': 0.0.29
+      '@mvdschee/use': 0.0.30
       universal-authenticator-library: 0.3.0
     dev: false
 
