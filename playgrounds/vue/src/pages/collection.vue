@@ -54,8 +54,6 @@ watch(currentRoute, (vnew, vold) => {
 });
 
 const signHandler = async ({ detail }: any) => {
-    console.log('signHandler', detail);
-
     try {
         const result: any = await window.provider_user.signTransaction(
             { actions: detail },
@@ -70,8 +68,7 @@ const signHandler = async ({ detail }: any) => {
             transactionId.value = result.transaction_id;
         }
     } catch (error) {
-        console.log('error', error);
-
+        console.error('error', error);
         transactionId.value = 'unset';
     }
 };

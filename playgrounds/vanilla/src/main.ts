@@ -34,16 +34,22 @@ const mountEl = () => {
 
         if (component && window.provider_user) {
             component.addEventListener('sign', async ({ detail }: any) => {
-                const result = await window.provider_user.signTransaction(
-                    { actions: detail },
-                    {
-                        broadcast: true,
-                        blocksBehind: 3,
-                        expireSeconds: 120,
-                    },
-                );
+                try {
+                    const result = await window.provider_user.signTransaction(
+                        { actions: detail },
+                        {
+                            broadcast: true,
+                            blocksBehind: 3,
+                            expireSeconds: 120,
+                        },
+                    );
 
-                component.setAttribute('transaction', result.transaction.transaction_id);
+                    component.setAttribute('transaction', result.transaction.transaction_id);
+                } catch (e) {
+                    console.error(e);
+
+                    component.setAttribute('transaction', 'unset');
+                }
             });
         }
     }
@@ -78,7 +84,7 @@ const callback = (users: WalletUser[]): void => {
             logout.classList.add('hidden');
             logout.innerHTML = '';
 
-            if (component) component.setAttribute('account', 'null');
+            if (component) component.setAttribute('account', 'unset');
         });
     }
 
