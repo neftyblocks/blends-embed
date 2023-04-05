@@ -58,7 +58,7 @@
             profile_url: "https://test.neftyblocks.com/profile/",
         }
 
-        const blend = { blend_id: "4071", contract: "blend.nefty" };
+        const blend = { blend_id: "4117", contract: "blend.nefty" };
 
         const account = {
             actor: VITE_ACCOUNT_NAME,
@@ -83,9 +83,6 @@
         // ----------------------------
 
         component.addEventListener("sign", ({ detail }) => {
-            console.log("sign", detail)
-
-
             setTimeout(() => {
                 component.setAttribute("transactionid", VITE_TEST_TX);
                 // component.setAttribute("transactionid", 'unset');

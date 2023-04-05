@@ -136,57 +136,63 @@
                 </svg>
             </button>
         {/if}
-        <div class="slider-group {gridView ? 'slider-group--grid' : ''}">
-            {#each items as item, key}
-                <div
-                    class="slider-item {item.rarity} {key === active
-                        ? 'current'
-                        : key > active
-                        ? 'next'
-                        : 'prev'} 
+
+        {#if items.length > 1}
+            <div class="slider-group {gridView ? 'slider-group--grid' : ''}">
+                {#each items as item, key}
+                    <div
+                        class="slider-item {item.rarity} {key === active
+                            ? 'current'
+                            : key > active
+                            ? 'next'
+                            : 'prev'} 
                         {key < active - 1 ? 'prev-depth' : ''} 
                         {key > active + 1 ? 'next-depth' : ''}
                         "
-                >
-                    <figure>
-                        {#if item.video}
-                            <video
-                                src={item.video}
-                                loop
-                                autoplay
-                                muted
-                                playsinline
-                            />
-                        {:else if item.image}
-                            <!-- <img class="shadow" src={item.image} alt="" /> -->
-                            <img src={item.image} alt={item.name} />
-                        {:else}
-                            <small>No result</small>
-                        {/if}
-                    </figure>
-                    <article>
-                        <h3>{item.name}</h3>
-                        {#if item.drop_rate}
-                            <small>
-                                {useTokenDisplay(item.drop_rate, 2)}% Drop rate
-                            </small>
-                        {/if}
-                        {#if item.mint}
-                            <p>
-                                <svg
-                                    role="presentation"
-                                    focusable="false"
-                                    aria-hidden="true"
-                                >
-                                    <use xlink:href="#hash" />
-                                </svg>
-                                {`${item.mint.amount} / ${item.mint.supply}`}
-                            </p>
-                        {/if}
-                    </article>
-                </div>
-            {/each}
-        </div>
+                    >
+                        <figure>
+                            {#if item.video}
+                                <video
+                                    src={item.video}
+                                    loop
+                                    autoplay
+                                    muted
+                                    playsinline
+                                />
+                            {:else if item.image}
+                                <!-- <img class="shadow" src={item.image} alt="" /> -->
+                                <img src={item.image} alt={item.name} />
+                            {:else}
+                                <small>No result</small>
+                            {/if}
+                        </figure>
+                        <article>
+                            <h3>{item.name}</h3>
+                            {#if item.drop_rate && !claims}
+                                <small>
+                                    {useTokenDisplay(item.drop_rate, 2)}% Drop
+                                    rate
+                                </small>
+                            {/if}
+                            {#if item.mint && !claims}
+                                <p>
+                                    <svg
+                                        role="presentation"
+                                        focusable="false"
+                                        aria-hidden="true"
+                                    >
+                                        <use xlink:href="#hash" />
+                                    </svg>
+                                    {`${item.mint.amount} / ${item.mint.supply}`}
+                                </p>
+                            {/if}
+                        </article>
+                    </div>
+                {/each}
+            </div>
+        {:else}
+            <p>No result</p>
+        {/if}
         {#if items.length > 1 && !gridView}
             <button class="btn-clear next" on:click={next}>
                 <svg role="presentation" focusable="false" aria-hidden="true">
@@ -225,8 +231,7 @@
 
         &.claims {
             opacity: 0;
-            animation: show 0.6s ease forwards;
-            animation-delay: 5s;
+            animation: show 0.6s 5s ease forwards;
 
             @keyframes show {
                 0% {
