@@ -41,6 +41,7 @@
     let selection = undefined;
     let selected = {};
     let claims = null;
+    let warnJobs = 0;
 
     // DOM
     let selectionGroupElement;
@@ -79,7 +80,11 @@
                     })
                 );
 
-                // await getJobsCount({ chain_url: config.chain_url });
+                if (data.odds) {
+                    warnJobs = await getJobsCount({
+                        chain_url: config.chain_url,
+                    });
+                }
             }
 
             // user flow
@@ -512,6 +517,15 @@
                                 <use xlink:href="#refresh" />
                             </svg>
                         </button>
+                    </div>
+                {/if}
+
+                {#if warnJobs >= 50}
+                    <div class="banner">
+                        <p>
+                            The current pending jobs are {warnJobs}, the blend
+                            results will be delayed!
+                        </p>
                     </div>
                 {/if}
             </section>
@@ -1030,6 +1044,20 @@
         }
         75% {
             transform: translate3d(-2px, -10px, 0) rotate(0deg);
+        }
+    }
+
+    .banner {
+        margin-left: auto;
+        max-width: 300px;
+        width: 100%;
+        background-color: var(--nb-inactive);
+        padding: 12px;
+        border-radius: var(--nb-radius);
+
+        p {
+            color: var(--nb-color);
+            font-size: var(--nb-font-size--small);
         }
     }
 </style>

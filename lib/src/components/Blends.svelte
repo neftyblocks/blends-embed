@@ -42,6 +42,8 @@
             data = sortBlends(Object.values(indexedData.content));
             searchValue = undefined;
 
+            console.log(indexedData.search);
+
             suggestifyEngine = new SuggestifyEngine({
                 defaultItems: Object.keys(indexedData.search),
                 options: {

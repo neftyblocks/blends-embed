@@ -98,6 +98,7 @@ export const getBlends = async ({
                         result.push({
                             name,
                             image: useImageUrl(img as string),
+                            schema_name: template.schema?.schema_name || '',
                         });
                     }
                 }
@@ -132,7 +133,7 @@ export const getBlends = async ({
                 image: blend_img ? useImageUrl(blend_img) : null,
             };
 
-            search[`${blend_name}`] = `${contract}_${blend_id}`;
+            search[`${blend_name}_${result.map((e) => e.schema_name).join('_')}`] = `${contract}_${blend_id}`;
         }
 
         return { content, search };
