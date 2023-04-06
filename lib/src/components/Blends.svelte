@@ -17,7 +17,6 @@
     let data = undefined;
     let indexedData = undefined;
 
-    let show;
     let now = new Date().getTime();
     let timeout: ReturnType<typeof setTimeout> = setTimeout(() => '', 250);
     let suggestifyEngine: SuggestifyEngine;
@@ -41,8 +40,6 @@
         if (indexedData) {
             data = sortBlends(Object.values(indexedData.content));
             searchValue = undefined;
-
-            console.log(indexedData.search);
 
             suggestifyEngine = new SuggestifyEngine({
                 defaultItems: Object.keys(indexedData.search),
@@ -80,9 +77,6 @@
     });
 
     const viewBlend = (blend: GetBlendsResult) => {
-        // Avoid onDestroy this doesn't work to clean up the subscription
-        unsubscribe();
-
         dispatch(
             'blend',
             {
@@ -121,7 +115,6 @@
         data = undefined;
 
         setTimeout(() => {
-            console.log('selectedMatch', selectedMatch);
             asyncData($settings.config);
         }, 100);
     };
@@ -209,7 +202,7 @@
         placeholder="Search name"
         on:input={search}
     />
-    <select bind:value={selectedMatch} name="" id="" on:input={selectMatch}>
+    <select bind:value={selectedMatch} on:input={selectMatch}>
         <option value="">Show all</option>
         <option value="all">Own all requirements</option>
         <option value="missing_x">Missing one requirement</option>
@@ -218,48 +211,8 @@
 </div>
 {#if data}
     <div class="blends-group">
-        {#each data as blend, key}
+        {#each data as blend}
             <div class="blends-item">
-                <!-- {#if show === key}
-                    <div class="content">
-                        <button
-                            class="btn-clear btn-close"
-                            on:click={() => (show = undefined)}
-                        >
-                            <svg>
-                                <use href="#close" />
-                            </svg>
-                        </button>
-                        <small>results</small>
-                        <div class="results">
-                            {#each blend.results as item}
-                                <figure>
-                                    {#if item.video}
-                                        <video
-                                            src={item.video}
-                                            loop
-                                            autoplay
-                                            muted
-                                            playsinline
-                                        />
-                                    {:else if item.image}
-                                        <img src={item.image} alt={item.name} />
-                                    {:else}
-                                        <small>empty</small>
-                                    {/if}
-                                </figure>
-                            {/each}
-                        </div>
-                        <small>requirements</small>
-                        <div class="requirements">
-                            {#each blend.items as item}
-                                <figure>
-                                    <img src={item.image} alt={item.name} />
-                                </figure>
-                            {/each}
-                        </div>
-                    </div>
-                {:else} -->
                 <div class="content">
                     <header>
                         <figure class="visual">
@@ -325,15 +278,6 @@
                                     {blend.result_count}
                                 </span>
                             </div>
-                            <!-- <button
-                                class="btn-clear btn-requirements"
-                                on:click={() => (show = key)}
-                            >
-                                details
-                                <svg>
-                                    <use href="#chevron_right" />
-                                </svg>
-                            </button> -->
                         </div>
                     </main>
                     <footer class={blend.status}>
@@ -352,7 +296,6 @@
                         {/if}
                     </footer>
                 </div>
-                <!-- {/if} -->
             </div>
         {/each}
     </div>

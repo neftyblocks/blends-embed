@@ -278,16 +278,6 @@
     };
 
     const close = () => {
-        // Avoid onDestroy this doesn't work to clean up the subscription
-        unsubscribe();
-
-        data = undefined;
-        selection = undefined;
-        loading = true;
-        selected = {};
-        claims = null;
-        showClaims = false;
-
         dispatch('blend', null, component);
     };
 

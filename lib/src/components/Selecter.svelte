@@ -24,7 +24,7 @@
     };
 
     const isSelected = (item) => {
-        return selected.some((select) => select.mint === item.mint);
+        return selected.some((select) => select.asset_id === item.asset_id);
     };
 
     const reset = () => {
@@ -35,7 +35,9 @@
 
     const selection = (item) => {
         if (isSelected(item)) {
-            selected = selected.filter((select) => select.mint !== item.mint);
+            selected = selected.filter(
+                (select) => select.asset_id !== item.asset_id
+            );
         } else {
             selected = [...selected, item];
 
@@ -91,6 +93,10 @@
         <polyline points="9 18 15 12 9 6" />
     </symbol>
 </svg>
+
+{#if show}
+    <button class="selecter-bg btn-clear" on:click={toggleShow} />
+{/if}
 
 <div class="selecter">
     <button class="btn-clear selecter-items" on:click={toggleShow}>
@@ -167,6 +173,15 @@
 <style lang="scss">
     @import '../style/global.scss';
     @import '../style/button.scss';
+
+    .selecter-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--nb-shadow);
+    }
 
     .selecter {
         width: 100%;
