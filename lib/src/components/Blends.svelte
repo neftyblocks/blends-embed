@@ -199,7 +199,7 @@
     <div class="blends-group">
         {#each data as blend}
             <button
-                class="btn-clear blends-item"
+                class={`btn-clear blends-item ${blend.secure ? 'secure' : ''}`}
                 on:click={() => viewBlend(blend)}
             >
                 <time class={displayStatus(blend.status)}>
@@ -226,27 +226,28 @@
                     {:else}
                         <small>empty</small>
                     {/if}
+                    <div class="stats">
+                        <div class="stat">
+                            <small>ingredients</small>
+                            <span>
+                                <svg>
+                                    <use href="#hat" />
+                                </svg>
+                                {blend.ingredients_count}
+                            </span>
+                        </div>
+                        <div class="stat">
+                            <small>results</small>
+                            <span>
+                                <svg>
+                                    <use href="#star" />
+                                </svg>
+                                {blend.result_count}
+                            </span>
+                        </div>
+                    </div>
                 </figure>
-                <div class="stats">
-                    <div class="stat">
-                        <small>ingredients</small>
-                        <span>
-                            <svg>
-                                <use href="#hat" />
-                            </svg>
-                            {blend.ingredients_count}
-                        </span>
-                    </div>
-                    <div class="stat">
-                        <small>results</small>
-                        <span>
-                            <svg>
-                                <use href="#star" />
-                            </svg>
-                            {blend.result_count}
-                        </span>
-                    </div>
-                </div>
+
                 <h3>
                     {#if blend.secure}
                         <svg>
@@ -295,17 +296,24 @@
             auto-fill,
             minmax(var(--nb-card-size-min), var(--nb-card-size-max))
         );
-        gap: 48px;
+        gap: var(--nb-gap);
     }
 
     .blends-item {
         position: relative;
+        background-color: var(--nb-bg-card);
+        border-radius: var(--nb-radius);
+        border: var(--nb-border-size) solid var(--nb-border-card);
+        overflow: hidden;
+        padding: 12px;
+        transition: transform 0.3s;
 
         .visual {
-            height: 290px;
-            overflow: hidden;
+            height: 230px;
+            border-radius: 6px;
             position: relative;
-            border-radius: var(--nb-radius);
+            z-index: 0;
+            overflow: hidden;
         }
 
         img {
@@ -320,7 +328,7 @@
                 width: 120%;
                 height: 120%;
                 z-index: -1;
-                filter: blur(20px);
+                filter: blur(60px);
                 transform: translate3d(0, 0, 0);
             }
         }
@@ -331,27 +339,24 @@
             justify-content: flex-start;
             gap: 12px;
             position: absolute;
-            bottom: 55px;
+            bottom: 0;
             left: 0;
             width: 100%;
-            height: calc(100% - 55px);
+            height: 100%;
             padding: 12px;
-            border-radius: var(--nb-radius);
             background: linear-gradient(
                 rgba(0, 0, 0, 0) 0%,
                 rgba(0, 0, 0, 0.8) 100%
             );
             opacity: 0;
-            transition: all 0.15s;
+            transition: opacity 0.3s;
         }
 
         time {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            z-index: 1;
+            display: inline-block;
             padding: 4px 12px;
             color: var(--nb-color);
+            transform: translateY(-6px);
             font-size: var(--nb-font-size--small);
             background-color: var(--nb-shadow);
             border-radius: var(--nb-radius);
@@ -393,10 +398,10 @@
             width: 100%;
 
             &:hover {
-                background-color: var(--nb-button-hover);
+                background-color: var(--nb-button);
 
                 &.secure {
-                    background-color: var(--nb-secure-hover);
+                    background-color: var(--nb-secure);
                 }
             }
 
@@ -424,15 +429,20 @@
                 margin-right: 6px;
                 width: 16px;
                 height: 16px;
-                color: var(--nb-color-secondary);
+                color: var(--nb-secure);
                 transform: translateY(1px);
             }
         }
 
+        &.secure {
+            border-color: var(--nb-secure);
+        }
+
         &:hover {
+            transform: scale(1.05);
+
             .stats {
                 opacity: 1;
-                transition: all 0.3s;
             }
         }
     }

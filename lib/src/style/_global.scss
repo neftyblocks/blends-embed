@@ -8,7 +8,7 @@
     --nb-font-size--extra-large: var(--nefty-font-size, 28px);
     --nb-font-size--title: var(--nefty-font-size, 32px);
 
-    --nb-card-size-min: var(--nefty-card-size-min, 180px);
+    --nb-card-size-min: var(--nefty-card-size-min, 200px);
     --nb-card-size-max: var(--nefty-card-size-max, 1fr);
     --nb-gap: var(--nefty-gap, 24px);
     --nb-radius: var(--nefty-radius, 12px);
@@ -27,8 +27,8 @@
     --nb-color-secondary: var(--nefty-color-secondary, #777e90);
     --nb-color-highlight: var(--nefty-color-highlight, #00ffff);
 
-    --nb-button-hover: var(--nefty-button-hover, #21b55a);
-    --nb-secure-hover: var(--nefty-secure-hover, #21abb5);
+    --nb-button: var(--nefty-button, #21b55a);
+    --nb-secure: var(--nefty-secure, #21abb5);
 
     --nb-inactive: var(--nefty-inactive, rgba(182, 44, 44, 0.8));
 
