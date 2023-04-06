@@ -168,30 +168,16 @@
         />
     </symbol>
     <symbol
-        id="chevron_right"
+        id="lock"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-    >
-        <polyline points="9 18 15 12 9 6" />
-    </symbol>
-    <symbol
-        id="close"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        ><circle cx="12" cy="12" r="10" /><line
-            x1="15"
-            y1="9"
-            x2="9"
-            y2="15"
-        /><line x1="9" y1="9" x2="15" y2="15" /></symbol
+        ><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path
+            d="M7 11V7a5 5 0 0 1 10 0v4"
+        /></symbol
     >
 </svg>
 
@@ -212,91 +198,65 @@
 {#if data}
     <div class="blends-group">
         {#each data as blend}
-            <div class="blends-item">
-                <div class="content">
-                    <header>
-                        <figure class="visual">
-                            {#if blend.video}
-                                <video
-                                    src={blend.video}
-                                    loop
-                                    autoplay
-                                    muted
-                                    playsinline
-                                />
-                            {:else if blend.image}
-                                <img
-                                    class="shadow"
-                                    src={blend.image}
-                                    alt={blend.name}
-                                />
-                                <img src={blend.image} alt={blend.name} />
-                            {:else}
-                                <small>empty</small>
-                            {/if}
-                        </figure>
-                        <article>
-                            <time>
-                                {['active', 'ended'].includes(blend.status)
-                                    ? displayTime(
-                                          blend.start_time,
-                                          blend.end_time,
-                                          now
-                                      )
-                                    : displayStatus(blend.status)}
-                            </time>
-                            <h3 data-title={blend.name}>{blend.name}</h3>
-                            <div class="stats">
-                                {#if blend.category}
-                                    <div class="stat">
-                                        <small>category</small>
-                                        <span>
-                                            {blend.category}
-                                        </span>
-                                    </div>
-                                {/if}
-                            </div>
-                        </article>
-                    </header>
-                    <main>
-                        <div class="stats">
-                            <div class="stat">
-                                <small>ingredients</small>
-                                <span>
-                                    <svg>
-                                        <use href="#hat" />
-                                    </svg>
-                                    {blend.ingredients_count}
-                                </span>
-                            </div>
-                            <div class="stat">
-                                <small>results</small>
-                                <span>
-                                    <svg>
-                                        <use href="#star" />
-                                    </svg>
-                                    {blend.result_count}
-                                </span>
-                            </div>
-                        </div>
-                    </main>
-                    <footer class={blend.status}>
-                        {#if blend.status === 'active'}
-                            <button
-                                class={blend.secure ? 'secure' : ''}
-                                on:click={() => viewBlend(blend)}
-                                >{blend.secure
-                                    ? 'Secure blend'
-                                    : 'Blend'}</button
-                            >
-                        {:else}
-                            <button on:click={() => viewBlend(blend)}>
-                                {displayStatus(blend.status)}
-                            </button>
-                        {/if}
-                    </footer>
+            <button
+                class="btn-clear blends-item"
+                on:click={() => viewBlend(blend)}
+            >
+                <time class={displayStatus(blend.status)}>
+                    {['active', 'ended'].includes(blend.status)
+                        ? displayTime(blend.start_time, blend.end_time, now)
+                        : displayStatus(blend.status)}
+                </time>
+                <figure class="visual">
+                    {#if blend.video}
+                        <video
+                            src={blend.video}
+                            loop
+                            autoplay
+                            muted
+                            playsinline
+                        />
+                    {:else if blend.image}
+                        <img
+                            class="shadow"
+                            src={blend.image}
+                            alt={blend.name}
+                        />
+                        <img src={blend.image} alt={blend.name} />
+                    {:else}
+                        <small>empty</small>
+                    {/if}
+                </figure>
+                <div class="stats">
+                    <div class="stat">
+                        <small>ingredients</small>
+                        <span>
+                            <svg>
+                                <use href="#hat" />
+                            </svg>
+                            {blend.ingredients_count}
+                        </span>
+                    </div>
+                    <div class="stat">
+                        <small>results</small>
+                        <span>
+                            <svg>
+                                <use href="#star" />
+                            </svg>
+                            {blend.result_count}
+                        </span>
+                    </div>
                 </div>
-            </div>
+                <h3>
+                    {#if blend.secure}
+                        <svg>
+                            <use href="#lock" />
+                        </svg>
+                    {/if}
+
+                    {blend.name}
+                </h3>
+            </button>
         {/each}
     </div>
 {:else if data === null}
@@ -326,7 +286,7 @@
         display: flex;
         align-items: center;
         gap: 24px;
-        margin-bottom: 12px;
+        margin-bottom: 24px;
     }
 
     .blends-group {
@@ -335,70 +295,17 @@
             auto-fill,
             minmax(var(--nb-card-size-min), var(--nb-card-size-max))
         );
-        gap: var(--nb-gap);
+        gap: 48px;
     }
 
     .blends-item {
-        background-color: var(--nb-bg-card);
-        border-radius: var(--nb-radius);
-        border: var(--nb-border-size) solid var(--nb-border);
-        overflow: hidden;
-        max-height: 276px;
-
-        .content {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            padding: 6px;
-
-            > small {
-                color: var(--nb-color-secondary);
-                font-size: var(--nb-font-size--small);
-                position: relative;
-                z-index: 0;
-                text-align: center;
-
-                &::before {
-                    content: '';
-                    position: absolute;
-                    top: calc(50% + 1px);
-                    left: 0;
-                    transform: translateY(-50%);
-                    width: 100%;
-                    height: 1px;
-                    z-index: -1;
-                    background-color: var(--nb-border);
-                }
-
-                &::after {
-                    content: '';
-                    position: absolute;
-                    background-color: var(--nb-bg-card);
-                    display: block;
-                    filter: blur(3px);
-                    transform: translate3d(0, 0, 0);
-                    height: 100%;
-                    left: calc(50% - 55px);
-                    top: 0;
-                    width: 110px;
-                    z-index: -1;
-                }
-            }
-        }
+        position: relative;
 
         .visual {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 290px;
             overflow: hidden;
             position: relative;
-            border-radius: 3px;
-            z-index: 0;
-
-            small {
-                color: var(--nb-color-secondary);
-                font-size: var(--nb-font-size--small);
-            }
+            border-radius: var(--nb-radius);
         }
 
         img {
@@ -408,91 +315,61 @@
 
             &.shadow {
                 position: absolute;
-                top: 0;
-                left: 0;
+                top: -10%;
+                left: -10%;
+                width: 120%;
+                height: 120%;
                 z-index: -1;
-                filter: blur(40px);
+                filter: blur(20px);
                 transform: translate3d(0, 0, 0);
             }
         }
 
-        h3 {
-            margin: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .stats {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            gap: 12px;
+            position: absolute;
+            bottom: 55px;
+            left: 0;
             width: 100%;
-            height: 2.4em;
-            margin-bottom: 6px;
-            transition: color 0.2s ease;
-
-            &::before {
-                content: attr(data-title);
-                color: var(--nb-color);
-                background-color: var(--nb-bg-card);
-                position: absolute;
-                width: 100%;
-                opacity: 0;
-                transition: opacity 0.2s ease;
-            }
-
-            &:hover {
-                color: rgba(0, 0, 0, 0);
-
-                &::before {
-                    opacity: 1;
-                }
-            }
+            height: calc(100% - 55px);
+            padding: 12px;
+            border-radius: var(--nb-radius);
+            background: linear-gradient(
+                rgba(0, 0, 0, 0) 0%,
+                rgba(0, 0, 0, 0.8) 100%
+            );
+            opacity: 0;
+            transition: all 0.15s;
         }
 
         time {
-            color: var(--nb-color-secondary);
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            z-index: 1;
+            padding: 4px 12px;
+            color: var(--nb-color);
             font-size: var(--nb-font-size--small);
-        }
+            background-color: var(--nb-shadow);
+            border-radius: var(--nb-radius);
 
-        header {
-            display: flex;
-            gap: 12px;
-            padding-bottom: 12px;
-
-            figure {
-                flex: 0 0 100px;
-                width: 100px;
-                height: 140px;
-                overflow: hidden;
-            }
-
-            article {
-                display: block;
-                width: 100%;
-                position: relative;
-            }
-
-            .stats {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-            }
-        }
-
-        main {
-            padding: 12px 0;
-            margin: auto 0 0;
-            height: 61px;
-            border-top: var(--nb-border-size) solid var(--nb-border);
-
-            .stats {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
-                gap: 12px;
+            &.ended,
+            &.sold-out,
+            &.max-reached {
+                background-color: var(--nb-inactive);
             }
         }
 
         .stat {
             display: flex;
             flex-direction: column;
+            text-align: left;
 
             small {
-                color: var(--nb-color-secondary);
+                color: var(--nb-color);
                 font-size: var(--nb-font-size--small);
             }
 
@@ -502,6 +379,7 @@
                 align-items: center;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                color: var(--nb-color-secondary);
             }
 
             svg {
@@ -511,99 +389,50 @@
             }
         }
 
-        .btn-requirements {
-            display: flex;
-            align-items: center;
-            color: var(--nb-color);
-            font-size: var(--nb-font-size--small);
+        button {
+            width: 100%;
 
-            svg {
-                width: 16px;
-                height: 16px;
-            }
-        }
+            &:hover {
+                background-color: var(--nb-button-hover);
 
-        .btn-close {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            margin-left: auto;
-            color: var(--nb-color);
-
-            svg {
-                width: 28px;
-                height: 28px;
-            }
-        }
-        .requirements,
-        .results {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 5px;
-            margin: 6px 0;
-
-            figure {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 60px;
-                height: 60px;
-                padding: 2px;
-                background-color: rgba(0, 0, 0, 0.2);
-                border: var(--nb-border-size) dashed var(--nb-border-card);
-
-                small {
-                    color: var(--nb-color-secondary);
-                    font-size: var(--nb-font-size--small);
+                &.secure {
+                    background-color: var(--nb-secure-hover);
                 }
             }
-        }
-
-        footer {
-            margin: 0 -6px;
-            min-height: 55px;
-            background-color: var(--nb-bg-footer);
-            border-radius: 0 0 var(--nb-radius) var(--nb-radius);
 
             &.ended,
             &.sold-out,
             &.max-reached {
                 background-color: var(--nb-inactive);
-
-                button {
-                    &:hover {
-                        background-color: rgba(0, 0, 0, 0);
-
-                        &.secure {
-                            background-color: rgba(0, 0, 0, 0);
-                        }
-                    }
-                }
-            }
-
-            p {
-                padding: 18px 6px;
-                width: 100%;
-                text-align: center;
-            }
-
-            button {
-                padding: 18px 6px;
-                width: 100%;
-                border: none;
-                background-color: rgba(0, 0, 0, 0);
-                color: var(--nb-color-button);
-                cursor: pointer;
-
                 &:hover {
-                    background-color: var(--nb-button-hover);
+                    background-color: var(--nb-inactive);
 
                     &.secure {
-                        background-color: var(--nb-secure-hover);
+                        background-color: var(--nb-inactive);
                     }
                 }
+            }
+        }
+
+        h3 {
+            color: var(--nb-color);
+            height: 55px;
+            text-align: left;
+            padding-top: 12px;
+
+            svg {
+                margin-right: 6px;
+                width: 16px;
+                height: 16px;
+                color: var(--nb-color-secondary);
+                transform: translateY(1px);
+            }
+        }
+
+        &:hover {
+            .stats {
+                opacity: 1;
+                transition: all 0.3s;
             }
         }
     }
