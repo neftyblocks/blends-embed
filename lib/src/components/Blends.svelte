@@ -37,6 +37,8 @@
                 })
         );
 
+        console.log(selectedMatch);
+
         if (indexedData) {
             data = sortBlends(Object.values(indexedData.content));
             searchValue = undefined;
@@ -192,7 +194,7 @@
         <option value="">Show all</option>
         <option value="all">Own all requirements</option>
         <option value="missing_x">Missing one requirement</option>
-        <option value="any">Own atleast one requirment</option>
+        <option value="any">Own at least one requirment</option>
     </select>
 </div>
 {#if data}
