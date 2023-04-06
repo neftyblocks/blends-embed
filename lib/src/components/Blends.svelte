@@ -167,6 +167,18 @@
             points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
         />
     </symbol>
+    <symbol
+        id="lock"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path
+            d="M7 11V7a5 5 0 0 1 10 0v4"
+        /></symbol
+    >
 </svg>
 
 <div class="blends-actions">
@@ -234,17 +246,16 @@
                             {blend.result_count}
                         </span>
                     </div>
-                    <!-- {#if blend.category}
-                        <div class="stat">
-                            <small>category</small>
-                            <span>
-                                {blend.category}
-                            </span>
-                        </div>
-                    {/if} -->
                 </div>
+                <h3>
+                    {#if blend.secure}
+                        <svg>
+                            <use href="#lock" />
+                        </svg>
+                    {/if}
 
-                <h3>{blend.name}</h3>
+                    {blend.name}
+                </h3>
             </button>
         {/each}
     </div>
@@ -291,7 +302,7 @@
         position: relative;
 
         .visual {
-            height: 256px;
+            height: 290px;
             overflow: hidden;
             position: relative;
             border-radius: var(--nb-radius);
@@ -304,10 +315,12 @@
 
             &.shadow {
                 position: absolute;
-                top: 0;
-                left: 0;
+                top: -10%;
+                left: -10%;
+                width: 120%;
+                height: 120%;
                 z-index: -1;
-                filter: blur(40px);
+                filter: blur(20px);
                 transform: translate3d(0, 0, 0);
             }
         }
@@ -406,6 +419,14 @@
             height: 55px;
             text-align: left;
             padding-top: 12px;
+
+            svg {
+                margin-right: 6px;
+                width: 16px;
+                height: 16px;
+                color: var(--nb-color-secondary);
+                transform: translateY(1px);
+            }
         }
 
         &:hover {
