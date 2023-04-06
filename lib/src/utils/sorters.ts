@@ -30,6 +30,10 @@ export const sortBlends = (blends: any[]): any[] => {
     return blends.sort((a, b) => {
         if (a.status === 'active' && b.status !== 'active') return -1;
         if (a.status !== 'active' && b.status === 'active') return 1;
+
+        if (a.contract === 'blenderizerx') return 1;
+        if (b.contract === 'blenderizerx') return -1;
+
         return 0;
     });
 };

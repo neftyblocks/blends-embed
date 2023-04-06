@@ -230,7 +230,7 @@
         position: absolute;
         bottom: 44px;
         left: 50%;
-        width: 280px;
+        width: 360px;
         max-height: 280px;
         transform: translateX(-50%);
         border-radius: var(--nb-radius);
