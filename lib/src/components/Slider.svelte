@@ -137,7 +137,7 @@
             </button>
         {/if}
 
-        {#if items.length > 1}
+        {#if items.length >= 1}
             <div class="slider-group {gridView ? 'slider-group--grid' : ''}">
                 {#each items as item, key}
                     <div
