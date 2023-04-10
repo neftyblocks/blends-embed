@@ -221,7 +221,7 @@
         }
     };
 
-    const validateSelection = (requirements) => {
+    const validateSelection = (requirements, dispatchError = false) => {
         const list = sortedRequirements(requirements);
 
         // Reset the selected assets and tokens
@@ -241,7 +241,16 @@
                     // TODO: add a check for the amount if multiple the same token is selected
                     selectedTokensToBlend.push(token);
                 } else {
-                    console.error('missing token');
+                    if (dispatchError) {
+                        dispatch(
+                            'error',
+                            {
+                                type: 'requirements',
+                                message: 'missing token',
+                            },
+                            component
+                        );
+                    }
 
                     meetRequirements = false;
                     break;
@@ -259,20 +268,48 @@
                                 ? selectedBalanceAssets.push(asset_id)
                                 : selectedAssetsToBlend.push(asset_id);
                         } else {
-                            console.error('duplicate asset');
+                            if (dispatchError) {
+                                dispatch(
+                                    'error',
+                                    {
+                                        type: 'requirements',
+                                        message: 'duplicate asset',
+                                    },
+                                    component
+                                );
+                            }
 
                             meetRequirements = false;
                             break;
                         }
                     }
                 } else {
-                    console.error('missing asset');
+                    if (dispatchError) {
+                        dispatch(
+                            'error',
+                            {
+                                type: 'requirements',
+                                message: 'missing asset',
+                            },
+                            component
+                        );
+                    }
 
                     meetRequirements = false;
                     break;
                 }
             }
         }
+
+        console.log(
+            'selectedAssetsToBlend',
+            selectedAssetsToBlend,
+            'selectedTokensToBlend',
+            selectedTokensToBlend,
+            'selectedBalanceAssets',
+            selectedBalanceAssets,
+            meetRequirements
+        );
 
         return meetRequirements;
     };
@@ -282,7 +319,7 @@
     };
 
     const blend = (requirements) => {
-        const allowed = validateSelection(requirements);
+        const allowed = validateSelection(requirements, true);
 
         if (allowed) {
             const transactions = blendTransactionActions({
@@ -474,7 +511,7 @@
                             rel="noopener noreferrer"
                             class="btn btn--primary btn--primary"
                         >
-                            See my results
+                            See my profile
                         </a>
                     </div>
                 {:else}
@@ -483,9 +520,11 @@
                             disabled={!allowBlend ||
                                 loading ||
                                 !user ||
-                                data.status !== 'active' ||
-                                !validateSelection(data.requirements)}
-                            class="btn btn--primary btn--blend"
+                                data.status !== 'active'}
+                            class="btn btn--primary {!loading &&
+                            validateSelection(data.requirements)
+                                ? 'btn--blend'
+                                : ''}"
                             on:click={() => {
                                 if (allowBlend) blend(data.requirements);
                             }}
@@ -705,7 +744,6 @@
         }
 
         &.claims {
-            // animate grid to full width
             grid-template-columns: 1fr 0fr;
             transition: grid;
             transition: 0.6s;
