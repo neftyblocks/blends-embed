@@ -44,11 +44,11 @@
             content: '';
             display: block;
             position: absolute;
-            height: 2rem;
+            height: 20px;
             top: 0;
             left: 0;
             width: 100%;
-            transform: skewY(-30deg) translate3d(0, -10rem, 0);
+            transform: skewY(-30deg) translate3d(0, -100px, 0);
             background-color: rgba(255, 255, 255, 0.3);
             animation: shine 3s linear infinite;
         }
@@ -81,10 +81,10 @@
         transform: skewY(-30deg) translate3d(0, -100%, 0);
     }
     20% {
-        transform: skewY(-30deg) translate3d(0, 300%, 0);
+        transform: skewY(-30deg) translate3d(0, 400%, 0);
     }
 
     100% {
-        transform: skewY(-30deg) translate3d(0, 300%, 0);
+        transform: skewY(-30deg) translate3d(0, 400%, 0);
     }
 }
