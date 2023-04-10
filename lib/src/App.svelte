@@ -18,8 +18,6 @@
 
     // METHODES
     onMount(() => {
-        console.log('onMount');
-
         // onDestroy clean up store
         return () => {
             $settings = {
@@ -35,7 +33,6 @@
         if (config && config !== JSON.stringify($settings.config)) {
             settings.update((s) => {
                 s.config = JSON.parse(config);
-                s.blend = null;
                 config = null;
 
                 return s;
@@ -61,10 +58,6 @@
         }
 
         if (blend && !$settings.blend) {
-            console.log('blend update');
-            console.log('blend prop:', blend);
-            console.log('blend store:', $settings.blend);
-
             settings.update((s) => {
                 s.blend = JSON.parse(blend);
                 blend = null;
