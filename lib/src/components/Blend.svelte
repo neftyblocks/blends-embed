@@ -301,16 +301,6 @@
             }
         }
 
-        console.log(
-            'selectedAssetsToBlend',
-            selectedAssetsToBlend,
-            'selectedTokensToBlend',
-            selectedTokensToBlend,
-            'selectedBalanceAssets',
-            selectedBalanceAssets,
-            meetRequirements
-        );
-
         return meetRequirements;
     };
 
