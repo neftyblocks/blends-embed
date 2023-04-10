@@ -297,6 +297,8 @@
 
             animateCards();
 
+            loading = true;
+
             dispatch('sign', transactions, component);
         }
     };
@@ -421,6 +423,24 @@
             : ''}"
     >
         <main>
+            <article class="blend-content">
+                <div>
+                    <h1>{data.name}</h1>
+                    <time>
+                        {['active', 'ended'].includes(data.status)
+                            ? displayTime(data.start_time, data.end_time, now)
+                            : displayStatus(data.status)}
+                    </time>
+                </div>
+                {#if warnJobs >= 50}
+                    <div class="banner">
+                        <p>
+                            There are {warnJobs} pending jobs, the blend results
+                            may be delayed.
+                        </p>
+                    </div>
+                {/if}
+            </article>
             <section class="blend-results">
                 {#if showClaims && claims}
                     <nefty-blend-slider items={claims} claims={true} />
@@ -439,26 +459,11 @@
                 {/if}
             </section>
             <section class="blend-actions">
-                <article>
-                    <h1>{data.name}</h1>
-                    <p>
-                        <time>
-                            {['active', 'ended'].includes(data.status)
-                                ? displayTime(
-                                      data.start_time,
-                                      data.end_time,
-                                      now
-                                  )
-                                : displayStatus(data.status)}
-                        </time>
-                    </p>
-                </article>
-
                 {#if showClaims}
                     <div class="btn-group">
                         <button
                             disabled={loading}
-                            class="btn btn--primary"
+                            class="btn btn--primary btn--blend"
                             on:click={reset}
                         >
                             {loading ? 'Loading' : 'Blend again'}
@@ -467,9 +472,9 @@
                             href="{localConfig.profile_url}{user.actor}?collection_name={localConfig.collection}"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="btn btn--primary"
+                            class="btn btn--primary btn--primary"
                         >
-                            See profile
+                            See my results
                         </a>
                     </div>
                 {:else}
@@ -478,8 +483,9 @@
                             disabled={!allowBlend ||
                                 loading ||
                                 !user ||
-                                data.status !== 'active'}
-                            class="btn btn--primary"
+                                data.status !== 'active' ||
+                                !validateSelection(data.requirements)}
+                            class="btn btn--primary btn--blend"
                             on:click={() => {
                                 if (allowBlend) blend(data.requirements);
                             }}
@@ -507,15 +513,6 @@
                                 <use xlink:href="#refresh" />
                             </svg>
                         </button>
-                    </div>
-                {/if}
-
-                {#if warnJobs >= 50}
-                    <div class="banner">
-                        <p>
-                            The current pending jobs are {warnJobs}, the blend
-                            results will be delayed!
-                        </p>
                     </div>
                 {/if}
             </section>
@@ -714,7 +711,8 @@
             transition: 0.6s;
 
             .blend-text,
-            .blend-selection {
+            .blend-selection,
+            .blend-content {
                 opacity: 0;
                 transition: opacity 0.3s ease;
             }
@@ -780,6 +778,24 @@
         }
     }
 
+    .blend-content {
+        display: flex;
+
+        h1 {
+            font-size: var(--nb-font-size--title);
+        }
+
+        time {
+            color: var(--nb-color-secondary);
+            text-transform: uppercase;
+
+            svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+    }
+
     .blend-text {
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
@@ -792,24 +808,7 @@
     .blend-actions {
         display: flex;
         align-items: center;
-        gap: 24px;
-
-        h1 {
-            font-size: var(--nb-font-size--title);
-        }
-
-        article {
-            min-width: 350px;
-        }
-
-        p {
-            color: var(--nb-color-secondary);
-
-            svg {
-                width: 14px;
-                height: 14px;
-            }
-        }
+        justify-content: center;
     }
 
     .btn-group {
@@ -1000,6 +999,8 @@
 
         h3 {
             margin-bottom: 12px;
+            height: 21px;
+            overflow: hidden;
         }
     }
 

@@ -460,13 +460,13 @@
                 margin-right: 6px;
                 width: 16px;
                 height: 16px;
-                color: var(--nb-secure);
+                color: var(--nb-highlight);
                 transform: translateY(1px);
             }
         }
 
         &.secure {
-            border-color: var(--nb-secure);
+            border-color: var(--nb-highlight);
         }
 
         &:hover {
