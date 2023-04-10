@@ -153,7 +153,9 @@
                             {/if}
                             <p>#{item.mint}</p>
                             {#if item.backedByTokens}
-                                <p class="badge">Backed with Tokens</p>
+                                <p class="badge">
+                                    Backed by {item.backedByTokens}
+                                </p>
                             {/if}
                         </article>
 
@@ -331,6 +333,7 @@
         margin-top: 6px;
         border-radius: 6px;
         font-size: var(--nb-font-size--small);
+        color: var(--nb-color);
         background-color: var(--nb-inactive);
     }
 </style>

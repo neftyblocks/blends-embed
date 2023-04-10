@@ -18,9 +18,9 @@ export const displayTime = (start_time, end_time, now) => {
         if (countdownStart === '0') {
             if (+end_time !== 0) {
                 if (countdownEnd === '0') return 'ended';
-                else return `ending in ${countdownEnd}`;
+                else return `ending ${countdownEnd}`;
             } else return 'live';
-        } else return `live in ${countdownStart}`;
+        } else return `${countdownStart}`;
     }
 };
 

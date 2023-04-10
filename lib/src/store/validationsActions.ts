@@ -1,5 +1,6 @@
-import { useFetch, useImageUrl, useAssetData, useRetry } from '@nefty/use';
+import { useFetch, useImageUrl, useAssetData, useRetry, useTokenDisplay } from '@nefty/use';
 import type { Payload, GetBlendResult } from '../types';
+import { priceForInput } from '../utils';
 
 const templateMintConfig = {
     is_transferable: 'true',
@@ -13,6 +14,22 @@ const attributeConfig = {
     sort: 'asset_id',
 };
 
+const isBackedByTokens = (backed_tokens) => {
+    const amount = backed_tokens.length > 0;
+
+    if (amount) {
+        const tokens = [];
+
+        for (let i = 0; i < backed_tokens.length; i++) {
+            const { amount, token_precision, token_symbol } = backed_tokens[i];
+            tokens.push(`${useTokenDisplay(priceForInput(amount, token_precision), token_precision)} ${token_symbol}`);
+        }
+
+        return tokens.join(', ');
+    }
+
+    return null;
+};
 export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_url, actor, matcher }) => {
     let result = {
         type: 'attributes',
@@ -44,7 +61,8 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
 
                 const asset = useAssetData(assets[i]);
                 const { video, img, name } = asset;
-                const backedByTokens = backed_tokens.length > 0;
+
+                const backedByTokens = isBackedByTokens(backed_tokens);
 
                 const content = {
                     asset_id,
@@ -93,7 +111,7 @@ export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url,
             for (let i = 0; i < assets.length; i++) {
                 const { asset_id, template_mint, mutable_data, backed_tokens } = assets[i];
 
-                const backedByTokens = backed_tokens.length > 0;
+                const backedByTokens = isBackedByTokens(backed_tokens);
 
                 const content = {
                     asset_id,
@@ -142,7 +160,7 @@ export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_nam
 
                 const asset = useAssetData(assets[i]);
                 const { video, img, name } = asset;
-                const backedByTokens = backed_tokens.length > 0;
+                const backedByTokens = isBackedByTokens(backed_tokens);
 
                 const content = {
                     asset_id,
@@ -189,7 +207,7 @@ export const getTemplateAssetId = async ({ template_id, collection_name, atomic_
 
             for (let i = 0; i < assets.length; i++) {
                 const { asset_id, template_mint, backed_tokens } = assets[i];
-                const backedByTokens = backed_tokens.length > 0;
+                const backedByTokens = isBackedByTokens(backed_tokens);
 
                 const content = {
                     asset_id,
@@ -235,7 +253,7 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
 
                 const asset = useAssetData(assets[i]);
                 const { video, img, name } = asset;
-                const backedByTokens = backed_tokens.length > 0;
+                const backedByTokens = isBackedByTokens(backed_tokens);
 
                 const content = {
                     asset_id,

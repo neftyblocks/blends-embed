@@ -37,8 +37,6 @@
                 })
         );
 
-        console.log(selectedMatch);
-
         if (indexedData) {
             data = sortBlends(Object.values(indexedData.content));
             searchValue = undefined;
@@ -144,6 +142,16 @@
         /></symbol
     >
     <symbol
+        id="clock"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+    </symbol>
+    <symbol
         id="hat"
         viewBox="0 0 24 24"
         fill="none"
@@ -205,6 +213,11 @@
                 on:click={() => viewBlend(blend)}
             >
                 <time class={displayStatus(blend.status)}>
+                    {#if !['ended', 'live'].includes(displayTime(blend.start_time, blend.end_time, now))}
+                        <svg>
+                            <use href="#clock" />
+                        </svg>
+                    {/if}
                     {['active', 'ended'].includes(blend.status)
                         ? displayTime(blend.start_time, blend.end_time, now)
                         : displayStatus(blend.status)}
@@ -316,6 +329,14 @@
             position: relative;
             z-index: 0;
             overflow: hidden;
+
+            > small {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: var(--nb-color);
+            }
         }
 
         img {
@@ -357,6 +378,7 @@
         time {
             display: inline-block;
             padding: 4px 12px;
+            text-transform: uppercase;
             color: var(--nb-color);
             transform: translateY(-6px);
             font-size: var(--nb-font-size--small);
@@ -367,6 +389,13 @@
             &.sold-out,
             &.max-reached {
                 background-color: var(--nb-inactive);
+            }
+
+            svg {
+                display: inline-block;
+                width: 13px;
+                height: 13px;
+                transform: translate(-4px, 1.5px);
             }
         }
 
