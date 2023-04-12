@@ -2,9 +2,9 @@ import { writable } from 'svelte/store';
 import type { Settings } from '../types';
 
 export const settings = writable<Settings>({
-    config: null,
     account: null,
     blend: null,
+    config: null,
     transactionId: null,
 });
 

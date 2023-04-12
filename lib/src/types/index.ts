@@ -1,12 +1,4 @@
 export interface Settings {
-    config?: {
-        atomic_url: string;
-        chain_url: string;
-        marketplace_url: string;
-        profile_url: string;
-        chain: string;
-        collection?: string;
-    };
     account?: {
         actor: string;
         permission: string;
@@ -14,6 +6,14 @@ export interface Settings {
     blend?: {
         contract: string;
         blend_id: string;
+    };
+    config?: {
+        atomic_url: string;
+        chain_url: string;
+        marketplace_url: string;
+        profile_url: string;
+        chain: string;
+        collection?: string;
     };
     transactionId?: string;
 }

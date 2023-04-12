@@ -11,9 +11,9 @@
     // GLOBALS
 
     // STATES
-    export let config: string | null = null;
     export let account: string | null = null;
     export let blend: string | null = null;
+    export let config: string | null = null;
     export let transactionid: string | null = null;
 
     // METHODES
@@ -21,24 +21,15 @@
         // onDestroy clean up store
         return () => {
             $settings = {
-                config: null,
-                account: null,
                 blend: null,
+                account: null,
+                config: null,
                 transactionId: null,
             };
         };
     });
 
     $: {
-        if (config && config !== JSON.stringify($settings.config)) {
-            settings.update((s) => {
-                s.config = JSON.parse(config);
-                config = null;
-
-                return s;
-            });
-        }
-
         if (account && account !== JSON.stringify($settings.account)) {
             settings.update((s) => {
                 s.account = account !== 'unset' ? JSON.parse(account) : null;
@@ -48,19 +39,29 @@
             });
         }
 
-        if (transactionid) {
+        if (blend && !$settings.blend) {
             settings.update((s) => {
-                s.transactionId = transactionid;
-                transactionid = null;
+                s.blend = JSON.parse(blend);
+                blend = null;
 
                 return s;
             });
         }
 
-        if (blend && !$settings.blend) {
+        if (config && config !== JSON.stringify($settings.config)) {
             settings.update((s) => {
-                s.blend = JSON.parse(blend);
+                s.config = JSON.parse(config);
+                config = null;
                 blend = null;
+
+                return s;
+            });
+        }
+
+        if (transactionid) {
+            settings.update((s) => {
+                s.transactionId = transactionid;
+                transactionid = null;
 
                 return s;
             });
