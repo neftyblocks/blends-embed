@@ -26,6 +26,11 @@
                 config: null,
                 transactionId: null,
             };
+
+            account = null;
+            blend = null;
+            config = null;
+            transactionid = null;
         };
     });
 
@@ -52,7 +57,6 @@
             settings.update((s) => {
                 s.config = JSON.parse(config);
                 config = null;
-                blend = null;
 
                 return s;
             });
