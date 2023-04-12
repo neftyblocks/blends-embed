@@ -985,7 +985,7 @@
             font-weight: 700;
             font-size: var(--nb-font-size--large);
             width: 100%;
-            height: 60%;
+            height: 50%;
             padding: 12px;
             position: relative;
             overflow: hidden;
@@ -1074,6 +1074,14 @@
         p {
             color: var(--nb-color);
             font-size: var(--nb-font-size--small);
+        }
+    }
+
+    @media all and (min-width: 768px) {
+        .selection-item {
+            .visual {
+                height: 60%;
+            }
         }
     }
 </style>

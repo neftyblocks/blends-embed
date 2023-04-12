@@ -225,7 +225,7 @@
         justify-content: center;
         width: 100%;
         height: 100%;
-        gap: 72px;
+        gap: 24px;
         position: relative;
         overflow: hidden;
 
@@ -248,7 +248,7 @@
         width: 40px;
         height: 40px;
         color: var(--nb-color);
-        z-index: 2;
+        z-index: 4;
         transition: transform 0.15s ease;
 
         &:hover {
@@ -279,7 +279,7 @@
         height: 100%;
         width: 220px;
         // item width - group width / 2
-        left: 40px;
+        left: 0;
         top: 0;
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
@@ -444,8 +444,7 @@
         display: block;
         position: relative;
         height: 276px;
-        width: 300px;
-        padding: 24px 48px;
+        width: 220px;
 
         &--grid {
             display: flex;
@@ -482,6 +481,12 @@
                     transform: translate3d(0, 0, 0) rotate(0) scale(1.1);
                 }
             }
+        }
+    }
+
+    @media all and (min-width: 768px) {
+        .slider {
+            gap: 72px;
         }
     }
 </style>
