@@ -25,15 +25,15 @@
         "lint": "rome check .",
         "format": "rome format . --write"
     },
-    "packageManager": "pnpm@8.1.1",
+    "packageManager": "pnpm@8.2.0",
     "dependencies": {
-        "@nefty/use": "^0.1.6",
-        "@nefty/ual-anchor": "^0.2.5"
+        "@nefty/ual-anchor": "^0.2.5",
+        "@nefty/use": "^0.1.6"
     },
     "devDependencies": {
         "rome": "12.0.0",
-        "sass": "^1.60.0",
-        "typescript": "^5.0.3",
+        "sass": "^1.62.0",
+        "typescript": "^5.0.4",
         "vite": "^4.2.1"
     }
 }

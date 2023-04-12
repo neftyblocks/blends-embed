@@ -236,9 +236,6 @@
 
             if (matcher_type === 'token') {
                 if (matchTokenRequirements(selected[matcher], list[i])) {
-                    // value or amount should be used
-
-                    // TODO: add a check for the amount if multiple the same token is selected
                     selectedTokensToBlend.push(token);
                 } else {
                     if (dispatchError) {

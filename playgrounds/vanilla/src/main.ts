@@ -30,7 +30,7 @@ const mountEl = () => {
         el.innerHTML = embed;
 
         // Listen for sign event
-        const component = document.querySelector('neftyblocks-blend');
+        const component = document.querySelector('neftyblocks-blends');
 
         if (component && window.provider_user) {
             component.addEventListener('sign', async ({ detail }: any) => {
@@ -56,7 +56,7 @@ const mountEl = () => {
 };
 
 const callback = (users: WalletUser[]): void => {
-    const component = document.querySelector('neftyblocks-blend');
+    const component = document.querySelector('neftyblocks-blends');
 
     const [walletUser] = users;
 
@@ -71,6 +71,8 @@ const callback = (users: WalletUser[]): void => {
             actor: walletUser.accountName,
             permission: walletUser.requestPermission || 'active',
         };
+
+        console;
 
         if (component) component.setAttribute('account', JSON.stringify(account));
 
@@ -110,7 +112,7 @@ form?.addEventListener('submit', (e) => {
         mountEl();
 
         if (account) {
-            const component = document.querySelector('neftyblocks-blend');
+            const component = document.querySelector('neftyblocks-blends');
 
             if (component) component.setAttribute('account', JSON.stringify(account));
         }

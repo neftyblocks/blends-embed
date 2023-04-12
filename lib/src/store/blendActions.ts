@@ -43,8 +43,8 @@ export const getBlend = async ({
 
         const now = new Date().getTime();
 
-        const items = [];
         const result = [];
+        const items = {};
         const requirements = {};
 
         // ------------------------------
@@ -71,7 +71,7 @@ export const getBlend = async ({
 
                 const displayData = display_data ? JSON.parse(display_data) : null;
 
-                items.push({
+                items[matcher] = {
                     name: attributes.collection_name,
                     description: displayData?.description,
                     matcher_type,
@@ -79,7 +79,7 @@ export const getBlend = async ({
                     market_data: `${attributes.collection_name}|${attributes.schema_name}`,
                     video: null,
                     image: null,
-                });
+                };
             }
 
             // INGREDIENT - BALANCE
@@ -92,7 +92,7 @@ export const getBlend = async ({
 
                 value = template.cost;
 
-                items.push({
+                items[matcher] = {
                     name: template.attribute_name,
                     matcher_type,
                     matcher,
@@ -100,7 +100,7 @@ export const getBlend = async ({
                     value,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
-                });
+                };
             }
 
             // INGREDIENT - SCHEMA
@@ -110,7 +110,7 @@ export const getBlend = async ({
 
                 const displayData = display_data ? JSON.parse(display_data) : null;
 
-                items.push({
+                items[matcher] = {
                     name: schema.c,
                     description: displayData?.description,
                     matcher_type,
@@ -118,7 +118,7 @@ export const getBlend = async ({
                     market_data: `${schema.c}|${schema.s}`,
                     video: null,
                     image: null,
-                });
+                };
             }
 
             // INGREDIENT - TEMPLATE
@@ -129,14 +129,14 @@ export const getBlend = async ({
                 const asset = useAssetData(template);
                 const { img, video, name } = asset;
 
-                items.push({
+                items[matcher] = {
                     name,
                     matcher_type,
                     matcher,
                     market_data: `${template.collection.collection_name}|${template.template_id}`,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
-                });
+                };
             }
 
             // INGREDIENT - COLLECTION
@@ -148,14 +148,14 @@ export const getBlend = async ({
                     data: { img },
                 } = collection;
 
-                items.push({
+                items[matcher] = {
                     name: matcher,
                     matcher_type,
                     matcher,
                     market_data: `${collection.collection_name}`,
                     video: null,
                     image: img ? useImageUrl(img as string) : null,
-                });
+                };
             }
 
             // INGREDIENT - TOKEN
@@ -163,7 +163,7 @@ export const getBlend = async ({
                 matcher = `${ft_amount.token_symbol}|${ft_amount.token_contract}`;
                 matcher_type = 'token';
 
-                // fetch is token is not yet cached
+                // fetch the tokens is not yet cached
                 if (!tokensJson) {
                     const { data } = await useFetch<any>(`/api/logos/${chain}`, {
                         baseUrl: 'https://rates.neftyblocks.com',
@@ -183,16 +183,35 @@ export const getBlend = async ({
                     value,
                 };
 
-                items.push({
-                    name: `${value} ${token_symbol}`,
+                if (items[matcher]) {
+                    value += items[matcher].value;
+
+                    if (token) {
+                        token.amount += items[matcher].token.amount;
+                        token.value += items[matcher].token.value;
+                    }
+                }
+
+                items[matcher] = {
+                    name: token_symbol,
                     matcher_type,
                     matcher,
+                    value,
                     video: null,
                     market_data: null,
                     image: img ? useImageUrl(img.logo as string) : null,
                     token,
-                });
+                };
             }
+
+            // if (requirements[matcher]) {
+            // value += requirements[matcher].value;
+
+            // if (token) {
+            //     token.amount += requirements[matcher].token.amount;
+            //     token.value += requirements[matcher].token.value;
+            // }
+            // }
 
             requirements[matcher] = {
                 key: type,
@@ -281,7 +300,7 @@ export const getBlend = async ({
             description: display_data?.description,
             start_time,
             end_time,
-            items,
+            items: Object.values(items),
             results: result,
             category,
             ingredients_count,
