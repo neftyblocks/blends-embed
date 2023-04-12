@@ -301,6 +301,7 @@
     .blends-actions {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 24px;
         margin-bottom: 24px;
     }
@@ -309,8 +310,9 @@
         display: grid;
         grid-template-columns: repeat(
             auto-fill,
-            minmax(var(--nb-card-size-min), var(--nb-card-size-max))
+            minmax(var(--nb-card-size-min-m), var(--nb-card-size-max-m))
         );
+
         gap: var(--nb-gap);
     }
 
@@ -324,7 +326,9 @@
         transition: transform 0.3s;
 
         .visual {
-            height: 230px;
+            height: auto;
+            max-height: 180px;
+            min-height: 150px;
             border-radius: 6px;
             position: relative;
             z-index: 0;
@@ -474,6 +478,22 @@
 
             .stats {
                 opacity: 1;
+            }
+        }
+    }
+
+    @media all and (min-width: 576px) {
+        .blends-group {
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(var(--nb-card-size-min), var(--nb-card-size-max))
+            );
+        }
+
+        .blends-item {
+            .visual {
+                height: 230px;
+                max-height: none;
             }
         }
     }
