@@ -409,6 +409,7 @@
 
         &.current {
             z-index: 3;
+            transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
         }
 
         &.next {
