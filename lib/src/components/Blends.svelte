@@ -31,7 +31,7 @@
     let lastPageReached = false;
 
     // METHODS
-    const asyncData = async (config) => {
+    const asyncData = async (config, searchString?: string) => {
         indexedData = await useSWR<GetBlendsResponse>(
             `blends-${config.collection}-${selectedMatch}-${selectedCategory}-${currentPage}`,
             () =>
@@ -46,9 +46,8 @@
         );
 
         if (indexedData) {
-            categories = indexedData.categories;
-            data = sortBlends(Object.values(indexedData.content));
             searchValue = '';
+            categories = indexedData.categories;
 
             updatePageLimits();
 
@@ -59,6 +58,13 @@
                     ITEM_CAP: 50,
                 },
             });
+
+            if (searchString) {
+                searchValue = searchString;
+                search(false);
+            } else {
+                data = sortBlends(Object.values(indexedData.content));
+            }
         }
     };
 
@@ -72,12 +78,7 @@
                     if (page) currentPage = +page;
                 }
 
-                await asyncData(config);
-
-                if (config.query?.search) {
-                    searchValue = config.query.search;
-                    search();
-                }
+                await asyncData(config, config.query?.search);
             }
 
             if (account) {
@@ -110,7 +111,7 @@
         );
     };
 
-    const search = () => {
+    const search = (emit = true) => {
         if (timeout) clearTimeout(timeout);
         timeout = setTimeout(() => {
             let temp = [];
@@ -131,15 +132,16 @@
             setTimeout(() => {
                 data = temp;
 
-                dispatch(
-                    'query',
-                    {
-                        search: searchValue,
-                        page: currentPage,
-                        category: selectedCategory,
-                    },
-                    component
-                );
+                if (emit)
+                    dispatch(
+                        'query',
+                        {
+                            search: searchValue,
+                            page: currentPage,
+                            category: selectedCategory,
+                        },
+                        component
+                    );
             }, 100);
         }, 250);
     };
