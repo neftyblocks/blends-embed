@@ -74,7 +74,7 @@
 
                 await asyncData(config);
 
-                if (config.query.search) {
+                if (config.query?.search) {
                     searchValue = config.query.search;
                     search();
                 }
