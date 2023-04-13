@@ -47,7 +47,7 @@
         // ----------------------------
         // CONFIG   
         // ----------------------------
-        const { VITE_COLLECTION_NAME, VITE_ACCOUNT_NAME, VITE_ATOMIC_URL, VITE_CHAIN_URL, VITE_TEST_TX } = import.meta.env;
+        const { VITE_COLLECTION_NAME, VITE_ACCOUNT_NAME, VITE_BLEND_ID, VITE_ATOMIC_URL, VITE_CHAIN_URL, VITE_TEST_TX } = import.meta.env;
 
         const config = {
             atomic_url: VITE_ATOMIC_URL,
@@ -56,9 +56,14 @@
             collection: VITE_COLLECTION_NAME,
             marketplace_url: "https://test.neftyblocks.com/marketplace/listing",
             profile_url: "https://test.neftyblocks.com/profile/",
+            query: {
+                search: "",
+                page: "1",
+                category: "",
+            }
         }
 
-        const blend = { blend_id: "4117", contract: "blend.nefty" };
+        const blend = { blend_id: VITE_BLEND_ID, contract: "blend.nefty" };
 
         const account = {
             actor: VITE_ACCOUNT_NAME,
@@ -102,6 +107,10 @@
             }));
 
             toggle = !toggle;
+        });
+
+        component.addEventListener("query", ({ detail }) => {
+            console.log("query", detail)
         });
 
 

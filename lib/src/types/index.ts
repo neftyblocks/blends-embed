@@ -14,6 +14,11 @@ export interface Settings {
         profile_url: string;
         chain: string;
         collection?: string;
+        query?: {
+            page?: string;
+            category?: string;
+            search?: string;
+        };
     };
     transactionId?: string;
 }
@@ -29,6 +34,7 @@ export interface GetBlendsProperty {
     atomic_url: string;
     collection: string;
     page?: number;
+    category?: string;
     ingredient_match?: string;
     ingredient_owner?: string;
 }
@@ -36,6 +42,7 @@ export interface GetBlendsProperty {
 export interface GetBlendsResponse {
     content: Record<string, GetBlendsResult>;
     search: Record<string, string>;
+    categories: string[];
 }
 
 export interface GetBlendsResult {

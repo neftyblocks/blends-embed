@@ -807,11 +807,6 @@
         time {
             color: var(--nb-color-secondary);
             text-transform: uppercase;
-
-            svg {
-                width: 14px;
-                height: 14px;
-            }
         }
     }
 

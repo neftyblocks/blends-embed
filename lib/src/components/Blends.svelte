@@ -2,8 +2,7 @@
 
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
-    import SuggestifyEngine from '@suggestify/engine';
-    import { useSWR } from '@nefty/use';
+    import { useSWR, useSearch } from '@nefty/use';
     import { getBlends, settings } from '../store';
     import { dispatch, displayStatus, displayTime, sortBlends } from '../utils';
     import type { GetBlendsResponse, GetBlendsResult } from '../types';
@@ -19,30 +18,42 @@
 
     let now = new Date().getTime();
     let timeout: ReturnType<typeof setTimeout> = setTimeout(() => '', 250);
-    let suggestifyEngine: SuggestifyEngine;
-    let searchValue;
+    let searchEngine: any;
+    let searchValue = '';
     let selectedMatch;
+    let selectedCategory = '';
     let owner;
+    let categories = [];
+    let currentPage = 1;
+
+    const limit = 1000;
+    let maxPages = 0;
+    let lastPageReached = false;
 
     // METHODS
     const asyncData = async (config) => {
         indexedData = await useSWR<GetBlendsResponse>(
-            `blends-${config.collection}-${selectedMatch}`,
+            `blends-${config.collection}-${selectedMatch}-${selectedCategory}-${currentPage}`,
             () =>
                 getBlends({
                     atomic_url: config.atomic_url,
                     collection: config.collection,
                     ingredient_match: selectedMatch,
                     ingredient_owner: owner,
+                    page: currentPage,
+                    category: selectedCategory,
                 })
         );
 
         if (indexedData) {
+            categories = indexedData.categories;
             data = sortBlends(Object.values(indexedData.content));
-            searchValue = undefined;
+            searchValue = '';
 
-            suggestifyEngine = new SuggestifyEngine({
-                defaultItems: Object.keys(indexedData.search),
+            updatePageLimits();
+
+            searchEngine = useSearch({
+                items: Object.keys(indexedData.search),
                 options: {
                     MIN_DISTANCE: 3,
                     ITEM_CAP: 50,
@@ -54,7 +65,19 @@
     const unsubscribe = settings.subscribe(
         async ({ config, blend, account }) => {
             if (config && !blend) {
+                if (config.query) {
+                    const { category, page } = config.query;
+
+                    if (category) selectedCategory = category;
+                    if (page) currentPage = +page;
+                }
+
                 await asyncData(config);
+
+                if (config.query.search) {
+                    searchValue = config.query.search;
+                    search();
+                }
             }
 
             if (account) {
@@ -92,7 +115,7 @@
         timeout = setTimeout(() => {
             let temp = [];
             if (searchValue.length > 0) {
-                const results = suggestifyEngine.getResults(searchValue);
+                const results = searchEngine(searchValue);
 
                 if (results) {
                     for (let i = 0; i < results.length; i++) {
@@ -107,11 +130,48 @@
 
             setTimeout(() => {
                 data = temp;
+
+                dispatch(
+                    'query',
+                    {
+                        search: searchValue,
+                        page: currentPage,
+                        category: selectedCategory,
+                    },
+                    component
+                );
             }, 100);
         }, 250);
     };
 
-    const selectMatch = () => {
+    const selectUpdate = () => {
+        data = undefined;
+        currentPage = 1;
+
+        setTimeout(() => {
+            dispatch(
+                'query',
+                {
+                    search: searchValue,
+                    page: currentPage,
+                    category: selectedCategory,
+                },
+                component
+            );
+
+            asyncData($settings.config);
+        }, 100);
+    };
+
+    const updatePageLimits = () => {
+        maxPages = data?.length || 0;
+        lastPageReached = limit - maxPages !== limit && limit - maxPages !== 0;
+    };
+
+    const updatePage = (newPage: number) => {
+        const page = currentPage ? +currentPage : 1;
+
+        currentPage = page + newPage >= 1 ? page + newPage : 1;
         data = undefined;
 
         setTimeout(() => {
@@ -189,6 +249,30 @@
             d="M7 11V7a5 5 0 0 1 10 0v4"
         /></symbol
     >
+    <symbol
+        id="arrow_right"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><line x1="5" y1="12" x2="19" y2="12" /><polyline
+            points="12 5 19 12 12 19"
+        /></symbol
+    >
+    <symbol
+        id="arrow_left"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><line x1="19" y1="12" x2="5" y2="12" /><polyline
+            points="12 19 5 12 12 5"
+        /></symbol
+    >
 </svg>
 
 <div class="blends-actions">
@@ -198,12 +282,20 @@
         placeholder="Search name"
         on:input={search}
     />
-    <select bind:value={selectedMatch} on:input={selectMatch}>
+    <select bind:value={selectedMatch} on:input={selectUpdate}>
         <option value="">Show all</option>
         <option value="all">Own all requirements</option>
         <option value="missing_x">Missing one requirement</option>
         <option value="any">Own at least one requirment</option>
     </select>
+    {#if categories.length}
+        <select bind:value={selectedCategory} on:input={selectUpdate}>
+            {#each categories as category}
+                <option value="">No category</option>
+                <option value={category}>{category}</option>
+            {/each}
+        </select>
+    {/if}
 </div>
 {#if data}
     <div class="blends-group">
@@ -275,6 +367,27 @@
             </button>
         {/each}
     </div>
+    <nav class="pagination">
+        <button
+            class="btn-clear"
+            on:click={() => updatePage(-1)}
+            disabled={currentPage === 1}
+        >
+            <svg role="presentation" focusable="false" aria-hidden="true">
+                <use xlink:href="#arrow_left" />
+            </svg>
+        </button>
+        <p>{currentPage} / {lastPageReached ? currentPage : '∞'}</p>
+        <button
+            class="btn-clear"
+            on:click={() => updatePage(1)}
+            disabled={lastPageReached}
+        >
+            <svg role="presentation" focusable="false" aria-hidden="true">
+                <use xlink:href="#arrow_right" />
+            </svg>
+        </button>
+    </nav>
 {:else if data === null}
     <p class="error">
         <svg role="presentation" focusable="false" aria-hidden="true">
@@ -479,6 +592,36 @@
             .stats {
                 opacity: 1;
             }
+        }
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--nb-gap);
+        padding: 12px;
+        margin-top: 24px;
+
+        button {
+            width: 32px;
+            height: 32px;
+            color: var(--nb-color);
+            transition: transform 0.15s;
+
+            &[disabled] {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            &:not([disabled]):hover {
+                transform: scale(1.1);
+            }
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
         }
     }
 

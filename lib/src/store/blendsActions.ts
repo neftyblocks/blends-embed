@@ -6,6 +6,7 @@ export const getBlends = async ({
     atomic_url,
     collection,
     page = 1,
+    category,
     ingredient_match,
     ingredient_owner,
 }: GetBlendsProperty): Promise<null | GetBlendsResponse> => {
@@ -19,6 +20,7 @@ export const getBlends = async ({
             limit: '1000',
             page: `${page}`,
             ...optionalMatch,
+            category,
         },
     });
 
@@ -31,6 +33,7 @@ export const getBlends = async ({
         const now = new Date().getTime();
         const content: Record<string, GetBlendsResult> = {};
         const search: Record<string, string> = {};
+        const categories = [];
 
         for (let i = 0; i < data.data.length; i++) {
             const {
@@ -53,6 +56,8 @@ export const getBlends = async ({
             let max_reached = false;
             const items = [];
             const result = [];
+
+            if (category && !categories.includes(category)) categories.push(category);
 
             for (let a = 0; a < ingredients.length; a++) {
                 const { template } = ingredients[a];
@@ -136,7 +141,7 @@ export const getBlends = async ({
             search[`${blend_name}_${result.map((e) => e.schema_name).join('_')}`] = `${contract}_${blend_id}`;
         }
 
-        return { content, search };
+        return { content, search, categories };
     }
 
     return null;

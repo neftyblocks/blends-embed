@@ -8,27 +8,8 @@ importers:
         specifier: ^0.2.5
         version: 0.2.5
       '@nefty/use':
-        specifier: ^0.1.6
-        version: 0.1.6
-    devDependencies:
-      rome:
-        specifier: 12.0.0
-        version: 12.0.0
-      sass:
-        specifier: ^1.62.0
-        version: 1.62.0
-      typescript:
-        specifier: ^5.0.4
-        version: 5.0.4
-      vite:
-        specifier: ^4.2.1
-        version: 4.2.1(sass@1.62.0)
-
-  lib:
-    dependencies:
-      '@suggestify/engine':
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^0.1.8
+        version: 0.1.8
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^2.0.4
@@ -36,6 +17,12 @@ importers:
       '@tsconfig/svelte':
         specifier: ^4.0.1
         version: 4.0.1
+      rome:
+        specifier: 12.0.0
+        version: 12.0.0
+      sass:
+        specifier: ^1.62.0
+        version: 1.62.0
       svelte:
         specifier: ^3.58.0
         version: 3.58.0
@@ -45,6 +32,18 @@ importers:
       tslib:
         specifier: ^2.5.0
         version: 2.5.0
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+      vite:
+        specifier: ^4.2.1
+        version: 4.2.1(sass@1.62.0)
+
+  lib:
+    dependencies:
+      '@nefty/use':
+        specifier: ^0.1.8
+        version: 0.1.8
 
   playgrounds/vanilla:
     dependencies:
@@ -326,8 +325,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@mvdschee/use@0.0.30:
-    resolution: {integrity: sha512-0modP+xmZ8qUeqbvw6S+snc3ZuN0VCc4Fw/lhxxFqrFeg2ZR5udorHypkgLI+j1wWhOZGURdaHWbrTJN7RceJg==}
+  /@mvdschee/use@0.1.1:
+    resolution: {integrity: sha512-UV7+zNQMlvbF82WV6xUNCTgx3ZErGErIuuYtQ2udeQ3CYBCmZRwC15PAV9K42Qo+pDA+hvc753GeLa3HstIX8A==}
     dev: false
 
   /@nefty/ual-anchor@0.2.5:
@@ -344,10 +343,10 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@nefty/use@0.1.6:
-    resolution: {integrity: sha512-VRhdPz2NsCJ0nkae4582+z4+rmLgud3NZdZp4HitjFx/ZhCXogsfAZjVFngl9lecEDmSeqdge4TecbWIDO7j2w==}
+  /@nefty/use@0.1.8:
+    resolution: {integrity: sha512-YSuhYdM9Oj/H9vRWWzbzWBF+iimxsfgtIfBs2t6pPwyIYnJ2egO8l5HTL8POd0avUhPiWolvzhd40JVXX52AiQ==}
     dependencies:
-      '@mvdschee/use': 0.0.30
+      '@mvdschee/use': 0.1.1
       universal-authenticator-library: 0.3.0
     dev: false
 
@@ -419,10 +418,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /@suggestify/engine@1.1.1:
-    resolution: {integrity: sha512-KPEZEAOVYT9mi2rLZiBV4Ep2DGO82amcBuEKrpgTQhWirspj9MypdRqTmlgBmMsiPsMJL7GlLcJlxCpepnU3vA==}
-    dev: false
 
   /@sveltejs/vite-plugin-svelte@2.0.4(svelte@3.58.0)(vite@4.2.1):
     resolution: {integrity: sha512-pjqhW00KwK2uzDGEr+yJBwut+D+4XfJO/+bHHdHzPRXn9+1Jeq5JcFHyrUiYaXgHtyhX0RsllCTm4ssAx4ZY7Q==}
