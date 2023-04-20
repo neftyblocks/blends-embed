@@ -51,6 +51,7 @@ export interface GetBlendsResult {
     name: string;
     description?: string;
     image: string;
+    video: string;
     start_time: number;
     end_time: number;
     items: {

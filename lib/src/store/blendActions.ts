@@ -1,6 +1,6 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
 import type { Payload, GetBlendProperty, GetBlendResult } from '../types';
-import { blendNameAndImage, displayTime, matchRarity, priceForInput } from '../utils';
+import { blendNameAndImage, displayTime, getVisuals, matchRarity, priceForInput } from '../utils';
 
 let tokensJson: any = null;
 
@@ -71,15 +71,24 @@ export const getBlend = async ({
 
                 const displayData = display_data ? JSON.parse(display_data) : null;
 
+                const message = attributes.attributes
+                    .map(({ name, allowed_values }) => {
+                        const values = allowed_values.join(', ');
+                        return `${name} equals "${values}"`;
+                    })
+                    .join(' and ');
+
                 items[matcher] = {
                     name: attributes.collection_name,
-                    description: displayData?.description,
+                    description: displayData?.description || message,
                     matcher_type,
                     matcher,
                     market_data: `${attributes.collection_name}|${attributes.schema_name}`,
                     video: null,
                     image: null,
                 };
+
+                console.log(items[matcher], attributes);
             }
 
             // INGREDIENT - BALANCE
@@ -127,7 +136,9 @@ export const getBlend = async ({
                 matcher_type = 'template';
 
                 const asset = useAssetData(template);
-                const { img, video, name } = asset;
+                const { name } = asset;
+
+                const { video, image } = getVisuals(asset, template.schema?.format);
 
                 items[matcher] = {
                     name,
@@ -135,7 +146,7 @@ export const getBlend = async ({
                     matcher,
                     market_data: `${template.collection.collection_name}|${template.template_id}`,
                     video: video ? useImageUrl(video as string) : null,
-                    image: img ? useImageUrl(img as string) : null,
+                    image: image ? useImageUrl(image as string) : null,
                 };
             }
 
@@ -257,33 +268,46 @@ export const getBlend = async ({
                 });
             } else {
                 for (let b = 0; b < results.length; b++) {
-                    const { template } = results[b];
+                    const { template, pool } = results[b];
 
-                    if (!template) continue;
+                    if (template) {
+                        const issued_supply = +template.issued_supply;
+                        const max_supply = +template.max_supply;
+                        const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
 
-                    const issued_supply = +template.issued_supply;
-                    const max_supply = +template.max_supply;
-                    const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
+                        if (maxReached) max_reached = true;
 
-                    if (maxReached) max_reached = true;
+                        const asset = useAssetData(template);
+                        const { img, video, name } = asset;
 
-                    const asset = useAssetData(template);
-                    const { img, video, name } = asset;
+                        result.push({
+                            name,
+                            drop_rate: dropRate,
+                            rarity,
+                            mint: {
+                                amount: +template.issued_supply,
+                                supply: +template.max_supply === 0 ? '∞' : template.max_supply,
+                            },
+                            video: video ? useImageUrl(video as string) : null,
+                            image: img ? useImageUrl(img as string) : null,
+                        });
 
-                    result.push({
-                        name,
-                        drop_rate: dropRate,
-                        rarity,
-                        mint: {
-                            amount: +template.issued_supply,
-                            supply: +template.max_supply === 0 ? '∞' : template.max_supply,
-                        },
-                        video: video ? useImageUrl(video as string) : null,
-                        image: img ? useImageUrl(img as string) : null,
-                    });
+                        if (!backgroundImg) {
+                            backgroundImg = useImageUrl(img, 300, true);
+                        }
+                    } else if (pool) {
+                        const displayData = pool.display_data ? JSON.parse(pool.display_data) : null;
 
-                    if (!backgroundImg) {
-                        backgroundImg = useImageUrl(img, 300, true);
+                        if (displayData) {
+                            result.push({
+                                name: displayData.name,
+                                drop_rate: dropRate,
+                                rarity,
+                                mint: null,
+                                video: displayData.video ? useImageUrl(displayData.video as string) : null,
+                                image: displayData.image ? useImageUrl(displayData.image as string) : null,
+                            });
+                        }
                     }
                 }
             }
@@ -309,6 +333,10 @@ export const getBlend = async ({
             security_id,
             odds: oddbased,
             requirements,
+            count: {
+                current: +use_count,
+                max: +max,
+            },
             status:
                 displayTime(start_time, end_time, now) === 'ended'
                     ? 'ended'

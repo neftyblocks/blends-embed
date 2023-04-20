@@ -102,7 +102,7 @@ export const getBlends = async ({
 
                         result.push({
                             name,
-                            image: useImageUrl(img as string),
+                            image: img ? useImageUrl(img as string) : null,
                             schema_name: template.schema?.schema_name || '',
                         });
                     }
@@ -110,7 +110,10 @@ export const getBlends = async ({
             }
 
             const displayData = display_data ? JSON.parse(display_data) : null;
-            const { blend_img, blend_name } = blendNameAndImage(displayData, rolls[0].outcomes[0].results[0]);
+            const { blend_img, blend_video, blend_name } = blendNameAndImage(
+                displayData,
+                rolls[0].outcomes[0].results[0],
+            );
 
             const soldOut = +max !== 0 && +use_count >= +max;
 
@@ -136,6 +139,7 @@ export const getBlends = async ({
                         ? 'max-reached'
                         : 'active',
                 image: blend_img ? useImageUrl(blend_img) : null,
+                video: blend_video ? useImageUrl(blend_video) : null,
             };
 
             search[`${blend_name}_${result.map((e) => e.schema_name).join('_')}`] = `${contract}_${blend_id}`;

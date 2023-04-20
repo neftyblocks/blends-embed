@@ -49,13 +49,12 @@
             searchValue = '';
             categories = indexedData.categories;
 
-            updatePageLimits();
-
             searchEngine = useSearch({
                 items: Object.keys(indexedData.search),
                 options: {
-                    MIN_DISTANCE: 3,
-                    ITEM_CAP: 50,
+                    distance: 3,
+                    results_count: 50,
+                    results_count_alt: 30,
                 },
             });
 
@@ -65,6 +64,8 @@
             } else {
                 data = sortBlends(Object.values(indexedData.content));
             }
+
+            updatePageLimits();
         }
     };
 
@@ -167,6 +168,8 @@
 
     const updatePageLimits = () => {
         maxPages = data?.length || 0;
+
+        console.log(limit, maxPages);
         lastPageReached = limit - maxPages !== limit && limit - maxPages !== 0;
     };
 
@@ -282,13 +285,13 @@
         type="search"
         bind:value={searchValue}
         placeholder="Search name"
-        on:input={search}
+        on:input={() => search}
     />
     <select bind:value={selectedMatch} on:input={selectUpdate}>
         <option value="">Show all</option>
         <option value="all">Own all requirements</option>
         <option value="missing_x">Missing one requirement</option>
-        <option value="any">Own at least one requirment</option>
+        <option value="any">Own at least one requirement</option>
     </select>
     {#if categories.length}
         <select bind:value={selectedCategory} on:input={selectUpdate}>
@@ -300,75 +303,86 @@
     {/if}
 </div>
 {#if data}
-    <div class="blends-group">
-        {#each data as blend}
-            <button
-                class={`btn-clear blends-item ${blend.secure ? 'secure' : ''}`}
-                on:click={() => viewBlend(blend)}
-            >
-                <time class={displayStatus(blend.status)}>
-                    {#if !['ended', 'live'].includes(displayTime(blend.start_time, blend.end_time, now))}
-                        <svg>
-                            <use href="#clock" />
-                        </svg>
-                    {/if}
-                    {['active', 'ended'].includes(blend.status)
-                        ? displayTime(blend.start_time, blend.end_time, now)
-                        : displayStatus(blend.status)}
-                </time>
-                <figure class="visual">
-                    {#if blend.video}
-                        <video
-                            src={blend.video}
-                            loop
-                            autoplay
-                            muted
-                            playsinline
-                        />
-                    {:else if blend.image}
-                        <img
-                            class="shadow"
-                            src={blend.image}
-                            alt={blend.name}
-                        />
-                        <img src={blend.image} alt={blend.name} />
-                    {:else}
-                        <small>empty</small>
-                    {/if}
-                    <div class="stats">
-                        <div class="stat">
-                            <small>ingredients</small>
-                            <span>
-                                <svg>
-                                    <use href="#hat" />
-                                </svg>
-                                {blend.ingredients_count}
-                            </span>
+    {#if data.length}
+        <div class="blends-group">
+            {#each data as blend}
+                <button
+                    class={`btn-clear blends-item ${
+                        blend.secure ? 'secure' : ''
+                    }`}
+                    on:click={() => viewBlend(blend)}
+                >
+                    <time class={displayStatus(blend.status)}>
+                        {#if !['ended', 'live'].includes(displayTime(blend.start_time, blend.end_time, now))}
+                            <svg>
+                                <use href="#clock" />
+                            </svg>
+                        {/if}
+                        {['active', 'ended'].includes(blend.status)
+                            ? displayTime(blend.start_time, blend.end_time, now)
+                            : displayStatus(blend.status)}
+                    </time>
+                    <figure class="visual">
+                        {#if blend.video}
+                            <video
+                                src={blend.video}
+                                loop
+                                autoplay
+                                muted
+                                playsinline
+                            />
+                        {:else if blend.image}
+                            <img
+                                class="shadow"
+                                src={blend.image}
+                                alt={blend.name}
+                            />
+                            <img src={blend.image} alt={blend.name} />
+                        {:else}
+                            <small>empty</small>
+                        {/if}
+                        <div class="stats">
+                            <div class="stat">
+                                <small>ingredients</small>
+                                <span>
+                                    <svg>
+                                        <use href="#hat" />
+                                    </svg>
+                                    {blend.ingredients_count}
+                                </span>
+                            </div>
+                            <div class="stat">
+                                <small>results</small>
+                                <span>
+                                    <svg>
+                                        <use href="#star" />
+                                    </svg>
+                                    {blend.result_count}
+                                </span>
+                            </div>
                         </div>
-                        <div class="stat">
-                            <small>results</small>
-                            <span>
-                                <svg>
-                                    <use href="#star" />
-                                </svg>
-                                {blend.result_count}
-                            </span>
-                        </div>
-                    </div>
-                </figure>
+                    </figure>
 
-                <h3>
-                    {#if blend.secure}
-                        <svg>
-                            <use href="#lock" />
-                        </svg>
-                    {/if}
+                    <h3>
+                        {#if blend.secure}
+                            <svg>
+                                <use href="#lock" />
+                            </svg>
+                        {/if}
 
-                    {blend.name}
-                </h3>
-            </button>
-        {/each}
-    </div>
+                        {blend.name}
+                    </h3>
+                </button>
+            {/each}
+        </div>
+    {:else}
+        <p class="error">
+            <svg role="presentation" focusable="false" aria-hidden="true">
+                <use xlink:href="#blender" />
+            </svg>
+            No results found
+        </p>
+    {/if}
     <nav class="pagination">
         <button
             class="btn-clear"

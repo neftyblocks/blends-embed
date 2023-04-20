@@ -449,12 +449,22 @@
         <main>
             <article class="blend-content">
                 <div>
-                    <h1>{data.name}</h1>
-                    <time>
-                        {['active', 'ended'].includes(data.status)
-                            ? displayTime(data.start_time, data.end_time, now)
-                            : displayStatus(data.status)}
-                    </time>
+                    <h1>
+                        {data.name}
+                    </h1>
+                    <span>
+                        <time>
+                            {['active', 'ended'].includes(data.status)
+                                ? displayTime(
+                                      data.start_time,
+                                      data.end_time,
+                                      now
+                                  )
+                                : displayStatus(data.status)}
+                        </time>
+                        <small>-</small>
+                        {data.count.current} / {data.count.max || '∞'} blends left
+                    </span>
                 </div>
                 {#if warnJobs >= 50}
                     <div class="banner">
@@ -637,9 +647,11 @@
                                             >
                                                 Get {data.requirements[
                                                     item.matcher
-                                                ].amount} asset{(data.requirements[
-                                                    item.matcher
-                                                ].amount = 1 ? '' : 's')}
+                                                ].amount} asset{data
+                                                    .requirements[item.matcher]
+                                                    .amount === 1
+                                                    ? ''
+                                                    : 's'}
                                             </a>{/if}
                                     {:else if matchTokenRequirements(selection[item.matcher], data.requirements[item.matcher])}
                                         <p class="balance">
@@ -654,6 +666,7 @@
                                         </p>
                                     {:else}
                                         <!-- svelte-ignore security-anchor-rel-noreferrer -->
+                                        <!-- svelte-ignore a11y-invalid-attribute -->
                                         <a
                                             class="btn"
                                             href="#"
@@ -804,8 +817,15 @@
             font-size: var(--nb-font-size--title);
         }
 
-        time {
+        span {
             color: var(--nb-color-secondary);
+        }
+
+        small {
+            padding: 0 10px;
+        }
+
+        time {
             text-transform: uppercase;
         }
     }

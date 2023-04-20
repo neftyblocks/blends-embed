@@ -22,13 +22,14 @@ export const matchTokenRequirements = (selectionItems: any, requirements: any) =
 
 export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem['market_data'], marketUrl: string) => {
     const marketArray = market_data.split('|');
+    const extend = '&sort=price&order=asc';
 
     const url = {
-        attributes: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}`,
-        collection: `${marketUrl}?collection_name=${marketArray[0]}`,
-        schema: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}`,
-        template: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}`,
-        balance: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}`,
+        attributes: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}${extend}`,
+        collection: `${marketUrl}?collection_name=${marketArray[0]}${extend}`,
+        schema: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}${extend}`,
+        template: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}${extend}`,
+        balance: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}${extend}`,
     };
 
     return url[matcher_type];
