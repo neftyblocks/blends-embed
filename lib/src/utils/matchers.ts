@@ -1,4 +1,4 @@
-import { BlendResultItem } from '../types';
+import type { BlendResultItem } from '../types';
 
 export const matchAssetRequirements = (selectionItems: any, requirements: any) => {
     const { amount } = requirements;

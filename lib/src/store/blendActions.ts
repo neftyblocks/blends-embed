@@ -63,6 +63,7 @@ export const getBlend = async ({
             let matcher_type;
             let value;
             let token;
+            let ingredients_amount = 0;
 
             // INGREDIENT - ATTRIBUTE
             if (type === 'ATTRIBUTE_INGREDIENT') {
@@ -87,8 +88,6 @@ export const getBlend = async ({
                     video: null,
                     image: null,
                 };
-
-                console.log(items[matcher], attributes);
             }
 
             // INGREDIENT - BALANCE
@@ -215,19 +214,16 @@ export const getBlend = async ({
                 };
             }
 
-            // if (requirements[matcher]) {
-            // value += requirements[matcher].value;
+            ingredients_amount = amount;
 
-            // if (token) {
-            //     token.amount += requirements[matcher].token.amount;
-            //     token.value += requirements[matcher].token.value;
-            // }
-            // }
+            if (requirements[matcher] && type !== 'FT_INGREDIENT') {
+                ingredients_amount += requirements[matcher].amount;
+            }
 
             requirements[matcher] = {
                 key: type,
                 collection_name,
-                amount,
+                amount: ingredients_amount,
                 value,
                 token,
                 matcher_type,
