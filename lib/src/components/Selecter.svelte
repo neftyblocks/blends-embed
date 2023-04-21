@@ -141,7 +141,11 @@
                                     playsinline
                                 />
                             {:else if item.image}
-                                <img src={item.image} alt={item.name} />
+                                <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    loading="lazy"
+                                />
                             {/if}
                         {/if}
                         <article>

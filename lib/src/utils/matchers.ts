@@ -1,9 +1,11 @@
 import type { BlendResultItem } from '../types';
 
-export const matchAssetRequirements = (selectionItems: any, requirements: any) => {
+export const matchAssetRequirements = (selectionItems: any, requirements: any, isFullValidation: boolean) => {
     const { amount } = requirements;
 
     if (!selectionItems) return false;
+
+    if (!isFullValidation && selectionItems.length) return true;
 
     if (amount > selectionItems.length) return false;
 

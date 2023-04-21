@@ -110,7 +110,14 @@
                         allowBlend = true;
                         selectedSecurity = result;
                     } else {
-                        console.log('not allowed', reason);
+                        dispatch(
+                            'error',
+                            {
+                                type: 'security',
+                                message: reason,
+                            },
+                            component
+                        );
                     }
                 }
             }
@@ -199,7 +206,7 @@
                     selected[matcher] = selection[matcher];
                 }
             } else {
-                if (selection[matcher] && selection[matcher].length >= amount) {
+                if (selection[matcher] && selection[matcher].length) {
                     const temp = [...selection[matcher]];
 
                     for (let j = 0; j < temp.length; j++) {
@@ -221,7 +228,11 @@
         }
     };
 
-    const validateSelection = (requirements, dispatchError = false) => {
+    const validateSelection = (
+        requirements,
+        isFullValidation = false,
+        dispatchError = false
+    ) => {
         const list = sortedRequirements(requirements);
 
         // Reset the selected assets and tokens
@@ -232,7 +243,7 @@
         let meetRequirements = true;
 
         for (let i = 0; i < list.length; i++) {
-            const { matcher, matcher_type, token, amount, value } = list[i];
+            const { matcher, matcher_type, token } = list[i];
 
             if (matcher_type === 'token') {
                 if (matchTokenRequirements(selected[matcher], list[i])) {
@@ -253,7 +264,13 @@
                     break;
                 }
             } else {
-                if (matchAssetRequirements(selected[matcher], list[i])) {
+                if (
+                    matchAssetRequirements(
+                        selected[matcher],
+                        list[i],
+                        isFullValidation
+                    )
+                ) {
                     for (let i = 0; i < selected[matcher].length; i++) {
                         const { asset_id } = selected[matcher][i];
 
@@ -306,7 +323,7 @@
     };
 
     const blend = (requirements) => {
-        const allowed = validateSelection(requirements, true);
+        const allowed = validateSelection(requirements, true, true);
 
         if (allowed) {
             const transactions = blendTransactionActions({
@@ -519,7 +536,7 @@
                                 !user ||
                                 data.status !== 'active'}
                             class="btn btn--primary {!loading &&
-                            validateSelection(data.requirements)
+                            validateSelection(data.requirements, true)
                                 ? 'btn--blend'
                                 : ''}"
                             on:click={() => {
@@ -576,7 +593,8 @@
                                 <div
                                     class={matchAssetRequirements(
                                         selection[item.matcher],
-                                        data.requirements[item.matcher]
+                                        data.requirements[item.matcher],
+                                        true
                                     )
                                         ? 'owned'
                                         : 'needed'}
@@ -600,6 +618,7 @@
                                                 <img
                                                     src={item.image}
                                                     alt={item.name}
+                                                    loading="lazy"
                                                 />
                                             {/if}
                                         </figure>
@@ -617,7 +636,7 @@
                                     </h3>
 
                                     {#if item.matcher_type !== 'token'}
-                                        {#if matchAssetRequirements(selection[item.matcher], data.requirements[item.matcher])}
+                                        {#if matchAssetRequirements(selection[item.matcher], data.requirements[item.matcher], true)}
                                             <nefty-blend-selecter
                                                 items={selection[item.matcher]}
                                                 matchertype={item.matcher_type}
@@ -647,7 +666,9 @@
                                             >
                                                 Get {data.requirements[
                                                     item.matcher
-                                                ].amount} asset{data
+                                                ].amount -
+                                                    selected[item.matcher]
+                                                        .length || 0} asset{data
                                                     .requirements[item.matcher]
                                                     .amount === 1
                                                     ? ''

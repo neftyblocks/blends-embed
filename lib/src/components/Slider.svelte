@@ -160,8 +160,11 @@
                                     playsinline
                                 />
                             {:else if item.image}
-                                <!-- <img class="shadow" src={item.image} alt="" /> -->
-                                <img src={item.image} alt={item.name} />
+                                <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    loading="lazy"
+                                />
                             {:else}
                                 <small>No result</small>
                             {/if}

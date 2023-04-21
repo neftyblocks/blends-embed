@@ -169,7 +169,6 @@
     const updatePageLimits = () => {
         maxPages = data?.length || 0;
 
-        console.log(limit, maxPages);
         lastPageReached = limit - maxPages !== limit && limit - maxPages !== 0;
     };
 
@@ -336,8 +335,13 @@
                                 class="shadow"
                                 src={blend.image}
                                 alt={blend.name}
+                                loading="lazy"
                             />
-                            <img src={blend.image} alt={blend.name} />
+                            <img
+                                src={blend.image}
+                                alt={blend.name}
+                                loading="lazy"
+                            />
                         {:else}
                             <small>empty</small>
                         {/if}
