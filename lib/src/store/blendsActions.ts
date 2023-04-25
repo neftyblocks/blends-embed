@@ -50,6 +50,7 @@ export const getBlends = async ({
                 category,
                 max,
                 use_count,
+                fulfilled,
             } = data.data[i];
 
             if (is_hidden) continue;
@@ -124,6 +125,7 @@ export const getBlends = async ({
                 start_time,
                 end_time,
                 items,
+                fulfilled,
                 results: result,
                 category,
                 ingredients_count,

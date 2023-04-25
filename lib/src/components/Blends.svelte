@@ -376,6 +376,12 @@
 
                         {blend.name}
                     </h3>
+                    {#if blend.fulfilled}
+                        <small class="fulfilled">
+                            Holding {blend.fulfilled} / {blend.ingredients_count}
+                            ingredients
+                        </small>
+                    {/if}
                 </button>
             {/each}
         </div>
@@ -534,6 +540,14 @@
                 height: 13px;
                 transform: translate(-4px, 1.5px);
             }
+        }
+
+        .fulfilled {
+            display: inline-block;
+            width: 100%;
+            color: var(--nb-color-secondary);
+            text-align: left;
+            font-size: var(--nb-font-size--small);
         }
 
         .stat {

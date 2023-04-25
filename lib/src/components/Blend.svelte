@@ -71,19 +71,36 @@
             if (config && blend && !transactionId) {
                 localConfig = config;
 
-                data = await useSWR(`blend-${blend.blend_id}`, () =>
-                    getBlend({
-                        atomic_url: config.atomic_url,
-                        blend_id: blend.blend_id,
-                        contract: blend.contract,
-                        chain: config.chain,
-                    })
+                const tempdata = await useSWR<GetBlendResult>(
+                    `blend-${blend.blend_id}`,
+                    () =>
+                        getBlend({
+                            atomic_url: config.atomic_url,
+                            blend_id: blend.blend_id,
+                            contract: blend.contract,
+                            chain: config.chain,
+                        })
                 );
 
-                if (data.odds) {
-                    warnJobs = await getJobsCount({
-                        chain_url: config.chain_url,
-                    });
+                if (tempdata.collection_name === config.collection) {
+                    data = tempdata;
+
+                    if (data.odds) {
+                        warnJobs = await getJobsCount({
+                            chain_url: config.chain_url,
+                        });
+                    }
+                } else {
+                    data = null;
+
+                    dispatch(
+                        'error',
+                        {
+                            type: 'blend',
+                            message: 'Blend is not from this collection',
+                        },
+                        component
+                    );
                 }
             }
 
@@ -95,7 +112,7 @@
                     selection = undefined;
                 }
 
-                if (data.secure) {
+                if (data?.secure) {
                     allowBlend = false;
 
                     const { allowed, result, reason } = await getSecurityCheck({
@@ -667,8 +684,8 @@
                                                 Get {data.requirements[
                                                     item.matcher
                                                 ].amount -
-                                                    selected[item.matcher]
-                                                        .length || 0} asset{data
+                                                    (selected[item.matcher]
+                                                        ?.length || 0)} asset{data
                                                     .requirements[item.matcher]
                                                     .amount === 1
                                                     ? ''

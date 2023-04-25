@@ -316,6 +316,7 @@ export const getBlend = async ({
         return {
             blend_id,
             contract,
+            collection_name,
             name: blend_name,
             description: display_data?.description,
             start_time,

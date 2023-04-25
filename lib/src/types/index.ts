@@ -54,6 +54,7 @@ export interface GetBlendsResult {
     video: string;
     start_time: number;
     end_time: number;
+    fulfilled?: number;
     items: {
         name: string;
         image: string;
@@ -97,6 +98,7 @@ export interface GetBlendResult {
     blend_id: string;
     contract: string;
     name: string;
+    collection_name: string;
     description?: string;
     start_time: number;
     end_time: number;
