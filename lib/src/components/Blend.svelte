@@ -96,7 +96,7 @@
                     dispatch(
                         'error',
                         {
-                            type: 'blend',
+                            type: 'invalid',
                             message: 'Blend is not from this collection',
                         },
                         component
