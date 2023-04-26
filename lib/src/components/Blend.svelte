@@ -517,7 +517,12 @@
                         style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjIiIGZpbGw9IiNmZmYiIGNsaXAtcnVsZT0iZXZlbm9kZCIgdmlld0JveD0iMCAwIDQ4IDQ4Ij48cGF0aCBmaWxsLXJ1bGU9Im5vbnplcm8iIGQ9Ik0xNSA0NGMtLjggMC0xLjUtLjMtMi4xLS45LS42LS42LS45LTEuMy0uOS0yLjF2LTJhOC44IDguOCAwIDAgMSA0LjQtNy42bC0yLTEwSDljLS44IDAtMS41LS4zLTIuMS0xLS42LS41LS45LTEuMi0uOS0yVjkuNWMwLS44LjMtMS41LjktMi4xLjYtLjYgMS4zLS45IDIuMS0uOWgyN2wtNC40IDI0LjljMS40IDEgMi41IDIgMy4zIDMuNEE3LjQgNy40IDAgMCAxIDM2IDM5djJjMCAuOC0uMyAxLjUtLjkgMi4xLS42LjYtMS4zLjktMi4xLjlIMTVabS0xLjItMjUuNkwxMiA5LjVIOXY4LjhsNC44LjFabTUuMyAxMS4xaDkuOGwzLjUtMjBIMTUuMWw0IDIwWk0xNSA0MWgxOHYtMmMwLTEuOC0uNy0zLjMtMi00LjZhNyA3IDAgMCAwLTUtMS45aC00Yy0yIDAtMy43LjctNSAyYTYuMiA2LjIgMCAwIDAtMiA0LjV2MloiLz48L3N2Zz4=');"
                     />
                 {:else}
-                    <nefty-blend-slider items={data.results} claims={false} />
+                    <nefty-blend-slider
+                        items={data.results}
+                        claims={false}
+                        ended={data.status !== 'active'}
+                        marketurl={localConfig.marketplace_url}
+                    />
                     <img
                         class="result-bg"
                         src={data.backgroundImg || ''}
@@ -1072,6 +1077,7 @@
         h3 {
             margin-bottom: 12px;
             height: 21px;
+            padding: 0 6px;
             overflow: hidden;
         }
     }

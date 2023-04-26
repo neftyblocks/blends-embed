@@ -1,22 +1,20 @@
-# blend-embed
+# @neftyblocks/blends
 
 ## Installation
 
 ```bash
-pnpm install @nefty/use
+pnpm install @neftyblocks/blends
 ```
 
 ```bash
-yarn add @nefty/use
+yarn add @neftyblocks/blends
 ```
 
 ## Usage
 
 ```js
-import { ... } from '@nefty/use';
+import '@neftyblocks/blends';
 ```
-
-see [lib/README.md](lib/README.md) for all methodes
 
 # 💻 Development
 

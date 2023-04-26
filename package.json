@@ -1,5 +1,5 @@
 {
-    "name": "blend-embed",
+    "name": "@neftyblocks/blends",
     "private": true,
     "license": "MIT",
     "author": {

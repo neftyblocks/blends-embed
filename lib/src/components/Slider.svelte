@@ -3,6 +3,7 @@
 <script lang="ts">
     import { useTokenDisplay } from '@nefty/use';
     import { onMount } from 'svelte/internal';
+    import { getMarketUrl } from '../utils';
 
     // COMPONENTS
 
@@ -11,6 +12,8 @@
     // STATES
     export let items: any[] = undefined;
     export let claims = false;
+    export let ended = false;
+    export let marketurl = null;
 
     let active = 0;
     let gridView = false;
@@ -177,7 +180,7 @@
                                     rate
                                 </small>
                             {/if}
-                            {#if item.mint && !claims}
+                            {#if item.mint && !claims && !ended}
                                 <p>
                                     <svg
                                         role="presentation"
@@ -188,6 +191,22 @@
                                     </svg>
                                     {`${item.mint.amount} / ${item.mint.supply}`}
                                 </p>
+                            {/if}
+
+                            {#if ended && item.matcher_type === 'template'}
+                                <!-- svelte-ignore security-anchor-rel-noreferrer -->
+                                <a
+                                    class="btn"
+                                    href={getMarketUrl(
+                                        item.matcher_type,
+                                        item.market_data,
+                                        marketurl
+                                    )}
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    Buy on market
+                                </a>
                             {/if}
                         </article>
                     </div>
@@ -390,6 +409,9 @@
 
             h3 {
                 margin-bottom: 12px;
+                height: 21px;
+                padding: 0 6px;
+                overflow: hidden;
             }
 
             p {
@@ -407,6 +429,10 @@
             svg {
                 width: 16px;
                 height: 16px;
+            }
+
+            .btn {
+                margin-top: 12px;
             }
         }
 
@@ -459,6 +485,7 @@
             width: 100%;
             gap: var(--nb-gap);
             overflow: hidden auto;
+            padding: var(--nb-gap);
 
             .slider-item {
                 position: static;

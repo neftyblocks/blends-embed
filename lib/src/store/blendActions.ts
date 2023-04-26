@@ -280,6 +280,8 @@ export const getBlend = async ({
                             name,
                             drop_rate: dropRate,
                             rarity,
+                            matcher_type: 'template',
+                            market_data: `${template.collection.collection_name}|${template.template_id}`,
                             mint: {
                                 amount: +template.issued_supply,
                                 supply: +template.max_supply === 0 ? '∞' : template.max_supply,

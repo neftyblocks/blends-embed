@@ -77,9 +77,7 @@
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        ><path d="M3 7v6h6" /><path
-            d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"
-        /></symbol
+        ><path d="M3 2v6h6" /><path d="M3 13a9 9 0 1 0 3-7.7L3 8" /></symbol
     >
     <symbol
         id="chevron_right"
@@ -117,7 +115,11 @@
             <header>
                 Select {amount} of {items.length}
 
-                <button class="btn-clear" on:click={reset}>
+                <button
+                    class="btn-clear"
+                    on:click={reset}
+                    title="Reset selection"
+                >
                     <svg>
                         <use href="#undo" />
                     </svg>
