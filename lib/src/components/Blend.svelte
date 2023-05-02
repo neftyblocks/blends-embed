@@ -91,7 +91,7 @@
                         });
                     }
                 } else {
-                    if (data) {
+                    if (data !== null) {
                         dispatch(
                             'error',
                             {
