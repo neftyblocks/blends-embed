@@ -83,7 +83,7 @@
 </script>
 
 <main>
-    {#if blend}
+    {#if blend || $settings.blend}
         <nefty-blend-item on:blend={handleBlend} />
     {:else}
         <nefty-blend-group on:blend={handleBlend} />

@@ -9,6 +9,10 @@ const routes = [
         component: collection,
     },
     {
+        path: '/:collection/:contract/:id',
+        component: collection,
+    },
+    {
         path: '/',
         component: home,
     },
