@@ -577,7 +577,7 @@
                         </button>
 
                         <button
-                            class="btn btn--primary btn-refresh"
+                            class="btn btn--secondary btn-refresh"
                             on:click={() => updateRequirments()}
                         >
                             <svg
@@ -847,9 +847,12 @@
         }
 
         svg {
-            width: 28px;
-            height: 28px;
+            width: 36px;
+            height: 36px;
             transition: transform 0.15s ease;
+            border: var(--nb-border-size) solid var(--nb-border);
+            border-radius: 24px;
+            padding: 6px;
         }
     }
 
@@ -876,7 +879,7 @@
     .blend-text {
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
-        border: var(--nb-border-size) solid var(--nb-border);
+        // border: var(--nb-border-size) solid var(--nb-border);
         padding: 12px;
         overflow: hidden auto;
     }
@@ -912,7 +915,6 @@
     .blend-results {
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
-        border: var(--nb-border-size) solid var(--nb-border);
         height: 350px;
         position: relative;
         overflow: hidden;
@@ -950,7 +952,7 @@
                 left: 0;
                 transform: translateY(-50%);
                 width: 100%;
-                height: 2px;
+                height: 1px;
                 z-index: -1;
                 background-color: var(--nb-border);
             }
@@ -963,9 +965,9 @@
                 filter: blur(3px);
                 transform: translate3d(0, 0, 0);
                 height: 100%;
-                left: calc(50% - 97px);
+                left: calc(50% - 120px);
                 top: 0;
-                width: 190px;
+                width: 240px;
                 z-index: -1;
             }
         }
@@ -1005,7 +1007,6 @@
             position: absolute;
             border: var(--nb-border-size) solid var(--nb-border-card);
             transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 0 26px 0 var(--nb-shadow);
 
             &.needed {
                 img,

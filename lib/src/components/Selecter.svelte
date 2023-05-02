@@ -186,6 +186,7 @@
         position: fixed;
         top: 0;
         left: 0;
+        z-index: 1;
         width: 100%;
         height: 100%;
         background-color: var(--nb-shadow);
@@ -305,7 +306,7 @@
                     width: 18px;
                     height: 18px;
                     margin-left: auto;
-                    color: var(--nb-button-hover);
+                    color: var(--nb-btn-primary);
                 }
 
                 &.checked {

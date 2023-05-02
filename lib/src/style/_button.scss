@@ -9,9 +9,9 @@
 .btn {
     display: inline-block;
     padding: 8px 16px;
-    border-radius: var(--nb-radius);
+    border-radius: var(--nb-radius-btn);
     border: var(--nb-border-size) solid var(--nb-border);
-    background-color: var(--nb-bg-card);
+    background-color: var(--nb-btn-primary);
     color: var(--nb-color);
     font-size: var(--nb-font-size--small);
     font-weight: 900;
@@ -21,7 +21,7 @@
     transition: background-color 0.2s ease-in-out;
 
     &:hover {
-        background-color: var(--nb-button-hover);
+        background-color: var(--nb-btn-primary-hover);
     }
 
     &[disabled] {
@@ -31,7 +31,17 @@
 
     &--primary {
         font-weight: 500;
-        padding: 16px 28px;
+        padding: 12px 36px;
+    }
+
+    &--secondary {
+        font-weight: 500;
+        padding: 12px 36px;
+        background-color: var(--nb-btn-secondary);
+
+        &:hover {
+            background-color: var(--nb-btn-secondary-hover);
+        }
     }
 
     &--blend {

@@ -13,10 +13,16 @@
     --nb-card-size-max-m: var(--nefty-card-size-max-mobile, 1fr);
     --nb-card-size-max: var(--nefty-card-size-max, 1fr);
     --nb-gap: var(--nefty-gap, 24px);
+
     --nb-radius: var(--nefty-radius, 12px);
+    --nb-radius-btn: var(--nefty-radius-btn, 26px);
+    --nb-btn-primary: var(--nefty-btn-primary, #23262f);
+    --nb-btn-primary-hover: var(--nefty-btn-primary-hover, #404555);
+    --nb-btn-secondary: var(--nefty-btn-secondary, #1a1a1a);
+    --nb-btn-secondary-hover: var(--nefty-btn-secondary-hover, #23262f);
 
     --nb-border: var(--nefty-border, #353945);
-    --nb-border-card: var(--nefty-border-card, #424652);
+    --nb-border-card: var(--nefty-border-card, #353945);
     --nb-border-size: var(--nefty-border-size, 1px);
     --nb-bg: var(--nefty-bg, #1a1a1a);
     --nb-bg-card: var(--nefty-bg-card, #23262f);

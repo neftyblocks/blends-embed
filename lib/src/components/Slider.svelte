@@ -421,8 +421,7 @@
                 margin: 12px auto 0;
                 padding: 6px 12px 6px 6px;
                 align-items: center;
-                border-radius: var(--nb-radius);
-                border: var(--nb-border-size) solid var(--nb-border-card);
+                border-radius: 18px;
                 background-color: var(--nb-bg);
             }
 
