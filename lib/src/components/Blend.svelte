@@ -91,16 +91,18 @@
                         });
                     }
                 } else {
-                    data = null;
+                    if (data) {
+                        dispatch(
+                            'error',
+                            {
+                                type: 'invalid',
+                                message: 'Blend is not from this collection',
+                            },
+                            component
+                        );
 
-                    dispatch(
-                        'error',
-                        {
-                            type: 'invalid',
-                            message: 'Blend is not from this collection',
-                        },
-                        component
-                    );
+                        data = null;
+                    }
                 }
             }
 
