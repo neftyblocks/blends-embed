@@ -31,7 +31,7 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
     return { blend_name, blend_img, blend_video };
 };
 
-const visualsTypes = ['image', 'video', 'ipfs'];
+const visualsTypes = ['image', 'video', 'ipfs', 'string'];
 
 export const getVisuals = (asset: any, format: any) => {
     const result = {

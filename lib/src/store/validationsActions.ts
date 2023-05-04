@@ -1,12 +1,14 @@
 import { useFetch, useImageUrl, useAssetData, useRetry, useTokenDisplay } from '@nefty/use';
 import type { Payload, GetBlendResult } from '../types';
-import { priceForInput } from '../utils';
+import { priceForInput, sortByAttribute } from '../utils';
 
 const templateMintConfig = {
     is_transferable: 'true',
     is_burnable: 'true',
     order: 'desc',
     sort: 'template_mint',
+    limit: '1000',
+    page: '1',
 };
 
 const attributeConfig = {
@@ -31,7 +33,7 @@ const isBackedByTokens = (backed_tokens) => {
     return null;
 };
 export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_url, actor, matcher }) => {
-    let result = {
+    const result = {
         type: 'attributes',
         data: {},
     };
@@ -67,7 +69,7 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
                 const content = {
                     asset_id,
                     name,
-                    mint: template_mint,
+                    mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
                     backedByTokens,
@@ -76,14 +78,14 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[matcher] = [...normal, ...backed];
+            result.data[matcher] = [...sortByAttribute(normal), ...sortByAttribute(backed)];
         }
     }
 
     return result;
 };
 export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url, actor, matcher, attribute_name }) => {
-    let result = {
+    const result = {
         type: 'balance',
         data: {},
     };
@@ -116,7 +118,7 @@ export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url,
                 const content = {
                     asset_id,
                     name: attribute_name,
-                    mint: template_mint,
+                    mint: +template_mint,
                     value: +mutable_data[attribute_name],
                     backedByTokens,
                 };
@@ -124,14 +126,14 @@ export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url,
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[matcher] = [...normal, ...backed];
+            result.data[matcher] = [...sortByAttribute(normal, 'value'), ...sortByAttribute(backed, 'value')];
         }
     }
 
     return result;
 };
 export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_name, actor, matcher }) => {
-    let result = {
+    const result = {
         type: 'schema',
         data: {},
     };
@@ -165,7 +167,7 @@ export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_nam
                 const content = {
                     asset_id,
                     name,
-                    mint: template_mint,
+                    mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
                     backedByTokens,
@@ -174,14 +176,14 @@ export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_nam
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[matcher] = [...normal, ...backed];
+            result.data[matcher] = [...sortByAttribute(normal), ...sortByAttribute(backed)];
         }
     }
 
     return result;
 };
 export const getTemplateAssetId = async ({ template_id, collection_name, atomic_url, actor }) => {
-    let result = {
+    const result = {
         type: 'template',
         data: {},
     };
@@ -211,21 +213,21 @@ export const getTemplateAssetId = async ({ template_id, collection_name, atomic_
 
                 const content = {
                     asset_id,
-                    mint: template_mint,
+                    mint: +template_mint,
                     backedByTokens,
                 };
 
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[template_id] = [...normal, ...backed];
+            result.data[template_id] = [...sortByAttribute(normal), ...sortByAttribute(backed)];
         }
     }
 
     return result;
 };
 export const getCollectionAssetId = async ({ collection_name, atomic_url, actor }) => {
-    let result = {
+    const result = {
         type: 'collection',
         data: {},
     };
@@ -258,7 +260,7 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
                 const content = {
                     asset_id,
                     name,
-                    mint: template_mint,
+                    mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
                     backedByTokens,
@@ -274,7 +276,7 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
     return result;
 };
 export const getTokenBalance = async ({ chain_url, actor, code, symbol, matcher }) => {
-    let result = {
+    const result = {
         type: 'token',
         data: {},
     };
@@ -452,7 +454,7 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
 };
 
 export const getJobsCount = async ({ chain_url }) => {
-    const { data, error } = await useFetch<any>('/v1/chain/get_table_by_scope', {
+    const { data, error } = await useFetch<Record<string, unknown[]>>('/v1/chain/get_table_by_scope', {
         baseUrl: chain_url,
         method: 'POST',
         body: {

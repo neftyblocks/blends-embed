@@ -306,7 +306,7 @@
                     width: 18px;
                     height: 18px;
                     margin-left: auto;
-                    color: var(--nb-btn-primary);
+                    color: var(--nb-color);
                 }
 
                 &.checked {

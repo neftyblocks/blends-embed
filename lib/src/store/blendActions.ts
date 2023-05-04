@@ -64,11 +64,13 @@ export const getBlend = async ({
             let value;
             let token;
             let ingredients_amount = 0;
+            let collectionName = collection_name;
 
             // INGREDIENT - ATTRIBUTE
             if (type === 'ATTRIBUTE_INGREDIENT') {
                 matcher_type = 'attributes';
                 matcher = `${blend_id}|${contract}|${index}`;
+                collectionName = attributes.collection_name;
 
                 const displayData = display_data ? JSON.parse(display_data) : null;
 
@@ -94,6 +96,7 @@ export const getBlend = async ({
             else if (type === 'BALANCE_INGREDIENT') {
                 matcher = `${blend_id}|${contract}|${index}|${template.attribute_name}`;
                 matcher_type = 'balance';
+                collectionName = template.collection.collection_name;
 
                 const asset = useAssetData(template);
                 const { img, video } = asset;
@@ -115,6 +118,7 @@ export const getBlend = async ({
             else if (type === 'SCHEMA_INGREDIENT') {
                 matcher = `${schema.c}|${schema.s}`;
                 matcher_type = 'schema';
+                collectionName = schema.c;
 
                 const displayData = display_data ? JSON.parse(display_data) : null;
 
@@ -131,13 +135,14 @@ export const getBlend = async ({
 
             // INGREDIENT - TEMPLATE
             else if (type === 'TEMPLATE_INGREDIENT') {
-                matcher = template?.template_id;
+                matcher = template.template_id;
                 matcher_type = 'template';
+                collectionName = template.collection.collection_name;
 
                 const asset = useAssetData(template);
                 const { name } = asset;
 
-                const { video, image } = getVisuals(asset, template.schema?.format);
+                const { video, image } = getVisuals(asset, template.schema.format);
 
                 items[matcher] = {
                     name,
@@ -153,6 +158,7 @@ export const getBlend = async ({
             else if (type === 'COLLECTION_INGREDIENT') {
                 matcher = collection?.collection_name;
                 matcher_type = 'collection';
+                collectionName = collection?.collection_name;
 
                 const {
                     data: { img },
@@ -162,7 +168,7 @@ export const getBlend = async ({
                     name: matcher,
                     matcher_type,
                     matcher,
-                    market_data: `${collection.collection_name}`,
+                    market_data: collection.collection_name,
                     video: null,
                     image: img ? useImageUrl(img as string) : null,
                 };
@@ -175,7 +181,7 @@ export const getBlend = async ({
 
                 // fetch the tokens is not yet cached
                 if (!tokensJson) {
-                    const { data } = await useFetch<any>(`/api/logos/${chain}`, {
+                    const { data } = await useFetch<Record<string, unknown>>(`/api/logos/${chain}`, {
                         baseUrl: 'https://rates.neftyblocks.com',
                     });
 
@@ -222,7 +228,7 @@ export const getBlend = async ({
 
             requirements[matcher] = {
                 key: type,
-                collection_name,
+                collection_name: collectionName,
                 amount: ingredients_amount,
                 value,
                 token,
@@ -291,7 +297,7 @@ export const getBlend = async ({
                         });
 
                         if (!backgroundImg) {
-                            backgroundImg = useImageUrl(img, 300, true);
+                            backgroundImg = useImageUrl(img as string, 300, true);
                         }
                     } else if (pool) {
                         const displayData = pool.display_data ? JSON.parse(pool.display_data) : null;

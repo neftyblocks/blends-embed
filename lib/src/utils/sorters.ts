@@ -37,3 +37,12 @@ export const sortBlends = (blends: any[]): any[] => {
         return 0;
     });
 };
+
+export const sortByAttribute = (assets: Record<string,string|number>[], attribute = 'mint'): Record<string,string|number>[] => {
+    return assets.sort((a, b) => {
+        if (a[attribute] > b[attribute]) return -1;
+        if (a[attribute] < b[attribute]) return 1;
+
+        return 0;
+    });
+}

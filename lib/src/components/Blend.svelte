@@ -168,12 +168,16 @@
                             s.transactionId = null;
                             return s;
                         });
+
+                        if (config && blend) refreshData(config, blend);
                     }, 1000);
                 } else {
                     settings.update((s) => {
                         s.transactionId = null;
                         return s;
                     });
+
+                    if (config && blend) refreshData(config, blend);
                 }
             }
 
@@ -191,6 +195,15 @@
             unsubscribe();
         };
     });
+
+    const refreshData = async (config, blend) => {
+        data = await getBlend({
+            atomic_url: config.atomic_url,
+            blend_id: blend.blend_id,
+            contract: blend.contract,
+            chain: config.chain,
+        });
+    };
 
     const updateRequirments = async () => {
         selection = undefined;
@@ -498,8 +511,11 @@
                                   )
                                 : displayStatus(data.status)}
                         </time>
-                        <small>-</small>
-                        {data.count.current} / {data.count.max || '∞'} blends left
+                        {#if data.count.current !== (data.count.max || '∞')}
+                            <small>-</small>
+                            {data.count.current} / {data.count.max || '∞'} blends
+                            left
+                        {/if}
                     </span>
                 </div>
                 {#if warnJobs >= 50}

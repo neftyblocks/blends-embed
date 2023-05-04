@@ -482,11 +482,14 @@
             }
         }
 
-        img {
+        img,
+        video {
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
 
+        img {
             &.shadow {
                 position: absolute;
                 top: -10%;
