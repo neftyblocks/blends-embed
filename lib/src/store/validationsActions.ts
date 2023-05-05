@@ -65,10 +65,12 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
                 const { video, img, name } = asset;
 
                 const backedByTokens = isBackedByTokens(backed_tokens);
+                const rarity = getRarity(asset);
 
                 const content = {
                     asset_id,
                     name,
+                    rarity,
                     mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
@@ -164,9 +166,12 @@ export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_nam
                 const { video, img, name } = asset;
                 const backedByTokens = isBackedByTokens(backed_tokens);
 
+                const rarity = getRarity(asset);
+
                 const content = {
                     asset_id,
                     name,
+                    rarity,
                     mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,
@@ -210,9 +215,12 @@ export const getTemplateAssetId = async ({ template_id, collection_name, atomic_
             for (let i = 0; i < assets.length; i++) {
                 const { asset_id, template_mint, backed_tokens } = assets[i];
                 const backedByTokens = isBackedByTokens(backed_tokens);
+                const asset = useAssetData(assets[i]);
+                const rarity = getRarity(asset);
 
                 const content = {
                     asset_id,
+                    rarity,
                     mint: +template_mint,
                     backedByTokens,
                 };
@@ -256,10 +264,12 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
                 const asset = useAssetData(assets[i]);
                 const { video, img, name } = asset;
                 const backedByTokens = isBackedByTokens(backed_tokens);
+                const rarity = getRarity(asset);
 
                 const content = {
                     asset_id,
                     name,
+                    rarity,
                     mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
                     image: img ? useImageUrl(img as string) : null,

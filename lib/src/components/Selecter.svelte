@@ -158,6 +158,9 @@
                                 <p class="name">{item.name}</p>
                             {/if}
                             <p>#{item.mint}</p>
+                            {#if item.rarity}
+                                <p>Rarity: {item.rarity}</p>
+                            {/if}
                             {#if item.backedByTokens}
                                 <p class="badge">
                                     Backed by {item.backedByTokens}
