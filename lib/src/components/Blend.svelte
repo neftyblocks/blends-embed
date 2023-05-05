@@ -568,13 +568,15 @@
                     />
                 {/if}
             </section>
-            <p class="account-limit">
-                <span>Account limit:</span>
-                {data.account_limit}
-                {data.account_limit_cooldown !== 0
-                    ? `every ${secondsToDhms(data.account_limit_cooldown)}`
-                    : ''}
-            </p>
+            {#if data.account_limit !== 0}
+                <p class="account-limit">
+                    <span>Account limit:</span>
+                    {data.account_limit}
+                    {data.account_limit_cooldown !== 0
+                        ? `every ${secondsToDhms(data.account_limit_cooldown)}`
+                        : ''}
+                </p>
+            {/if}
             <section class="blend-actions">
                 {#if showClaims}
                     <div class="btn-group">
@@ -848,8 +850,8 @@
 
         &.claims {
             grid-template-columns: 1fr 0fr;
-            transition: grid;
-            transition: 0.6s;
+            transition: grid 0.6s;
+            gap: 0;
 
             .blend-text,
             .blend-selection {

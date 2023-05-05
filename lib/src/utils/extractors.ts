@@ -57,3 +57,20 @@ export const getVisuals = (asset: any, format: any) => {
 
     return result;
 };
+
+const rarityNames = [
+    'rarity',
+    'Rarity',
+    'variation',
+    'Variation',
+    'style',
+    'Style',
+  ];
+
+export const getRarity = (data) => {
+    for (let i = 0; i < rarityNames.length; i++) {
+        if (data[rarityNames[i]]) return data[rarityNames[i]];
+    }
+
+    return null;
+}

@@ -1,6 +1,6 @@
 import { useFetch, useImageUrl, useAssetData, useRetry, useTokenDisplay } from '@nefty/use';
 import type { Payload, GetBlendResult } from '../types';
-import { priceForInput, sortByAttribute } from '../utils';
+import { getRarity, priceForInput, sortByAttribute } from '../utils';
 
 const templateMintConfig = {
     is_transferable: 'true',
@@ -425,7 +425,7 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
         if (!outcomes.length) {
             result.push({
                 name: 'empty',
-                rarity: 'common',
+                rarity: null,
                 mint: null,
                 empty: true,
                 image: null,
@@ -434,18 +434,25 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
             for (let b = 0; b < outcomes.length; b++) {
                 const { template, asset } = outcomes[b];
 
-                    const assetData = useAssetData(template || asset);
-                    const { img, video, name } = assetData;
-    
-                    result.push({
-                        name,
-                        mint: null,
-                        rarity: 'common',
-                        video: video ? useImageUrl(video as string) : null,
-                        image: img ? useImageUrl(img as string) : null,
-                    });
-               
+                const assetData = useAssetData(template || asset);
+                const { img, video, name } = assetData;
 
+                const rarity = getRarity(assetData);
+
+                const mint = asset
+                    ? {
+                          amount: +asset.template_mint,
+                          supply: +asset.template.max_supply === 0 ? '∞' : asset.template.max_supply,
+                      }
+                    : null;
+
+                result.push({
+                    name,
+                    mint: mint,
+                    rarity: rarity,
+                    video: video ? useImageUrl(video as string) : null,
+                    image: img ? useImageUrl(img as string) : null,
+                });
             }
         }
     }

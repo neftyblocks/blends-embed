@@ -144,7 +144,8 @@
             <div class="slider-group {gridView ? 'slider-group--grid' : ''}">
                 {#each items as item, key}
                     <div
-                        class="slider-item {item.rarity} {key === active
+                        class="slider-item {item.rarity || 'common'} {key ===
+                        active
                             ? 'current'
                             : key > active
                             ? 'next'
@@ -174,13 +175,16 @@
                         </figure>
                         <article>
                             <h3>{item.name}</h3>
+                            {#if claims && item.rarity}
+                                <small>Rarity: {item.rarity}</small>
+                            {/if}
                             {#if item.drop_rate && !claims}
                                 <small>
                                     {useTokenDisplay(item.drop_rate, 2)}% Drop
                                     rate
                                 </small>
                             {/if}
-                            {#if item.mint && !claims && !ended}
+                            {#if item.mint && !ended}
                                 <p>
                                     <svg
                                         role="presentation"
@@ -305,7 +309,7 @@
         top: 0;
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
-        border: var(--nb-border-size) solid;
+        border: var(--nb-border-size) solid var(--nb-rarity-common);
         transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1),
             filter 0.1s linear;
 
