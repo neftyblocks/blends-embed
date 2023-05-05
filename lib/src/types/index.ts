@@ -10,8 +10,7 @@ export interface Settings {
     config?: {
         atomic_url: string;
         chain_url: string;
-        marketplace_url: string;
-        profile_url: string;
+        platform_url: string;
         chain: string;
         collection?: string;
         query?: {

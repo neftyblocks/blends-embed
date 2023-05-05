@@ -18,7 +18,7 @@ const mountEl = () => {
         const config = {
             atomic_url: 'https://aa.neftyblocks.com',
             chain_url: 'https://wax.neftyblocks.com',
-            marketplace_url: 'https://neftyblocks.com/marketplace/listing',
+            platform_url: 'https://neftyblocks.com',
             chain: 'wax',
             collection,
         };

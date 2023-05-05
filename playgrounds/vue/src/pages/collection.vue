@@ -42,10 +42,9 @@ onMounted(() => {
     setup.value = JSON.stringify({
         atomic_url: 'https://aa-testnet.neftyblocks.com',
         chain_url: 'https://waxtest.eu.eosamsterdam.net',
-        marketplace_url: 'https://test.neftyblocks.com/marketplace/listing',
+        platform_url: 'https://test.neftyblocks.com',
         chain: 'wax',
         collection: collection.value,
-        profile_url: 'https://test.neftyblocks.com/profile/',
         back_btn: false,
     });
 

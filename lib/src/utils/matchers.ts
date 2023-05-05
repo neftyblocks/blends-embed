@@ -22,9 +22,10 @@ export const matchTokenRequirements = (selectionItems: any, requirements: any) =
     return value <= +tokenValue;
 };
 
-export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem['market_data'], marketUrl: string) => {
+export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem['market_data'], platformUrl: string) => {
     const marketArray = market_data.split('|');
     const extend = '&sort=price&order=asc';
+    const marketUrl = `${platformUrl}/marketplace/listing`;
 
     const url = {
         attributes: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}${extend}`,
@@ -32,6 +33,21 @@ export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem[
         schema: `${marketUrl}?collection_name=${marketArray[0]}&schema_name=${marketArray[1]}${extend}`,
         template: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}${extend}`,
         balance: `${marketUrl}?collection_name=${marketArray[0]}&template_id=${marketArray[1]}${extend}`,
+    };
+
+    return url[matcher_type];
+};
+
+export const getDetailUrl = (matcher_type: string, market_data: BlendResultItem['market_data'], platformUrl: string) => {
+    const marketArray = market_data.split('|');
+
+
+    const url = {
+        attributes: `${platformUrl}/schemas/${marketArray[0]}/${marketArray[1]}`,
+        collection: `${platformUrl}/collection/${marketArray[0]}`,
+        schema: `${platformUrl}/schemas/${marketArray[0]}/${marketArray[1]}`,
+        template: `${platformUrl}/templates/${marketArray[0]}/${marketArray[1]}`,
+        balance: `${platformUrl}/templates/${marketArray[0]}/${marketArray[1]}`,
     };
 
     return url[matcher_type];

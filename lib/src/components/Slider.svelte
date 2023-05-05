@@ -13,7 +13,7 @@
     export let items: any[] = undefined;
     export let claims = false;
     export let ended = false;
-    export let marketurl = null;
+    export let platformurl = null;
 
     let active = 0;
     let gridView = false;
@@ -200,7 +200,7 @@
                                     href={getMarketUrl(
                                         item.matcher_type,
                                         item.market_data,
-                                        marketurl
+                                        platformurl
                                     )}
                                     target="_blank"
                                     rel="noopener"

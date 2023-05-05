@@ -11,7 +11,7 @@
         settings,
     } from '../store';
     import { useSWR } from '@nefty/use';
-    import type { GetBlendResult } from '../types';
+    import type { GetBlendResult, Settings } from '../types';
     import {
         dispatch,
         formatTokenWithoutSymbol,
@@ -22,6 +22,7 @@
         blendTransactionActions,
         displayTime,
         displayStatus,
+        getDetailUrl,
     } from '../utils';
 
     // COMPONENTS
@@ -33,8 +34,8 @@
 
     // STATES
     // settings data
-    let user = undefined;
-    let localConfig = undefined;
+    let user: Settings['account'] = undefined;
+    let localConfig: Settings['config'] = undefined;
 
     // blend data
     let data = undefined;
@@ -431,6 +432,23 @@
     height="0"
     style="position: absolute"
 >
+    <svg
+        id="external"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path
+            d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+        /><polyline points="15 3 21 3 21 9" /><line
+            x1="10"
+            x2="21"
+            y1="14"
+            y2="3"
+        /></svg
+    >
     <symbol
         id="refresh"
         viewBox="0 0 24 24"
@@ -539,7 +557,7 @@
                         items={data.results}
                         claims={false}
                         ended={data.status !== 'active'}
-                        marketurl={localConfig.marketplace_url}
+                        platformurl={localConfig.platform_url}
                     />
                     <img
                         class="result-bg"
@@ -560,7 +578,7 @@
                             {loading ? 'Loading' : 'Blend again'}
                         </button>
                         <a
-                            href="{localConfig.profile_url}{user.actor}?collection_name={localConfig.collection}"
+                            href="{localConfig.platform_url}/profile/{user.actor}?collection_name={localConfig.collection}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="btn btn--primary btn--primary"
@@ -639,9 +657,30 @@
                                         ? 'owned'
                                         : 'needed'}
                                 >
-                                    <small class="type"
-                                        >{item.matcher_type}</small
-                                    >
+                                    <small class="type">
+                                        {item.matcher_type}
+                                        {#if item.matcher_type !== 'token'}
+                                            <a
+                                                href={getDetailUrl(
+                                                    item.matcher_type,
+                                                    item.market_data,
+                                                    localConfig.platform_url
+                                                )}
+                                                target="_blank"
+                                                rel="noopener"
+                                            >
+                                                <svg
+                                                    role="presentation"
+                                                    focusable="false"
+                                                    aria-hidden="true"
+                                                >
+                                                    <use
+                                                        xlink:href="#external"
+                                                    />
+                                                </svg>
+                                            </a>
+                                        {/if}
+                                    </small>
                                     {#if hasVisual.includes(item.matcher_type)}
                                         <figure
                                             class="visual {item.matcher_type}"
@@ -699,7 +738,7 @@
                                                 href={getMarketUrl(
                                                     item.matcher_type,
                                                     item.market_data,
-                                                    localConfig.marketplace_url
+                                                    localConfig.platform_url
                                                 )}
                                                 target="_blank"
                                                 rel="noopener"
@@ -1083,6 +1122,29 @@
 
             small {
                 display: block;
+            }
+        }
+
+        .type {
+            display: inline-block;
+            width: 100%;
+            position: relative;
+
+            a {
+                position: absolute;
+                top: 2px;
+                right: 3px;
+                transition: transform 0.15s ease;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+            }
+
+            svg {
+                color: var(--nb-color-secondary);
+                width: 18px;
+                height: 18px;
             }
         }
 
