@@ -108,6 +108,12 @@ export interface GetBlendResult {
         video: string | null;
         empty?: boolean;
     }[];
+    account_limit: number;
+    account_limit_cooldown: number;
+    count: {
+        current: number;
+        max: number;
+    }
     category: string;
     ingredients_count: number;
     result_count: number;

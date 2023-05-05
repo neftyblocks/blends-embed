@@ -23,6 +23,7 @@
         displayTime,
         displayStatus,
         getDetailUrl,
+        secondsToDhms,
     } from '../utils';
 
     // COMPONENTS
@@ -567,6 +568,13 @@
                     />
                 {/if}
             </section>
+            <p class="account-limit">
+                <span>Account limit:</span>
+                {data.account_limit}
+                {data.account_limit_cooldown !== 0
+                    ? `every ${secondsToDhms(data.account_limit_cooldown)}`
+                    : ''}
+            </p>
             <section class="blend-actions">
                 {#if showClaims}
                     <div class="btn-group">
@@ -990,6 +998,13 @@
         opacity: 0.3;
         z-index: -1;
         user-select: none;
+    }
+
+    .account-limit {
+        color: var(--nb-color-secondary);
+        span {
+            color: var(--nb-color);
+        }
     }
 
     .blend-selection {

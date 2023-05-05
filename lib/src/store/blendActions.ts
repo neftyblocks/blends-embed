@@ -38,6 +38,8 @@ export const getBlend = async ({
             category,
             collection_name,
             use_count,
+            account_limit,
+            account_limit_cooldown,
             max,
         } = data.data;
 
@@ -338,6 +340,8 @@ export const getBlend = async ({
             security_id,
             odds: oddbased,
             requirements,
+            account_limit: +account_limit,
+            account_limit_cooldown: +account_limit_cooldown,
             count: {
                 current: +use_count,
                 max: +max,

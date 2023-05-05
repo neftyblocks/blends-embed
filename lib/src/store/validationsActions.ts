@@ -407,7 +407,7 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
     const { data, error } = await useRetry({
         retries: 3,
         delay: 1500,
-        retryOn: ({ data }) => data.length === 0,
+        retryOn: (data: Payload) => data.success === false || data.data.length === 0,
         call: () =>
             useFetch<Payload>(`/neftyblends/v1/blends/${contract}/${blend_id}/claims`, {
                 baseUrl: atomic_url,
@@ -419,7 +419,7 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
 
     if (error) console.error(error);
 
-    if (data) {
+    if (data?.data?.length) {
         const outcomes = data.data[0].results;
 
         if (!outcomes.length) {
@@ -432,20 +432,20 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
             });
         } else {
             for (let b = 0; b < outcomes.length; b++) {
-                const { template } = outcomes[b];
+                const { template, asset } = outcomes[b];
 
-                if (!template) continue;
+                    const assetData = useAssetData(template || asset);
+                    const { img, video, name } = assetData;
+    
+                    result.push({
+                        name,
+                        mint: null,
+                        rarity: 'common',
+                        video: video ? useImageUrl(video as string) : null,
+                        image: img ? useImageUrl(img as string) : null,
+                    });
+               
 
-                const asset = useAssetData(template);
-                const { img, video, name } = asset;
-
-                result.push({
-                    name,
-                    mint: null,
-                    rarity: 'common',
-                    video: video ? useImageUrl(video as string) : null,
-                    image: img ? useImageUrl(img as string) : null,
-                });
             }
         }
     }

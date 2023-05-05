@@ -83,7 +83,7 @@ const signHandler = async ({ detail }: any) => {
         );
 
         if (result) {
-            transactionId.value = result.transaction_id;
+            transactionId.value = result.transaction.transaction_id;
         }
     } catch (error) {
         console.error('error', error);
