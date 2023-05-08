@@ -46,6 +46,7 @@
     let selected = {};
     let claims = null;
     let warnJobs = 0;
+    let isMeetingRequirements = false;
 
     // DOM
     let selectionGroupElement;
@@ -260,6 +261,12 @@
         });
 
         autoSelect(data.requirements);
+
+        isMeetingRequirements = validateSelection(
+            data.requirements,
+            true,
+            true
+        );
     };
 
     const updateSelection = ({ detail }, matcher: string) => {
@@ -390,13 +397,6 @@
                 }
             }
         }
-
-        console.log(
-            selectedAssetsToBlend,
-            selectedTokensToBlend,
-            selectedBalanceAssets,
-            meetRequirements
-        );
 
         return meetRequirements;
     };
@@ -659,7 +659,7 @@
                                 !user ||
                                 data.status !== 'active'}
                             class="btn btn--primary {!loading &&
-                            validateSelection(data.requirements, true)
+                            isMeetingRequirements
                                 ? 'btn--blend'
                                 : ''}"
                             on:click={() => {
