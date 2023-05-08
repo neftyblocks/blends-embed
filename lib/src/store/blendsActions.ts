@@ -88,24 +88,34 @@ export const getBlends = async ({
                     });
                 } else {
                     for (let b = 0; b < results.length; b++) {
-                        const { template } = results[b];
+                        const { template, pool } = results[b];
 
-                        if (!template) continue;
+                        if (template) {
+                            const issued_supply = +template.issued_supply;
+                            const max_supply = +template.max_supply;
+                            const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
 
-                        const issued_supply = +template.issued_supply;
-                        const max_supply = +template.max_supply;
-                        const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
+                            if (maxReached) max_reached = true;
 
-                        if (maxReached) max_reached = true;
+                            const asset = useAssetData(template);
+                            const { img, name } = asset;
 
-                        const asset = useAssetData(template);
-                        const { img, name } = asset;
+                            result.push({
+                                name,
+                                image: img ? useImageUrl(img as string) : null,
+                            });
+                        }
 
-                        result.push({
-                            name,
-                            image: img ? useImageUrl(img as string) : null,
-                            schema_name: template.schema?.schema_name || '',
-                        });
+                        if (pool) {
+                            const displayData = pool.display_data ? JSON.parse(pool.display_data) : null;
+
+                            if (displayData) {
+                                result.push({
+                                    name: displayData.name,
+                                    image: displayData.image ? useImageUrl(displayData.image as string) : null,
+                                });
+                            }
+                        }
                     }
                 }
             }

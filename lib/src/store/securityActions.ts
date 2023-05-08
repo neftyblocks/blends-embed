@@ -91,6 +91,71 @@ export const getSecurityCheck = async ({ chain_url, actor, security_id, atomic_u
     return response;
 };
 
+export const getAccountClaims = async ({ chain_url, actor, blend_id, account_limit, account_limit_cooldown }) => {
+    const response = {
+        allowed: true,
+        wait: 0,
+        left: account_limit,
+        reason: '',
+    };
+
+    const { data, error } = await useFetch<any>('/v1/chain/get_table_rows', {
+        baseUrl: chain_url,
+        method: 'POST',
+        body: {
+            code: 'blend.nefty',
+            table: 'accstats',
+            scope: blend_id,
+            limit: '1',
+            key_type: '',
+            lower_bound: actor,
+            upper_bound: actor,
+            index_position: 1,
+            show_payer: false,
+            reverse: false,
+            json: true,
+        },
+    });
+
+    if (error) console.error(error);
+
+    if (data?.rows.length) {
+        const now = new Date().getTime();
+        const { counter, last_claim_time } = data.rows[0];
+
+        // if no cooldown is set
+        if (account_limit_cooldown === 0) {
+            const left = account_limit - counter;
+
+            if (left >= 0) {
+                response.allowed = false;
+                response.reason = 'limit reached.';
+            }
+
+            response.left = left;
+        } else {
+            const left = account_limit - counter;
+            const lastClaimTime = new Date(last_claim_time * 1000).getTime();
+            const timeDiff = now - lastClaimTime;
+            const seconds = Math.floor(timeDiff / 1000);
+            const wait = account_limit_cooldown - seconds;
+
+            response.wait = wait >= 0 ? wait : 0;
+
+            if (left <= 0) {
+                if (wait >= 0) {
+                    response.allowed = false;
+                    response.reason = 'wait for cooldown';
+                }
+            } else {
+                response.left = wait >= 0 ? left : account_limit;
+            }
+        }
+    }
+
+    return response;
+};
+
 // --------------------------------------------------
 // PROOF OF OWNERSHIP
 // --------------------------------------------------

@@ -3,6 +3,7 @@
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
     import {
+        getAccountClaims,
         getBlend,
         getClaims,
         getJobsCount,
@@ -10,7 +11,7 @@
         getSecurityCheck,
         settings,
     } from '../store';
-    import { useSWR } from '@nefty/use';
+    import { useCountDown, useSWR } from '@nefty/use';
     import type { GetBlendResult, Settings } from '../types';
     import {
         dispatch,
@@ -41,6 +42,7 @@
     // blend data
     let data = undefined;
     let selection = undefined;
+    let limits = undefined;
     let selected = {};
     let claims = null;
     let warnJobs = 0;
@@ -141,6 +143,10 @@
                         );
                     }
                 }
+
+                if (data.account_limit !== 0) {
+                    await loadLimits();
+                }
             }
 
             // transaction flow
@@ -205,6 +211,42 @@
             contract: blend.contract,
             chain: config.chain,
         });
+    };
+
+    const loadLimits = async () => {
+        limits = await getAccountClaims({
+            chain_url: localConfig.chain_url,
+            blend_id: data.blend_id,
+            actor: user.actor,
+            account_limit: data.account_limit,
+            account_limit_cooldown: data.account_limit_cooldown,
+        });
+
+        allowBlend = limits.allowed;
+
+        if (limits.wait > 0) {
+            setTimeout(async () => {
+                await loadLimits();
+            }, limits.wait * 1000 + 1000);
+        }
+    };
+
+    let countdown_start = 0;
+
+    const countdown = (now) => {
+        if (limits.wait > 0) {
+            if (!countdown_start) countdown_start = now + limits.wait * 1000;
+
+            const countdownStart = useCountDown(countdown_start, now);
+
+            if (countdownStart === '0') countdown_start = 0;
+
+            return `refresh in ${countdownStart}`;
+        } else {
+            return data.account_limit_cooldown !== 0
+                ? `every ${secondsToDhms(data.account_limit_cooldown)}`
+                : '';
+        }
     };
 
     const updateRequirments = async () => {
@@ -348,6 +390,13 @@
                 }
             }
         }
+
+        console.log(
+            selectedAssetsToBlend,
+            selectedTokensToBlend,
+            selectedBalanceAssets,
+            meetRequirements
+        );
 
         return meetRequirements;
     };
@@ -571,10 +620,16 @@
             {#if data.account_limit !== 0}
                 <p class="account-limit">
                     <span>Account limit:</span>
-                    {data.account_limit}
-                    {data.account_limit_cooldown !== 0
-                        ? `every ${secondsToDhms(data.account_limit_cooldown)}`
-                        : ''}
+                    {#if limits}
+                        {#if limits.allowed}
+                            {limits.left}
+                            {countdown(now)}
+                        {:else}
+                            {limits.reason} {countdown(now)}
+                        {/if}
+                    {:else}
+                        loading...
+                    {/if}
                 </p>
             {/if}
             <section class="blend-actions">
