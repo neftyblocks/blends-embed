@@ -113,6 +113,10 @@
             console.log("query", detail)
         });
 
+        component.addEventListener("error", ({ detail }) => {
+            console.error("error", detail)
+        });
+
 
         // ----------------------------
         // LOGIN

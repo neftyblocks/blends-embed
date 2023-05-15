@@ -265,7 +265,7 @@
         isMeetingRequirements = validateSelection(
             data.requirements,
             true,
-            true
+            false
         );
     };
 
@@ -814,10 +814,21 @@
                                                     (selected[item.matcher]
                                                         ?.length || 0)} asset{data
                                                     .requirements[item.matcher]
-                                                    .amount === 1
+                                                    .amount -
+                                                    (selected[item.matcher]
+                                                        ?.length || 0) ===
+                                                1
                                                     ? ''
                                                     : 's'}
-                                            </a>{/if}
+                                                <small
+                                                    >({selected[item.matcher]
+                                                        ?.length || 0}/{data
+                                                        .requirements[
+                                                        item.matcher
+                                                    ].amount})</small
+                                                >
+                                            </a>
+                                        {/if}
                                     {:else if matchTokenRequirements(selection[item.matcher], data.requirements[item.matcher])}
                                         <p class="balance">
                                             <small>current balance</small>
@@ -1001,7 +1012,6 @@
     .blend-text {
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
-        // border: var(--nb-border-size) solid var(--nb-border);
         padding: 12px;
         overflow: hidden auto;
     }
@@ -1141,6 +1151,13 @@
                 img,
                 video {
                     filter: grayscale(1);
+                }
+
+                .btn {
+                    small {
+                        font-size: 0.8em;
+                        margin-left: 2px;
+                    }
                 }
             }
         }
