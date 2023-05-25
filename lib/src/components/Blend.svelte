@@ -601,7 +601,7 @@
                 {/if}
             </article>
             <section class="blend-results">
-                {#if showClaims && claims}
+                {#if showClaims}
                     <nefty-blend-slider items={claims} claims={true} />
                     <div
                         class="result-bg"

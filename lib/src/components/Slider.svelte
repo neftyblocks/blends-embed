@@ -257,7 +257,7 @@
 
         &.claims {
             opacity: 0;
-            animation: show 0.6s 5s ease forwards;
+            animation: show 0.6s 1s ease forwards;
 
             @keyframes show {
                 0% {
