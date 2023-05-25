@@ -28,6 +28,7 @@
     "packageManager": "pnpm@8.2.0",
     "dependencies": {
         "@nefty/ual-anchor": "^0.2.5",
+        "@nefty/ual-wax": "^0.2.7",
         "@nefty/use": "^0.1.8"
     },
     "devDependencies": {

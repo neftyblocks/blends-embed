@@ -40,9 +40,9 @@ const handlePopState = () => {
 
 onMounted(() => {
     setup.value = JSON.stringify({
-        atomic_url: 'https://aa-testnet.neftyblocks.com',
-        chain_url: 'https://waxtest.eu.eosamsterdam.net',
-        platform_url: 'https://test.neftyblocks.com',
+        atomic_url: 'https://aa.neftyblocks.com',
+        chain_url: 'https://wax.neftyblocks.com',
+        platform_url: 'https://neftyblocks.com',
         chain: 'wax',
         collection: collection.value,
         back_btn: false,

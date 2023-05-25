@@ -1,10 +1,12 @@
 import { Anchor } from '@nefty/ual-anchor';
+import { Wax } from '@nefty/ual-wax';
 import { WalletUAL, WalletUser } from '@nefty/use/dist/wallet';
 
 declare global {
     interface Window {
         global: any;
         wallet_anchor: Anchor;
+        wallet_wax: Wax;
         provider: WalletUAL;
         provider_user: WalletUser;
     }
@@ -36,8 +38,9 @@ export function useWallet({
     const appName = 'neftyblocks';
 
     window.wallet_anchor = new Anchor([network], { appName });
+    window.wallet_wax = new Wax([network], { appName });
 
-    window.provider = new WalletUAL(callback, [network], appName, [window.wallet_anchor]);
+    window.provider = new WalletUAL(callback, [network], appName, [window.wallet_anchor, window.wallet_wax]);
 
     window.provider.init();
 }

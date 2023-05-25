@@ -251,7 +251,12 @@
     };
 
     const updateRequirments = async () => {
+        // reset all selections
         selection = undefined;
+        selected = {};
+        selectedAssetsToBlend = [];
+        selectedTokensToBlend = [];
+        selectedBalanceAssets = [];
 
         selection = await getRequirements({
             requirements: data.requirements,
