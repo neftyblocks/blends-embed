@@ -30,6 +30,6 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@nefty/use": "^0.1.8"
+        "@nefty/use": "^0.1.9"
     }
 }

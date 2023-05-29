@@ -68,6 +68,44 @@
     const hasVisual = ['collection', 'template', 'token', 'balance'];
 
     // METHODS
+    const getBlendData = async (blend, config, reload) => {
+        const tempdata = await useSWR<GetBlendResult>(
+            `blend-${blend.blend_id}`,
+            () =>
+                getBlend({
+                    atomic_url: config.atomic_url,
+                    blend_id: blend.blend_id,
+                    contract: blend.contract,
+                    chain: config.chain,
+                }),
+            600_000,
+            reload
+        );
+
+        if (tempdata.collection_name === config.collection) {
+            data = tempdata;
+
+            if (data.odds) {
+                warnJobs = await getJobsCount({
+                    chain_url: config.chain_url,
+                });
+            }
+        } else {
+            if (data !== null) {
+                dispatch(
+                    'error',
+                    {
+                        type: 'invalid',
+                        message: 'Blend is not from this collection',
+                    },
+                    component
+                );
+
+                data = null;
+            }
+        }
+    };
+
     const unsubscribe = settings.subscribe(
         async ({ config, blend, account, transactionId }) => {
             user = account;
@@ -76,39 +114,7 @@
             if (config && blend && !transactionId) {
                 localConfig = config;
 
-                const tempdata = await useSWR<GetBlendResult>(
-                    `blend-${blend.blend_id}`,
-                    () =>
-                        getBlend({
-                            atomic_url: config.atomic_url,
-                            blend_id: blend.blend_id,
-                            contract: blend.contract,
-                            chain: config.chain,
-                        })
-                );
-
-                if (tempdata.collection_name === config.collection) {
-                    data = tempdata;
-
-                    if (data.odds) {
-                        warnJobs = await getJobsCount({
-                            chain_url: config.chain_url,
-                        });
-                    }
-                } else {
-                    if (data !== null) {
-                        dispatch(
-                            'error',
-                            {
-                                type: 'invalid',
-                                message: 'Blend is not from this collection',
-                            },
-                            component
-                        );
-
-                        data = null;
-                    }
-                }
+                await getBlendData(blend, config, false);
             }
 
             // user flow
@@ -206,12 +212,7 @@
     });
 
     const refreshData = async (config, blend) => {
-        data = await getBlend({
-            atomic_url: config.atomic_url,
-            blend_id: blend.blend_id,
-            contract: blend.contract,
-            chain: config.chain,
-        });
+        await getBlendData(blend, config, true);
     };
 
     const loadLimits = async () => {
