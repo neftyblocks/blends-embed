@@ -116,6 +116,9 @@
         if (timeout) clearTimeout(timeout);
         timeout = setTimeout(() => {
             let temp = [];
+
+            console.log(searchValue);
+
             if (searchValue.length > 0) {
                 const results = searchEngine(searchValue);
 
@@ -284,7 +287,7 @@
         type="search"
         bind:value={searchValue}
         placeholder="Search name"
-        on:input={() => search}
+        on:input={() => search()}
     />
     <select bind:value={selectedMatch} on:input={selectUpdate}>
         <option value="">Show all</option>
