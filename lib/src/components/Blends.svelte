@@ -102,6 +102,15 @@
     });
 
     const viewBlend = (blend: GetBlendsResult) => {
+        settings.update((s) => {
+            s.config.query = {
+                search: searchValue,
+                page: currentPage.toString(),
+                category: selectedCategory,
+            };
+            return s;
+        });
+
         dispatch(
             'blend',
             {
@@ -116,8 +125,6 @@
         if (timeout) clearTimeout(timeout);
         timeout = setTimeout(() => {
             let temp = [];
-
-            console.log(searchValue);
 
             if (searchValue.length > 0) {
                 const results = searchEngine(searchValue);

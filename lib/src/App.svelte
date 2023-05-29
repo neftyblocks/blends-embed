@@ -35,6 +35,8 @@
     });
 
     $: {
+        let detailView = !!blend;
+
         if (account && account !== JSON.stringify($settings.account)) {
             settings.update((s) => {
                 s.account = account !== 'unset' ? JSON.parse(account) : null;
@@ -54,8 +56,15 @@
         }
 
         if (config && config !== JSON.stringify($settings.config)) {
+            const query =
+                detailView && $settings.config ? $settings.config.query : {};
+            const newConfig = JSON.parse(config);
+
             settings.update((s) => {
-                s.config = JSON.parse(config);
+                s.config = {
+                    ...newConfig,
+                    query,
+                };
                 config = null;
 
                 return s;
