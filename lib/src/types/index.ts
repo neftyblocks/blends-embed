@@ -113,7 +113,7 @@ export interface GetBlendResult {
     count: {
         current: number;
         max: number;
-    }
+    };
     category: string;
     ingredients_count: number;
     result_count: number;

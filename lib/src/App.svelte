@@ -56,14 +56,15 @@
         }
 
         if (config && config !== JSON.stringify($settings.config)) {
-            const query =
-                detailView && $settings.config ? $settings.config.query : {};
-            const newConfig = JSON.parse(config);
-
             settings.update((s) => {
+                // fix issue with triggering a config update
+                const query = JSON.stringify(
+                    detailView && s.config ? { query: s.config.query } : {}
+                );
+
                 s.config = {
-                    ...newConfig,
-                    query,
+                    ...JSON.parse(config),
+                    ...JSON.parse(query),
                 };
                 config = null;
 

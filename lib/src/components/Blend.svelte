@@ -118,7 +118,7 @@
             }
 
             // user flow
-            if (account && !transactionId) {
+            if (account && blend && !transactionId) {
                 if (data?.requirements) {
                     await updateRequirments();
                 } else {

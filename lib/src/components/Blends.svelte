@@ -3,7 +3,7 @@
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
     import { useSWR, useSearch } from '@nefty/use';
-    import { getBlends, settings } from '../store';
+    import { getBlends, settings, categories } from '../store';
     import { dispatch, displayStatus, displayTime, sortBlends } from '../utils';
     import type { GetBlendsResponse, GetBlendsResult } from '../types';
 
@@ -23,7 +23,6 @@
     let selectedMatch;
     let selectedCategory = '';
     let owner;
-    let categories = [];
     let currentPage = 1;
 
     const limit = 1000;
@@ -47,7 +46,10 @@
 
         if (indexedData) {
             searchValue = '';
-            categories = indexedData.categories;
+
+            if (!$categories.length) {
+                $categories = indexedData.categories;
+            }
 
             searchEngine = useSearch({
                 items: Object.keys(indexedData.search),
@@ -302,10 +304,10 @@
         <option value="missing_x">Missing one requirement</option>
         <option value="any">Own at least one requirement</option>
     </select>
-    {#if categories.length}
+    {#if $categories.length}
         <select bind:value={selectedCategory} on:input={selectUpdate}>
-            {#each categories as category}
-                <option value="">No category</option>
+            <option value="">No category</option>
+            {#each $categories as category}
                 <option value={category}>{category}</option>
             {/each}
         </select>

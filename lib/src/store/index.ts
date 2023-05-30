@@ -8,6 +8,8 @@ export const settings = writable<Settings>({
     transactionId: null,
 });
 
+export const categories = writable<string[]>([]);
+
 export * from './blendActions';
 export * from './blendsActions';
 export * from './validationsActions';
