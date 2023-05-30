@@ -161,7 +161,7 @@
                                 {#if item.mint !== 0}
                                     #{item.mint}
                                 {:else}
-                                    minting...
+                                    calculating...
                                 {/if}
                             </p>
                             {#if item.rarity}
