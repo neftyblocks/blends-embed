@@ -157,7 +157,13 @@
                             {#if matchertype === 'collection' || matchertype === 'attributes' || matchertype === 'schema'}
                                 <p class="name">{item.name}</p>
                             {/if}
-                            <p>#{item.mint}</p>
+                            <p>
+                                {#if item.mint !== 0}
+                                    #{item.mint}
+                                {:else}
+                                    minting...
+                                {/if}
+                            </p>
                             {#if item.rarity}
                                 <p>Rarity: {item.rarity}</p>
                             {/if}
@@ -243,7 +249,7 @@
         bottom: 44px;
         left: 50%;
         width: 360px;
-        max-height: 280px;
+        max-height: 60vh;
         transform: translateX(-50%);
         border-radius: var(--nb-radius);
         background-color: var(--nb-bg-card);

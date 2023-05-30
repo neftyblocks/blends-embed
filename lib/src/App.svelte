@@ -1,7 +1,7 @@
 <svelte:options tag="neftyblocks-blends" />
 
 <script lang="ts">
-    import { settings } from './store';
+    import { settings, categories } from './store';
     import { onMount } from 'svelte/internal';
 
     // COMPONENTS
@@ -26,6 +26,8 @@
                 config: null,
                 transactionId: null,
             };
+
+            $categories = [];
 
             account = null;
             blend = null;

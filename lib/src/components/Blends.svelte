@@ -139,7 +139,7 @@
                     data = undefined;
                 }
             } else {
-                temp = Object.values(indexedData.content);
+                temp = sortBlends(Object.values(indexedData.content));
             }
 
             setTimeout(() => {
