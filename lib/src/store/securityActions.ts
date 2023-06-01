@@ -17,6 +17,8 @@ export const getSecurityCheck = async ({ chain_url, actor, security_id, atomic_u
                 code: 'secure.nefty',
                 scope: security_id,
                 table: 'whitelists',
+                lower_bound: actor,
+                upper_bound: actor,
                 limit: 1,
                 json: true,
             },
