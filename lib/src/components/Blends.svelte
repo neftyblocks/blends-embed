@@ -3,7 +3,7 @@
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
     import { useSWR, useSearch } from '@nefty/use';
-    import { getBlends, settings, categories, requirments } from '../store';
+    import { getBlends, settings, categories, show_owner_filter, requirments } from '../store';
     import { dispatch, displayStatus, displayTime, sortBlends } from '../utils';
     import type { GetBlendsResponse, GetBlendsResult } from '../types';
 
@@ -85,8 +85,10 @@
 
             if (account) {
                 owner = account.actor;
+                $show_owner_filter = true;
             } else {
                 owner = undefined;
+                $show_owner_filter = false;
             }
         }
     );
@@ -297,12 +299,14 @@
         placeholder="Search name"
         on:input={() => search()}
     />
-    <select bind:value={$requirments} on:input={selectUpdate}>
-        <option value="">Show all</option>
-        <option value="all">Own all requirements</option>
-        <option value="missing_x">Missing one requirement</option>
-        <option value="any">Own at least one requirement</option>
-    </select>
+    {#if $show_owner_filter}
+        <select bind:value={$requirments} on:input={selectUpdate}>
+            <option value="">Show all</option>
+            <option value="all">Own all requirements</option>
+            <option value="missing_x">Missing one requirement</option>
+            <option value="any">Own at least one requirement</option>
+        </select>
+    {/if}
     {#if $categories.length}
         <select bind:value={selectedCategory} on:input={selectUpdate}>
             <option value="">No category</option>
