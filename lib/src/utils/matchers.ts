@@ -22,7 +22,11 @@ export const matchTokenRequirements = (selectionItems: any, requirements: any) =
     return value <= +tokenValue;
 };
 
-export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem['market_data'], platformUrl: string) => {
+export const getMarketUrl = (
+    matcher_type: string,
+    market_data: BlendResultItem['market_data'],
+    platformUrl: string,
+) => {
     const marketArray = market_data.split('|');
     const extend = '&sort=price&order=asc';
     const marketUrl = `${platformUrl}/marketplace/listing`;
@@ -38,9 +42,12 @@ export const getMarketUrl = (matcher_type: string, market_data: BlendResultItem[
     return url[matcher_type];
 };
 
-export const getDetailUrl = (matcher_type: string, market_data: BlendResultItem['market_data'], platformUrl: string) => {
+export const getDetailUrl = (
+    matcher_type: string,
+    market_data: BlendResultItem['market_data'],
+    platformUrl: string,
+) => {
     const marketArray = market_data.split('|');
-
 
     const url = {
         attributes: `${platformUrl}/schemas/${marketArray[0]}/${marketArray[1]}`,
@@ -65,9 +72,9 @@ const text = 'You do not hold enough';
 
 export const matchSecurityReason = {
     TOKEN_HOLDING: `${text} tokens`,
-    TEMPLATE_HOLDINGS: `${text} NFTs from a templates`,
-    COLLECTION_HOLDINGS: `${text} NFTs from a collections`,
-    SCHEMA_HOLDINGS: `${text} NFTs from a schemas`,
+    TEMPLATE_HOLDINGS: `${text} NFTs from a template`,
+    COLLECTION_HOLDINGS: `${text} NFTs from a collection`,
+    SCHEMA_HOLDINGS: `${text} NFTs from a schema`,
     '': '',
 };
 
