@@ -38,7 +38,7 @@ export function useWallet({
     const appName = 'neftyblocks';
 
     window.wallet_anchor = new Anchor([network], { appName });
-    window.wallet_wax = new Wax([network], { appName });
+    window.wallet_wax = new Wax([network], { });
 
     window.provider = new WalletUAL(callback, [network], appName, [window.wallet_anchor, window.wallet_wax]);
 
