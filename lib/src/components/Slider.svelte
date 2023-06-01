@@ -3,7 +3,7 @@
 <script lang="ts">
     import { useTokenDisplay } from '@nefty/use';
     import { onMount } from 'svelte/internal';
-    import { getMarketUrl } from '../utils';
+    import { getDetailUrl, getMarketUrl } from '../utils';
 
     // COMPONENTS
 
@@ -51,6 +51,23 @@
     height="0"
     style="position: absolute"
 >
+    <symbol
+        id="external"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path
+            d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+        /><polyline points="15 3 21 3 21 9" /><line
+            x1="10"
+            x2="21"
+            y1="14"
+            y2="3"
+        /></symbol
+    >
     <symbol
         id="hash"
         viewBox="0 0 24 24"
@@ -154,6 +171,25 @@
                         {key > active + 1 ? 'next-depth' : ''}
                         "
                     >
+                        {#if !ended && item.matcher_type === 'template'}
+                            <a
+                                href={getDetailUrl(
+                                    item.matcher_type,
+                                    item.market_data,
+                                    platformurl
+                                )}
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                <svg
+                                    role="presentation"
+                                    focusable="false"
+                                    aria-hidden="true"
+                                >
+                                    <use xlink:href="#external" />
+                                </svg>
+                            </a>
+                        {/if}
                         <figure>
                             {#if item.video}
                                 <video
@@ -398,6 +434,24 @@
             small {
                 color: var(--nb-color-secondary);
                 font-size: var(--nb-font-size--small);
+            }
+        }
+
+        > a {
+            position: absolute;
+            top: 2px;
+            right: 3px;
+            transition: transform 0.15s ease;
+            z-index: 1;
+
+            svg {
+                color: var(--nb-color-secondary);
+                width: 18px;
+                height: 18px;
+            }
+
+            &:hover {
+                transform: scale(1.1);
             }
         }
 

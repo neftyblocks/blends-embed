@@ -309,6 +309,7 @@ export const getBlend = async ({
                                 name: displayData.name,
                                 drop_rate: dropRate,
                                 rarity,
+                                matcher_type: 'pool',
                                 mint: null,
                                 video: displayData.video ? useImageUrl(displayData.video as string) : null,
                                 image: displayData.image ? useImageUrl(displayData.image as string) : null,

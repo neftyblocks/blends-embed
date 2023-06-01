@@ -46,6 +46,7 @@
     let selected = {};
     let claims = null;
     let warnJobs = 0;
+    let secureClaimError = null;
     let isMeetingRequirements = false;
 
     // DOM
@@ -139,15 +140,9 @@
                     if (allowed) {
                         allowBlend = true;
                         selectedSecurity = result;
+                        secureClaimError = null;
                     } else {
-                        dispatch(
-                            'error',
-                            {
-                                type: 'security',
-                                message: reason,
-                            },
-                            component
-                        );
+                        secureClaimError = reason;
                     }
                 }
 
@@ -488,7 +483,7 @@
     height="0"
     style="position: absolute"
 >
-    <svg
+    <symbol
         id="external"
         viewBox="0 0 24 24"
         fill="none"
@@ -503,7 +498,7 @@
             x2="21"
             y1="14"
             y2="3"
-        /></svg
+        /></symbol
     >
     <symbol
         id="refresh"
@@ -623,21 +618,31 @@
                     />
                 {/if}
             </section>
-            {#if data.account_limit !== 0}
-                <p class="account-limit">
-                    <span>Account limit:</span>
-                    {#if limits}
-                        {#if limits.allowed}
-                            {limits.left}
-                            {countdown(now)}
+            <section class="blend-info">
+                {#if data.account_limit !== 0}
+                    <p class="account-limit">
+                        <span>Account limit:</span>
+                        {#if limits}
+                            {#if limits.allowed}
+                                {limits.left}
+                                {countdown(now)}
+                            {:else}
+                                {limits.reason} {countdown(now)}
+                            {/if}
                         {:else}
-                            {limits.reason} {countdown(now)}
+                            loading...
                         {/if}
-                    {:else}
-                        loading...
-                    {/if}
-                </p>
-            {/if}
+                    </p>
+                {/if}
+                {#if secureClaimError}
+                    <div class="banner banner--warn">
+                        <p>
+                            Secure blend: {secureClaimError}
+                        </p>
+                    </div>
+                {/if}
+            </section>
+
             <section class="blend-actions">
                 {#if showClaims}
                     <div class="btn-group">
@@ -698,6 +703,7 @@
                     </div>
                 {/if}
             </section>
+
             <section class="blend-selection">
                 <h2>Ingredients</h2>
                 <small>Ingredients will be consumed</small>
@@ -1022,6 +1028,17 @@
         overflow: hidden auto;
     }
 
+    .blend-info {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap-reverse;
+        gap: 12px;
+
+        .banner {
+            margin-left: 0;
+        }
+    }
+
     .blend-actions {
         display: flex;
         align-items: center;
@@ -1303,6 +1320,10 @@
         p {
             color: var(--nb-color);
             font-size: var(--nb-font-size--small);
+        }
+
+        &--warn {
+            background-color: var(--nb-warning);
         }
     }
 

@@ -3,7 +3,7 @@
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
     import { useSWR, useSearch } from '@nefty/use';
-    import { getBlends, settings, categories } from '../store';
+    import { getBlends, settings, categories, requirments } from '../store';
     import { dispatch, displayStatus, displayTime, sortBlends } from '../utils';
     import type { GetBlendsResponse, GetBlendsResult } from '../types';
 
@@ -20,7 +20,6 @@
     let timeout: ReturnType<typeof setTimeout> = setTimeout(() => '', 250);
     let searchEngine: any;
     let searchValue = '';
-    let selectedMatch;
     let selectedCategory = '';
     let owner;
     let currentPage = 1;
@@ -32,12 +31,12 @@
     // METHODS
     const asyncData = async (config, searchString?: string) => {
         indexedData = await useSWR<GetBlendsResponse>(
-            `blends-${config.collection}-${selectedMatch}-${selectedCategory}-${currentPage}`,
+            `blends-${config.collection}-${$requirments}-${selectedCategory}-${currentPage}`,
             () =>
                 getBlends({
                     atomic_url: config.atomic_url,
                     collection: config.collection,
-                    ingredient_match: selectedMatch,
+                    ingredient_match: $requirments,
                     ingredient_owner: owner,
                     page: currentPage,
                     category: selectedCategory,
@@ -298,7 +297,7 @@
         placeholder="Search name"
         on:input={() => search()}
     />
-    <select bind:value={selectedMatch} on:input={selectUpdate}>
+    <select bind:value={$requirments} on:input={selectUpdate}>
         <option value="">Show all</option>
         <option value="all">Own all requirements</option>
         <option value="missing_x">Missing one requirement</option>

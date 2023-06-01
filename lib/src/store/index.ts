@@ -9,6 +9,7 @@ export const settings = writable<Settings>({
 });
 
 export const categories = writable<string[]>([]);
+export const requirments = writable<string>('');
 
 export * from './blendActions';
 export * from './blendsActions';
