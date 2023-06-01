@@ -9,6 +9,7 @@ export const settings = writable<Settings>({
 });
 
 export const categories = writable<string[]>([]);
+export const show_owner_filter = writable<boolean>(false);
 export const requirments = writable<string>('');
 
 export * from './blendActions';
