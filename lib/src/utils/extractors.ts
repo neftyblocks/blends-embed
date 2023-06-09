@@ -13,13 +13,22 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
 
     if (firstResult?.template) {
         const asset = useAssetData(firstResult.template);
-        const { name, img, video } = asset;
+
+        const { name } = asset;
+        const { image, video } = getVisuals(
+            asset,
+            firstResult.template.schema.format
+        );
+
+        console.log(name, image, video);
 
         if (!blend_name) blend_name = name;
-        if (!blend_img) blend_img = img;
+        if (!blend_img) blend_img = image;
         if (!blend_video) blend_video = video;
     } else if (firstResult?.pool) {
-        const displayData = firstResult.pool.display_data ? JSON.parse(firstResult.pool.display_data) : null;
+        const displayData = firstResult.pool.display_data
+            ? JSON.parse(firstResult.pool.display_data)
+            : null;
 
         if (displayData) {
             if (!blend_name) blend_name = displayData.name;
@@ -31,26 +40,48 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
     return { blend_name, blend_img, blend_video };
 };
 
-const visualsTypes = ['image', 'video', 'ipfs', 'string'];
+// Not checking on type
+// const visualsTypes = ['image', 'video', 'ipfs', 'string'];
 
-export const getVisuals = (asset: any, format: any) => {
+export const getVisuals = (asset: any, format?: any) => {
     const result = {
         image: null,
         video: null,
     };
 
-    for (let i = 0; i < format.length; i++) {
-        const { type, name } = format[i];
+    if (format) {
+        for (let i = 0; i < format.length; i++) {
+            const { name, type } = format[i];
+            const lowName = name.toLowerCase();
 
-        if (visualsTypes.includes(type) && asset[name]) {
-            if (name.startsWith('im')) {
-                if (!result.image) result.image = asset[name];
-            } else if (name.includes('img')) {
-                if (!result.image) result.image = asset[name];
-            } else if (name.startsWith('vid')) {
-                if (!result.video) result.video = asset[name];
-            } else if (name.includes('vid')) {
-                if (!result.video) result.video = asset[name];
+            if (asset[name]) {
+                if (lowName.startsWith('im')) {
+                    if (!result.image) result.image = asset[name];
+                } else if (lowName.includes('img')) {
+                    if (!result.image) result.image = asset[name];
+                } else if (lowName.startsWith('vid')) {
+                    if (!result.video) result.video = asset[name];
+                } else if (lowName.includes('vid')) {
+                    if (!result.video) result.video = asset[name];
+                }
+            }
+        }
+    } else {
+        const attributes = Object.keys(asset);
+
+        for (let i = 0; i < attributes.length; i++) {
+            const lowName = attributes[i].toLowerCase();
+
+            if (asset[attributes[i]]) {
+                if (lowName.startsWith('im')) {
+                    if (!result.image) result.image = asset[attributes[i]];
+                } else if (lowName.includes('img')) {
+                    if (!result.image) result.image = asset[attributes[i]];
+                } else if (lowName.startsWith('vid')) {
+                    if (!result.video) result.video = asset[attributes[i]];
+                } else if (lowName.includes('vid')) {
+                    if (!result.video) result.video = asset[attributes[i]];
+                }
             }
         }
     }
@@ -65,7 +96,7 @@ const rarityNames = [
     'Variation',
     'style',
     'Style',
-  ];
+];
 
 export const getRarity = (data) => {
     for (let i = 0; i < rarityNames.length; i++) {
@@ -73,4 +104,4 @@ export const getRarity = (data) => {
     }
 
     return null;
-}
+};

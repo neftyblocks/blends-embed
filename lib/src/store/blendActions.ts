@@ -1,6 +1,12 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
 import type { Payload, GetBlendProperty, GetBlendResult } from '../types';
-import { blendNameAndImage, displayTime, getVisuals, matchRarity, priceForInput } from '../utils';
+import {
+    blendNameAndImage,
+    displayTime,
+    getVisuals,
+    matchRarity,
+    priceForInput,
+} from '../utils';
 
 let tokensJson: any = null;
 
@@ -12,12 +18,15 @@ export const getBlend = async ({
 }: GetBlendProperty): Promise<GetBlendResult | null> => {
     if (!contract) return null;
 
-    const { data, error } = await useFetch<Payload>(`/neftyblends/v1/blends/${contract}/${blend_id}`, {
-        baseUrl: atomic_url,
-        params: {
-            render_markdown: 'true',
-        },
-    });
+    const { data, error } = await useFetch<Payload>(
+        `/neftyblends/v1/blends/${contract}/${blend_id}`,
+        {
+            baseUrl: atomic_url,
+            params: {
+                render_markdown: 'true',
+            },
+        }
+    );
 
     if (error) {
         console.error(error);
@@ -58,8 +67,17 @@ export const getBlend = async ({
         // which properties it will be checked against
         // ------------------------------
         for (let a = 0; a < ingredients.length; a++) {
-            const { template, collection, attributes, schema, ft_amount, type, amount, index, display_data } =
-                ingredients[a];
+            const {
+                template,
+                collection,
+                attributes,
+                schema,
+                ft_amount,
+                type,
+                amount,
+                index,
+                display_data,
+            } = ingredients[a];
 
             let matcher;
             let matcher_type;
@@ -74,7 +92,9 @@ export const getBlend = async ({
                 matcher = `${blend_id}|${contract}|${index}`;
                 collectionName = attributes.collection_name;
 
-                const displayData = display_data ? JSON.parse(display_data) : null;
+                const displayData = display_data
+                    ? JSON.parse(display_data)
+                    : null;
 
                 const message = attributes.attributes
                     .map(({ name, allowed_values }) => {
@@ -101,7 +121,10 @@ export const getBlend = async ({
                 collectionName = template.collection.collection_name;
 
                 const asset = useAssetData(template);
-                const { img, video } = asset;
+                const { image, video } = getVisuals(
+                    asset,
+                    template.schema.format
+                );
 
                 value = template.cost;
 
@@ -112,7 +135,7 @@ export const getBlend = async ({
                     market_data: `${template.collection.collection_name}|${template.template_id}`,
                     value,
                     video: video ? useImageUrl(video as string) : null,
-                    image: img ? useImageUrl(img as string) : null,
+                    image: image ? useImageUrl(image as string) : null,
                 };
             }
 
@@ -122,7 +145,9 @@ export const getBlend = async ({
                 matcher_type = 'schema';
                 collectionName = schema.c;
 
-                const displayData = display_data ? JSON.parse(display_data) : null;
+                const displayData = display_data
+                    ? JSON.parse(display_data)
+                    : null;
 
                 items[matcher] = {
                     name: schema.c,
@@ -144,7 +169,10 @@ export const getBlend = async ({
                 const asset = useAssetData(template);
                 const { name } = asset;
 
-                const { video, image } = getVisuals(asset, template.schema.format);
+                const { video, image } = getVisuals(
+                    asset,
+                    template.schema.format
+                );
 
                 items[matcher] = {
                     name,
@@ -183,9 +211,12 @@ export const getBlend = async ({
 
                 // fetch the tokens is not yet cached
                 if (!tokensJson) {
-                    const { data } = await useFetch<Record<string, unknown>>(`/api/logos/${chain}`, {
-                        baseUrl: 'https://rates.neftyblocks.com',
-                    });
+                    const { data } = await useFetch<Record<string, unknown>>(
+                        `/api/logos/${chain}`,
+                        {
+                            baseUrl: 'https://rates.neftyblocks.com',
+                        }
+                    );
 
                     if (data) tokensJson = data;
                 }
@@ -277,12 +308,20 @@ export const getBlend = async ({
                     if (template) {
                         const issued_supply = +template.issued_supply;
                         const max_supply = +template.max_supply;
-                        const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
+                        const maxReached =
+                            max_supply === 0
+                                ? false
+                                : issued_supply === max_supply;
 
                         if (maxReached) max_reached = true;
 
                         const asset = useAssetData(template);
-                        const { img, video, name } = asset;
+                        const { name } = asset;
+
+                        const { image, video } = getVisuals(
+                            asset,
+                            template.schema.format
+                        );
 
                         result.push({
                             name,
@@ -292,17 +331,26 @@ export const getBlend = async ({
                             market_data: `${template.collection.collection_name}|${template.template_id}`,
                             mint: {
                                 amount: +template.issued_supply,
-                                supply: +template.max_supply === 0 ? '∞' : template.max_supply,
+                                supply:
+                                    +template.max_supply === 0
+                                        ? '∞'
+                                        : template.max_supply,
                             },
                             video: video ? useImageUrl(video as string) : null,
-                            image: img ? useImageUrl(img as string) : null,
+                            image: image ? useImageUrl(image as string) : null,
                         });
 
                         if (!backgroundImg) {
-                            backgroundImg = useImageUrl(img as string, 300, true);
+                            backgroundImg = useImageUrl(
+                                image as string,
+                                300,
+                                true
+                            );
                         }
                     } else if (pool) {
-                        const displayData = pool.display_data ? JSON.parse(pool.display_data) : null;
+                        const displayData = pool.display_data
+                            ? JSON.parse(pool.display_data)
+                            : null;
 
                         if (displayData) {
                             result.push({
@@ -311,8 +359,12 @@ export const getBlend = async ({
                                 rarity,
                                 matcher_type: 'pool',
                                 mint: null,
-                                video: displayData.video ? useImageUrl(displayData.video as string) : null,
-                                image: displayData.image ? useImageUrl(displayData.image as string) : null,
+                                video: displayData.video
+                                    ? useImageUrl(displayData.video as string)
+                                    : null,
+                                image: displayData.image
+                                    ? useImageUrl(displayData.image as string)
+                                    : null,
                             });
                         }
                     }
@@ -320,7 +372,10 @@ export const getBlend = async ({
             }
         }
 
-        const { blend_name } = blendNameAndImage(display_data, rolls[0].outcomes[0].results[0]);
+        const { blend_name } = blendNameAndImage(
+            display_data,
+            rolls[0].outcomes[0].results[0]
+        );
 
         const soldOut = +max !== 0 && +use_count >= +max;
 

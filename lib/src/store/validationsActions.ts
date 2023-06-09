@@ -1,6 +1,17 @@
-import { useFetch, useImageUrl, useAssetData, useRetry, useTokenDisplay } from '@nefty/use';
+import {
+    useFetch,
+    useImageUrl,
+    useAssetData,
+    useRetry,
+    useTokenDisplay,
+} from '@nefty/use';
 import type { Payload, GetBlendResult } from '../types';
-import { getRarity, priceForInput, sortByAttribute } from '../utils';
+import {
+    getRarity,
+    getVisuals,
+    priceForInput,
+    sortByAttribute,
+} from '../utils';
 
 const templateMintConfig = {
     is_transferable: 'true',
@@ -24,7 +35,12 @@ const isBackedByTokens = (backed_tokens) => {
 
         for (let i = 0; i < backed_tokens.length; i++) {
             const { amount, token_precision, token_symbol } = backed_tokens[i];
-            tokens.push(`${useTokenDisplay(priceForInput(amount, token_precision), token_precision)} ${token_symbol}`);
+            tokens.push(
+                `${useTokenDisplay(
+                    priceForInput(amount, token_precision),
+                    token_precision
+                )} ${token_symbol}`
+            );
         }
 
         return tokens.join(', ');
@@ -32,7 +48,14 @@ const isBackedByTokens = (backed_tokens) => {
 
     return null;
 };
-export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_url, actor, matcher }) => {
+export const getAttributesAssetId = async ({
+    blend_id,
+    contract,
+    index,
+    atomic_url,
+    actor,
+    matcher,
+}) => {
     const result = {
         type: 'attributes',
         data: {},
@@ -46,7 +69,7 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
                 owner: actor,
                 ...attributeConfig,
             },
-        },
+        }
     );
 
     if (error) console.error(error);
@@ -62,7 +85,11 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
                 const { asset_id, template_mint, backed_tokens } = assets[i];
 
                 const asset = useAssetData(assets[i]);
-                const { video, img, name } = asset;
+                const { name } = asset;
+                const { image, video } = getVisuals(
+                    asset,
+                    assets[i].schema.format
+                );
 
                 const backedByTokens = isBackedByTokens(backed_tokens);
                 const rarity = getRarity(asset);
@@ -73,20 +100,31 @@ export const getAttributesAssetId = async ({ blend_id, contract, index, atomic_u
                     rarity,
                     mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
-                    image: img ? useImageUrl(img as string) : null,
+                    image: image ? useImageUrl(image as string) : null,
                     backedByTokens,
                 };
 
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[matcher] = [...sortByAttribute(normal), ...sortByAttribute(backed)];
+            result.data[matcher] = [
+                ...sortByAttribute(normal),
+                ...sortByAttribute(backed),
+            ];
         }
     }
 
     return result;
 };
-export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url, actor, matcher, attribute_name }) => {
+export const getBalanceAssetId = async ({
+    blend_id,
+    contract,
+    index,
+    atomic_url,
+    actor,
+    matcher,
+    attribute_name,
+}) => {
     const result = {
         type: 'balance',
         data: {},
@@ -100,7 +138,7 @@ export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url,
                 owner: actor,
                 ...attributeConfig,
             },
-        },
+        }
     );
 
     if (error) console.error(error);
@@ -113,7 +151,8 @@ export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url,
             const backed = [];
 
             for (let i = 0; i < assets.length; i++) {
-                const { asset_id, template_mint, mutable_data, backed_tokens } = assets[i];
+                const { asset_id, template_mint, mutable_data, backed_tokens } =
+                    assets[i];
 
                 const backedByTokens = isBackedByTokens(backed_tokens);
 
@@ -128,13 +167,22 @@ export const getBalanceAssetId = async ({ blend_id, contract, index, atomic_url,
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[matcher] = [...sortByAttribute(normal, 'value'), ...sortByAttribute(backed, 'value')];
+            result.data[matcher] = [
+                ...sortByAttribute(normal, 'value'),
+                ...sortByAttribute(backed, 'value'),
+            ];
         }
     }
 
     return result;
 };
-export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_name, actor, matcher }) => {
+export const getSchemaAssetId = async ({
+    collection_name,
+    atomic_url,
+    schema_name,
+    actor,
+    matcher,
+}) => {
     const result = {
         type: 'schema',
         data: {},
@@ -163,7 +211,11 @@ export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_nam
                 const { asset_id, template_mint, backed_tokens } = assets[i];
 
                 const asset = useAssetData(assets[i]);
-                const { video, img, name } = asset;
+                const { name } = asset;
+                const { image, video } = getVisuals(
+                    asset,
+                    assets[i].schema.format
+                );
                 const backedByTokens = isBackedByTokens(backed_tokens);
 
                 const rarity = getRarity(asset);
@@ -174,20 +226,28 @@ export const getSchemaAssetId = async ({ collection_name, atomic_url, schema_nam
                     rarity,
                     mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
-                    image: img ? useImageUrl(img as string) : null,
+                    image: image ? useImageUrl(image as string) : null,
                     backedByTokens,
                 };
 
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[matcher] = [...sortByAttribute(normal), ...sortByAttribute(backed)];
+            result.data[matcher] = [
+                ...sortByAttribute(normal),
+                ...sortByAttribute(backed),
+            ];
         }
     }
 
     return result;
 };
-export const getTemplateAssetId = async ({ template_id, collection_name, atomic_url, actor }) => {
+export const getTemplateAssetId = async ({
+    template_id,
+    collection_name,
+    atomic_url,
+    actor,
+}) => {
     const result = {
         type: 'template',
         data: {},
@@ -228,13 +288,20 @@ export const getTemplateAssetId = async ({ template_id, collection_name, atomic_
                 backedByTokens ? backed.push(content) : normal.push(content);
             }
 
-            result.data[template_id] = [...sortByAttribute(normal), ...sortByAttribute(backed)];
+            result.data[template_id] = [
+                ...sortByAttribute(normal),
+                ...sortByAttribute(backed),
+            ];
         }
     }
 
     return result;
 };
-export const getCollectionAssetId = async ({ collection_name, atomic_url, actor }) => {
+export const getCollectionAssetId = async ({
+    collection_name,
+    atomic_url,
+    actor,
+}) => {
     const result = {
         type: 'collection',
         data: {},
@@ -262,7 +329,11 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
                 const { asset_id, template_mint, backed_tokens } = assets[i];
 
                 const asset = useAssetData(assets[i]);
-                const { video, img, name } = asset;
+                const { name } = asset;
+                const { image, video } = getVisuals(
+                    asset,
+                    assets[i].schema.format
+                );
                 const backedByTokens = isBackedByTokens(backed_tokens);
                 const rarity = getRarity(asset);
 
@@ -272,7 +343,7 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
                     rarity,
                     mint: +template_mint,
                     video: video ? useImageUrl(video as string) : null,
-                    image: img ? useImageUrl(img as string) : null,
+                    image: image ? useImageUrl(image as string) : null,
                     backedByTokens,
                 };
 
@@ -285,21 +356,30 @@ export const getCollectionAssetId = async ({ collection_name, atomic_url, actor 
 
     return result;
 };
-export const getTokenBalance = async ({ chain_url, actor, code, symbol, matcher }) => {
+export const getTokenBalance = async ({
+    chain_url,
+    actor,
+    code,
+    symbol,
+    matcher,
+}) => {
     const result = {
         type: 'token',
         data: {},
     };
 
-    const { data, error } = await useFetch<Payload>('/v1/chain/get_currency_balance', {
-        baseUrl: chain_url,
-        method: 'POST',
-        body: {
-            code,
-            symbol,
-            account: actor,
-        },
-    });
+    const { data, error } = await useFetch<Payload>(
+        '/v1/chain/get_currency_balance',
+        {
+            baseUrl: chain_url,
+            method: 'POST',
+            body: {
+                code,
+                symbol,
+                account: actor,
+            },
+        }
+    );
 
     if (error) console.error(error);
 
@@ -340,10 +420,11 @@ export const getRequirements = async ({
                     actor,
                     atomic_url,
                     matcher: requirement.matcher,
-                }),
+                })
             );
         } else if (requirement.key === 'BALANCE_INGREDIENT') {
-            const [blend_id, contract, index, attribute_name] = requirement.matcher.split('|');
+            const [blend_id, contract, index, attribute_name] =
+                requirement.matcher.split('|');
             fetchCalls.push(
                 getBalanceAssetId({
                     blend_id,
@@ -353,7 +434,7 @@ export const getRequirements = async ({
                     atomic_url,
                     matcher: requirement.matcher,
                     attribute_name,
-                }),
+                })
             );
         } else if (requirement.key === 'SCHEMA_INGREDIENT') {
             const [, schema] = requirement.matcher.split('|');
@@ -365,7 +446,7 @@ export const getRequirements = async ({
                     actor,
                     atomic_url,
                     matcher: requirement.matcher,
-                }),
+                })
             );
         } else if (requirement.key === 'TEMPLATE_INGREDIENT') {
             fetchCalls.push(
@@ -374,7 +455,7 @@ export const getRequirements = async ({
                     collection_name: requirement.collection_name,
                     actor,
                     atomic_url,
-                }),
+                })
             );
         } else if (requirement.key === 'COLLECTION_INGREDIENT') {
             fetchCalls.push(
@@ -382,7 +463,7 @@ export const getRequirements = async ({
                     collection_name: requirement.matcher,
                     actor,
                     atomic_url,
-                }),
+                })
             );
         } else if (requirement.key === 'FT_INGREDIENT') {
             const token = requirement.matcher.split('|');
@@ -393,7 +474,7 @@ export const getRequirements = async ({
                     code: token[1],
                     symbol: token[0],
                     matcher: requirement.matcher,
-                }),
+                })
             );
         }
     }
@@ -417,14 +498,18 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
     const { data, error } = await useRetry({
         retries: 3,
         delay: 1500,
-        retryOn: (data: Payload) => data.success === false || data.data.length === 0,
+        retryOn: (data: Payload) =>
+            data.success === false || data.data.length === 0,
         call: () =>
-            useFetch<Payload>(`/neftyblends/v1/blends/${contract}/${blend_id}/claims`, {
-                baseUrl: atomic_url,
-                params: {
-                    tx_id,
-                },
-            }),
+            useFetch<Payload>(
+                `/neftyblends/v1/blends/${contract}/${blend_id}/claims`,
+                {
+                    baseUrl: atomic_url,
+                    params: {
+                        tx_id,
+                    },
+                }
+            ),
     });
 
     if (error) console.error(error);
@@ -445,14 +530,22 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
                 const { template, asset } = outcomes[b];
 
                 const assetData = useAssetData(template || asset);
-                const { img, video, name } = assetData;
+                const { name } = assetData;
+
+                const { image, video } = getVisuals(
+                    assetData,
+                    template?.schema.format || undefined
+                );
 
                 const rarity = getRarity(assetData);
 
                 const mint = asset
                     ? {
                           amount: +asset.template_mint,
-                          supply: +asset.template.max_supply === 0 ? '∞' : asset.template.max_supply,
+                          supply:
+                              +asset.template.max_supply === 0
+                                  ? '∞'
+                                  : asset.template.max_supply,
                       }
                     : null;
 
@@ -461,7 +554,7 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
                     mint: mint,
                     rarity: rarity,
                     video: video ? useImageUrl(video as string) : null,
-                    image: img ? useImageUrl(img as string) : null,
+                    image: image ? useImageUrl(image as string) : null,
                 });
             }
         }
@@ -471,17 +564,20 @@ export const getClaims = async ({ contract, blend_id, tx_id, atomic_url }) => {
 };
 
 export const getJobsCount = async ({ chain_url }) => {
-    const { data, error } = await useFetch<Record<string, unknown[]>>('/v1/chain/get_table_by_scope', {
-        baseUrl: chain_url,
-        method: 'POST',
-        body: {
-            code: 'orng.wax',
-            table: 'jobs.a',
-            reverse: false,
-            limit: 100,
-            show_payer: false,
-        },
-    });
+    const { data, error } = await useFetch<Record<string, unknown[]>>(
+        '/v1/chain/get_table_by_scope',
+        {
+            baseUrl: chain_url,
+            method: 'POST',
+            body: {
+                code: 'orng.wax',
+                table: 'jobs.a',
+                reverse: false,
+                limit: 100,
+                show_payer: false,
+            },
+        }
+    );
 
     if (error) console.error(error);
 

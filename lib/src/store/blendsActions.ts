@@ -1,5 +1,10 @@
 import { useFetch, useImageUrl, useAssetData } from '@nefty/use';
-import type { GetBlendsProperty, Payload, GetBlendsResult, GetBlendsResponse } from '../types';
+import type {
+    GetBlendsProperty,
+    Payload,
+    GetBlendsResult,
+    GetBlendsResponse,
+} from '../types';
 import { blendNameAndImage, displayTime } from '../utils';
 
 export const getBlends = async ({
@@ -10,7 +15,10 @@ export const getBlends = async ({
     ingredient_match,
     ingredient_owner,
 }: GetBlendsProperty): Promise<null | GetBlendsResponse> => {
-    const optionalMatch = ingredient_match && ingredient_owner ? { ingredient_match, ingredient_owner } : {};
+    const optionalMatch =
+        ingredient_match && ingredient_owner
+            ? { ingredient_match, ingredient_owner }
+            : {};
 
     const { data, error } = await useFetch<Payload>('/neftyblends/v1/blends', {
         baseUrl: atomic_url,
@@ -58,7 +66,8 @@ export const getBlends = async ({
             const items = [];
             const result = [];
 
-            if (category && !categories.includes(category)) categories.push(category);
+            if (category && !categories.includes(category))
+                categories.push(category);
 
             for (let a = 0; a < ingredients.length; a++) {
                 const { template } = ingredients[a];
@@ -93,7 +102,10 @@ export const getBlends = async ({
                         if (template) {
                             const issued_supply = +template.issued_supply;
                             const max_supply = +template.max_supply;
-                            const maxReached = max_supply === 0 ? false : issued_supply === max_supply;
+                            const maxReached =
+                                max_supply === 0
+                                    ? false
+                                    : issued_supply === max_supply;
 
                             if (maxReached) max_reached = true;
 
@@ -107,12 +119,18 @@ export const getBlends = async ({
                         }
 
                         if (pool) {
-                            const displayData = pool.display_data ? JSON.parse(pool.display_data) : null;
+                            const displayData = pool.display_data
+                                ? JSON.parse(pool.display_data)
+                                : null;
 
                             if (displayData) {
                                 result.push({
                                     name: displayData.name,
-                                    image: displayData.image ? useImageUrl(displayData.image as string) : null,
+                                    image: displayData.image
+                                        ? useImageUrl(
+                                              displayData.image as string
+                                          )
+                                        : null,
                                 });
                             }
                         }
@@ -123,7 +141,7 @@ export const getBlends = async ({
             const displayData = display_data ? JSON.parse(display_data) : null;
             const { blend_img, blend_video, blend_name } = blendNameAndImage(
                 displayData,
-                rolls[0].outcomes[0].results[0],
+                rolls[0].outcomes[0].results[0]
             );
 
             const soldOut = +max !== 0 && +use_count >= +max;
@@ -154,7 +172,9 @@ export const getBlends = async ({
                 video: blend_video ? useImageUrl(blend_video) : null,
             };
 
-            search[`${blend_name}_${result.map((e) => e.schema_name).join('_')}`] = `${contract}_${blend_id}`;
+            search[
+                `${blend_name}_${result.map((e) => e.schema_name).join('_')}`
+            ] = `${contract}_${blend_id}`;
         }
 
         return { content, search, categories };
