@@ -20,8 +20,6 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
             firstResult.template.schema.format
         );
 
-        console.log(name, image, video);
-
         if (!blend_name) blend_name = name;
         if (!blend_img) blend_img = image;
         if (!blend_video) blend_video = video;

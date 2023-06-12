@@ -92,9 +92,14 @@ export const getBlend = async ({
                 matcher = `${blend_id}|${contract}|${index}`;
                 collectionName = attributes.collection_name;
 
-                const displayData = display_data
-                    ? JSON.parse(display_data)
-                    : null;
+                let displayData;
+
+                try {
+                    displayData = display_data ? JSON.parse(display_data): null;
+                } catch (e) {
+                    displayData = { description: display_data};
+                }
+               
 
                 const message = attributes.attributes
                     .map(({ name, allowed_values }) => {
@@ -145,9 +150,13 @@ export const getBlend = async ({
                 matcher_type = 'schema';
                 collectionName = schema.c;
 
-                const displayData = display_data
-                    ? JSON.parse(display_data)
-                    : null;
+                let displayData;
+
+                try {
+                    displayData = display_data ? JSON.parse(display_data): null;
+                } catch (e) {
+                    displayData = { description: display_data};
+                }
 
                 items[matcher] = {
                     name: schema.c,

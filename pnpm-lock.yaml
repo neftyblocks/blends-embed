@@ -45,8 +45,8 @@ importers:
   lib:
     dependencies:
       '@nefty/use':
-        specifier: ^0.1.9
-        version: 0.1.9
+        specifier: ^0.1.11
+        version: 0.1.11
 
   playgrounds/vanilla:
     dependencies:
@@ -336,8 +336,8 @@ packages:
     resolution: {integrity: sha512-rFLdDoIlcJYPFdtVD/Xn1UKhgZmhd+zn9dkB3PF1K1+eVo9kUn9IuN4N4es7Ygn4lW91sY24r9sIs/YUJ7ujVA==}
     dev: false
 
-  /@mvdschee/use@0.1.3:
-    resolution: {integrity: sha512-9zlVw+jB2ZzTeSUl0nAm2tywNEozrgp9FOxFzUThLOx7UtjUm377h/vT6soAtwut0MkrDy2b9VHx0ko20SaMGg==}
+  /@mvdschee/use@0.1.5:
+    resolution: {integrity: sha512-GzTWWFHyCGhQJSYrzMuxaaYFuf7m7RBX1rLVAO0jqO9c17HwE96CFE1uEIdMb9ayG5CdeRs0sjx6Qz+791IM3A==}
     dev: false
 
   /@nefty/ual-anchor@0.2.5:
@@ -365,17 +365,17 @@ packages:
       - typescript
     dev: false
 
+  /@nefty/use@0.1.11:
+    resolution: {integrity: sha512-MNNmsRIOBkCC/wGtda0fITjq0qYZyrTCSqZ4Po5Z4KS0L1V/cz25n92M3STpaUNM03qlq4TeipvMT8rECecXPw==}
+    dependencies:
+      '@mvdschee/use': 0.1.5
+      universal-authenticator-library: 0.3.0
+    dev: false
+
   /@nefty/use@0.1.8:
     resolution: {integrity: sha512-YSuhYdM9Oj/H9vRWWzbzWBF+iimxsfgtIfBs2t6pPwyIYnJ2egO8l5HTL8POd0avUhPiWolvzhd40JVXX52AiQ==}
     dependencies:
       '@mvdschee/use': 0.1.2
-      universal-authenticator-library: 0.3.0
-    dev: false
-
-  /@nefty/use@0.1.9:
-    resolution: {integrity: sha512-Na3mLUCxmUhsBuIYPZ+2D94LBYOt61LSEcsqyLLW9ImhLJu6r5Z2X1TNIJKlXNj5ZHZXBNuOwGhGjI5WbdvtKQ==}
-    dependencies:
-      '@mvdschee/use': 0.1.3
       universal-authenticator-library: 0.3.0
     dev: false
 

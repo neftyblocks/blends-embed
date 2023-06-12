@@ -62,7 +62,7 @@
             }
         }
 
-        const blend = { blend_id: VITE_BLEND_ID, contract: "blend.nefty" };
+        const blend = { blend_id: VITE_BLEND_ID, contract: "craft.tag" };
 
         const account = {
             actor: VITE_ACCOUNT_NAME,
@@ -75,6 +75,7 @@
         const embed = `<neftyblocks-blends 
                         config=${JSON.stringify(config)}
                         account=${JSON.stringify(account)}
+                        blend=${JSON.stringify(blend)}
                     />`;
 
         mount.innerHTML = embed;
