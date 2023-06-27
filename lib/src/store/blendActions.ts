@@ -234,7 +234,7 @@ export const getBlend = async ({
 
                 const img = tokensJson[`${token_symbol}@${token_contract}`];
 
-                value = priceForInput(ft_amount.amount, ft_amount.precision);
+                value = priceForInput(ft_amount.amount, ft_amount.token_precision);
 
                 token = {
                     ...ft_amount,
