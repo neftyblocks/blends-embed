@@ -5,12 +5,13 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
     let blend_video;
     let blend_name;
 
+    // data from the blend
     if (displayData) {
         blend_name = displayData.name;
         blend_img = displayData.image;
-        blend_video = displayData.video;
     }
 
+    // data from the first result ::fallback
     if (firstResult?.template) {
         const asset = useAssetData(firstResult.template);
 
@@ -22,7 +23,10 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
 
         if (!blend_name) blend_name = name;
         if (!blend_img) blend_img = image;
-        if (!blend_video) blend_video = video;
+        // only set if no image data from the blend
+        if (!blend_img && !blend_video) blend_video = video;
+    
+    // data from the first pool ::fallback
     } else if (firstResult?.pool) {
         const displayData = firstResult.pool.display_data
             ? JSON.parse(firstResult.pool.display_data)
@@ -31,7 +35,8 @@ export const blendNameAndImage = (displayData: any, firstResult: any) => {
         if (displayData) {
             if (!blend_name) blend_name = displayData.name;
             if (!blend_img) blend_img = displayData.image;
-            if (!blend_video) blend_video = displayData.video;
+            // only set if no image data from the blend
+            if (!blend_img && !blend_video) blend_video = displayData.video;
         }
     }
 
