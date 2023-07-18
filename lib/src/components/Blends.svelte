@@ -3,7 +3,13 @@
 <script lang="ts">
     import { get_current_component, onMount } from 'svelte/internal';
     import { useSWR, useSearch } from '@nefty/use';
-    import { getBlends, settings, categories, show_owner_filter, requirments } from '../store';
+    import {
+        getBlends,
+        settings,
+        categories,
+        show_owner_filter,
+        requirments,
+    } from '../store';
     import { dispatch, displayStatus, displayTime, sortBlends } from '../utils';
     import type { GetBlendsResponse, GetBlendsResult } from '../types';
 
@@ -195,6 +201,20 @@
             asyncData($settings.config);
         }, 100);
     };
+
+    const blendUrl = ({ blend_id, contract }) => {
+        const { config } = $settings;
+
+        if (config?.blend_link_template) {
+            const url = config.blend_link_template;
+
+            return url
+                .replace('{contract}', contract)
+                .replace('{blend_id}', blend_id);
+        } else {
+            return `/blend/${contract}/${blend_id}`;
+        }
+    };
 </script>
 
 <svg
@@ -320,11 +340,12 @@
     {#if data.length}
         <div class="blends-group">
             {#each data as blend}
-                <button
+                <a
                     class={`btn-clear blends-item ${
                         blend.secure ? 'secure' : ''
                     }`}
-                    on:click={() => viewBlend(blend)}
+                    href={blendUrl(blend)}
+                    on:click|preventDefault={() => viewBlend(blend)}
                 >
                     <time class={displayStatus(blend.status)}>
                         {#if !['ended', 'live'].includes(displayTime(blend.start_time, blend.end_time, now))}
@@ -397,7 +418,7 @@
                             ingredients
                         </small>
                     {/if}
-                </button>
+                </a>
             {/each}
         </div>
     {:else}

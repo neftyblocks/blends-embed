@@ -13,6 +13,7 @@ export interface Settings {
         platform_url: string;
         chain: string;
         collection?: string;
+        blend_link_template?: string;
         query?: {
             page?: string;
             category?: string;
