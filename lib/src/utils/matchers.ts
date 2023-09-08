@@ -100,15 +100,19 @@ export const switchFn =
     (expression: string) =>
         (lookupObject[expression] || lookupObject[defaultCase])();
 
-export const matchBlendLive = (start_time, end_time, now) => {
-    const countdownStart = useCountDown(start_time, now);
-    const countdownEnd = useCountDown(end_time, now);
+export const matchBlendLive = (
+    start_time: string,
+    end_time: string,
+    now: number
+) => {
+    const countdownStart = useCountDown(+start_time, now);
+    const countdownEnd = useCountDown(+end_time, now);
 
-    if (start_time === 0 && end_time === 0) {
+    if (start_time === '0' && end_time === '0') {
         return true;
-    } else if (start_time === 0 && countdownEnd !== '0') {
+    } else if (start_time === '0' && countdownEnd !== '0') {
         return true;
-    } else if (end_time === 0 && countdownStart === '0') {
+    } else if (end_time === '0' && countdownStart === '0') {
         return true;
     } else if (countdownStart === '0' && countdownEnd !== '0') {
         return true;
