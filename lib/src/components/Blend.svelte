@@ -25,6 +25,7 @@
         displayStatus,
         getDetailUrl,
         secondsToDhms,
+        matchBlendLive,
     } from '../utils';
 
     // COMPONENTS
@@ -668,13 +669,27 @@
                             disabled={!allowBlend ||
                                 loading ||
                                 !user ||
-                                data.status !== 'active'}
+                                data.status !== 'active' ||
+                                !matchBlendLive(
+                                    data.start_time,
+                                    data.end_time,
+                                    now
+                                )}
                             class="btn btn--primary {!loading &&
-                            isMeetingRequirements
+                            isMeetingRequirements &&
+                            matchBlendLive(data.start_time, data.end_time, now)
                                 ? 'btn--blend'
                                 : ''}"
                             on:click={() => {
-                                if (allowBlend) blend(data.requirements);
+                                if (
+                                    allowBlend &&
+                                    matchBlendLive(
+                                        data.start_time,
+                                        data.end_time,
+                                        now
+                                    )
+                                )
+                                    blend(data.requirements);
                             }}
                         >
                             {loading
@@ -682,9 +697,19 @@
                                 : user
                                 ? data.status !== 'active'
                                     ? displayStatus(data.status)
-                                    : data.secure
-                                    ? 'Secure blend'
-                                    : 'Blend'
+                                    : matchBlendLive(
+                                          data.start_time,
+                                          data.end_time,
+                                          now
+                                      )
+                                    ? data.secure
+                                        ? 'Secure blend'
+                                        : 'Blend'
+                                    : displayTime(
+                                          data.start_time,
+                                          data.end_time,
+                                          now
+                                      )
                                 : 'Not logged in'}
                         </button>
 

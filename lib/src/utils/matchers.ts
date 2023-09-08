@@ -1,6 +1,11 @@
+import { useCountDown } from '@nefty/use';
 import type { BlendResultItem } from '../types';
 
-export const matchAssetRequirements = (selectionItems: any, requirements: any, isFullValidation: boolean) => {
+export const matchAssetRequirements = (
+    selectionItems: any,
+    requirements: any,
+    isFullValidation: boolean
+) => {
     const { amount } = requirements;
 
     if (!selectionItems) return false;
@@ -12,7 +17,10 @@ export const matchAssetRequirements = (selectionItems: any, requirements: any, i
     return true;
 };
 
-export const matchTokenRequirements = (selectionItems: any, requirements: any) => {
+export const matchTokenRequirements = (
+    selectionItems: any,
+    requirements: any
+) => {
     const { value } = requirements;
 
     if (!selectionItems) return false;
@@ -25,7 +33,7 @@ export const matchTokenRequirements = (selectionItems: any, requirements: any) =
 export const getMarketUrl = (
     matcher_type: string,
     market_data: BlendResultItem['market_data'],
-    platformUrl: string,
+    platformUrl: string
 ) => {
     const marketArray = market_data.split('|');
     const extend = '&sort=price&order=asc';
@@ -45,7 +53,7 @@ export const getMarketUrl = (
 export const getDetailUrl = (
     matcher_type: string,
     market_data: BlendResultItem['market_data'],
-    platformUrl: string,
+    platformUrl: string
 ) => {
     const marketArray = market_data.split('|');
 
@@ -88,5 +96,21 @@ export const comparisonOperator = {
 };
 
 export const switchFn =
-    (lookupObject: Record<string, () => unknown>, defaultCase = '_default') => (expression: string) =>
+    (lookupObject: Record<string, () => unknown>, defaultCase = '_default') =>
+    (expression: string) =>
         (lookupObject[expression] || lookupObject[defaultCase])();
+
+export const matchBlendLive = (start_time, end_time, now) => {
+    const countdownStart = useCountDown(start_time, now);
+    const countdownEnd = useCountDown(end_time, now);
+
+    if (start_time === 0 && end_time === 0) {
+        return true;
+    } else if (start_time === 0 && countdownEnd !== '0') {
+        return true;
+    } else if (end_time === 0 && countdownStart === '0') {
+        return true;
+    } else {
+        return false;
+    }
+};

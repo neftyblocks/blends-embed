@@ -492,6 +492,7 @@
     }
 
     .blends-item {
+        display: block;
         position: relative;
         background-color: var(--nb-bg-card);
         border-radius: var(--nb-radius);
@@ -499,6 +500,7 @@
         overflow: hidden;
         padding: 12px;
         transition: transform 0.3s;
+        text-decoration: none;
 
         .visual {
             height: auto;
@@ -558,8 +560,10 @@
         }
 
         time {
-            display: inline-block;
+            display: block;
+            width: fit-content;
             padding: 4px 12px;
+            margin: 0 auto;
             text-transform: uppercase;
             color: var(--nb-color);
             transform: translateY(-6px);
