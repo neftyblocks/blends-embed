@@ -110,6 +110,8 @@ export const matchBlendLive = (start_time, end_time, now) => {
         return true;
     } else if (end_time === 0 && countdownStart === '0') {
         return true;
+    } else if (countdownStart === '0' && countdownEnd !== '0') {
+        return true;
     } else {
         return false;
     }
