@@ -2,7 +2,13 @@ import { useFetch } from '@nefty/use';
 import type { Payload } from '../types';
 import { comparisonOperator, matchSecurityReason, switchFn } from '../utils';
 
-export const getSecurityCheck = async ({ chain_url, actor, security_id, atomic_url, collection }) => {
+export const getSecurityCheck = async ({
+    chain_url,
+    actor,
+    security_id,
+    atomic_url,
+    collection,
+}) => {
     const response = {
         allowed: false,
         result: [],
@@ -93,7 +99,13 @@ export const getSecurityCheck = async ({ chain_url, actor, security_id, atomic_u
     return response;
 };
 
-export const getAccountClaims = async ({ chain_url, actor, blend_id, account_limit, account_limit_cooldown }) => {
+export const getAccountClaims = async ({
+    chain_url,
+    actor,
+    blend_id,
+    account_limit,
+    account_limit_cooldown,
+}) => {
     const response = {
         allowed: true,
         wait: 0,
@@ -129,7 +141,7 @@ export const getAccountClaims = async ({ chain_url, actor, blend_id, account_lim
         if (account_limit_cooldown === 0) {
             const left = account_limit - counter;
 
-            if (left >= 0) {
+            if (left <= 0) {
                 response.allowed = false;
                 response.reason = 'limit reached.';
             }
@@ -178,7 +190,11 @@ async function ownership(value, actor, atomic_url, chain_url) {
             const [key, value] = filters[i];
 
             if (key === 'TOKEN_HOLDING') {
-                const token = await proofOfTokenship({ value, actor, chain_url });
+                const token = await proofOfTokenship({
+                    value,
+                    actor,
+                    chain_url,
+                });
 
                 if (+logical_operator === 1) {
                     validtokens = token;
@@ -198,7 +214,12 @@ async function ownership(value, actor, atomic_url, chain_url) {
                     }
                 }
             } else {
-                const assets = await proofOfOwnership({ key, value, actor, atomic_url });
+                const assets = await proofOfOwnership({
+                    key,
+                    value,
+                    actor,
+                    atomic_url,
+                });
 
                 if (assets.length) {
                     validAssets.push(...assets);
@@ -218,7 +239,13 @@ async function ownership(value, actor, atomic_url, chain_url) {
         // if any of the assets is missing (not matching requirements) send back empty array
         validAssets = missingAssets ? [] : [...new Set(validAssets)];
 
-        return { logical_operator, validtokens, missingAssets, validAssets, reason };
+        return {
+            logical_operator,
+            validtokens,
+            missingAssets,
+            validAssets,
+            reason,
+        };
     }
 
     return null;
@@ -227,15 +254,18 @@ async function ownership(value, actor, atomic_url, chain_url) {
 async function proofOfTokenship({ value, chain_url, actor }): Promise<boolean> {
     const [amount, symbol] = value.amount.split(' ');
 
-    const { data, error } = await useFetch<any>('/v1/chain/get_currency_balance', {
-        baseUrl: chain_url,
-        method: 'POST',
-        body: {
-            code: value.token_contract,
-            symbol,
-            account: actor,
-        },
-    });
+    const { data, error } = await useFetch<any>(
+        '/v1/chain/get_currency_balance',
+        {
+            baseUrl: chain_url,
+            method: 'POST',
+            body: {
+                code: value.token_contract,
+                symbol,
+                account: actor,
+            },
+        }
+    );
 
     if (error) console.error(error);
 
@@ -244,7 +274,10 @@ async function proofOfTokenship({ value, chain_url, actor }): Promise<boolean> {
             const [tokenAmount, tokenSymbol] = data[i].split(' ');
 
             if (tokenSymbol === symbol) {
-                return comparisonOperator[+value.comparison_operator](+tokenAmount, +amount);
+                return comparisonOperator[+value.comparison_operator](
+                    +tokenAmount,
+                    +amount
+                );
             }
         }
     }
@@ -252,53 +285,73 @@ async function proofOfTokenship({ value, chain_url, actor }): Promise<boolean> {
     return false;
 }
 
-async function proofOfOwnership({ key, value, actor, atomic_url }): Promise<any> {
-    const { collection_name, template_id, schema_name, comparison_operator, amount } = value;
+async function proofOfOwnership({
+    key,
+    value,
+    actor,
+    atomic_url,
+}): Promise<any> {
+    const {
+        collection_name,
+        template_id,
+        schema_name,
+        comparison_operator,
+        amount,
+    } = value;
 
     const assetsIds = [];
     const limit = `${+amount + 1}`;
 
     const cases = {
         TEMPLATE_HOLDINGS: async () => {
-            const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
-                baseUrl: atomic_url,
-                method: 'GET',
-                params: {
-                    owner: actor,
-                    collection_name,
-                    template_id,
-                    limit,
-                },
-            });
+            const { data, error } = await useFetch<Payload>(
+                '/atomicassets/v1/assets',
+                {
+                    baseUrl: atomic_url,
+                    method: 'GET',
+                    params: {
+                        owner: actor,
+                        collection_name,
+                        template_id,
+                        limit,
+                    },
+                }
+            );
 
             if (error) return [];
             return data.data;
         },
         COLLECTION_HOLDINGS: async () => {
-            const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
-                baseUrl: atomic_url,
-                method: 'GET',
-                params: {
-                    owner: actor,
-                    collection_name,
-                    limit,
-                },
-            });
+            const { data, error } = await useFetch<Payload>(
+                '/atomicassets/v1/assets',
+                {
+                    baseUrl: atomic_url,
+                    method: 'GET',
+                    params: {
+                        owner: actor,
+                        collection_name,
+                        limit,
+                    },
+                }
+            );
 
             if (error) return [];
             return data.data;
         },
         SCHEMA_HOLDINGS: async () => {
-            const { data, error } = await useFetch<Payload>('/atomicassets/v1/assets', {
-                baseUrl: atomic_url,
-                method: 'GET',
-                params: {
-                    owner: actor,
-                    collection_name,
-                    schema_name,
-                    limit,
-                },
-            });
+            const { data, error } = await useFetch<Payload>(
+                '/atomicassets/v1/assets',
+                {
+                    baseUrl: atomic_url,
+                    method: 'GET',
+                    params: {
+                        owner: actor,
+                        collection_name,
+                        schema_name,
+                        limit,
+                    },
+                }
+            );
 
             if (error) return [];
             return data.data;
@@ -316,7 +369,8 @@ async function proofOfOwnership({ key, value, actor, atomic_url }): Promise<any>
         assetsIds.push(asset_id);
     }
 
-    if (comparisonOperator[+comparison_operator](assetsIds.length, +amount)) return assetsIds;
+    if (comparisonOperator[+comparison_operator](assetsIds.length, +amount))
+        return assetsIds;
     else {
         return [];
     }
